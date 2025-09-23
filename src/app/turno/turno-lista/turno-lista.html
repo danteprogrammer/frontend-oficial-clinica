@@ -1,82 +1,92 @@
 <div class="container">
     <div class="header">
-        <h2>Turnos Próximos</h2>
-        <button class="btn-refresh" (click)="cargarTurnosProximos()" [disabled]="cargando">
-            {{ cargando ? 'Cargando...' : 'Actualizar' }}
-        </button>
+        <h2>Gestión de Turnos</h2>
+        <div class="header-info">
+            <span class="info-badge">Total: {{ turnos.length + pacientesSinTurno.length }}</span>
+        </div>
     </div>
 
     <div *ngIf="mensajeExito" class="mensaje exito">{{ mensajeExito }}</div>
     <div *ngIf="mensajeError" class="mensaje error">{{ mensajeError }}</div>
 
-    <div *ngIf="cargando && turnos.length === 0" class="loading">
-        Cargando turnos...
-    </div>
+    <!-- PANEL 1: Turnos Asignados -->
+    <div class="panel-section">
+        <div class="panel-header">
+            <h3>📅 Turnos Asignados ({{ turnos.length }})</h3>
+        </div>
 
-    <div *ngIf="!cargando && turnos.length === 0" class="no-data">
-        No hay turnos próximos programados.
-    </div>
+        <div *ngIf="cargando && turnos.length === 0" class="loading">
+            Cargando turnos...
+        </div>
 
-    <div class="turnos-grid" *ngIf="turnos.length > 0">
-        <div class="turno-card" *ngFor="let turno of turnos">
-            <div class="turno-header">
-                <h3>{{ turno.paciente.nombres }} {{ turno.paciente.apellidos }}</h3>
-                <span class="turno-id">#{{ turno.idTurno }}</span>
-            </div>
+        <div *ngIf="!cargando && turnos.length === 0" class="no-data">
+            No hay turnos asignados.
+        </div>
 
-            <div class="turno-info">
-                <div class="info-item">
-                    <strong>DNI:</strong> {{ turno.paciente.dni }}
+        <div class="turnos-grid" *ngIf="turnos.length > 0">
+            <div class="turno-card" *ngFor="let turno of turnos">
+                <div class="turno-header">
+                    <h3>{{ turno.paciente?.nombres || 'PACIENTE' }} {{ turno.paciente?.apellidos || '' }}</h3>
+                    <span class="turno-id">#{{ turno.idTurno }}</span>
                 </div>
-                <div class="info-item">
-                    <strong>Fecha:</strong> {{ turno.fecha | date:'dd/MM/yyyy' }}
-                </div>
-                <div class="info-item">
-                    <strong>Hora:</strong> {{ turno.hora }}
-                </div>
-                <div class="info-item">
-                    <strong>Consultorio:</strong> {{ turno.consultorio.numero }} - Piso {{ turno.consultorio.piso }}
-                </div>
-                <div class="info-item">
-                    <strong>Motivo:</strong> {{ turno.motivo }}
-                </div>
-                <div class="info-item" *ngIf="turno.observaciones">
-                    <strong>Observaciones:</strong> {{ turno.observaciones }}
-                </div>
-            </div>
 
-            <div class="turno-status">
-                <span class="estado" [ngClass]="getEstadoClass(turno.estado)">
-                    {{ getEstadoLabel(turno.estado) }}
-                </span>
-            </div>
+                <div class="turno-info">
+                    <div class="info-item">
+                        <strong>DNI:</strong> {{ turno.paciente?.dni || turno.dniPaciente || 'N/A' }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Fecha:</strong> {{ turno.fecha | date:'dd/MM/yyyy' }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Hora:</strong> {{ turno.hora }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Consultorio:</strong> {{ turno.consultorio?.numero || turno.id_consultorio || 'N/A' }}
+                        <span *ngIf="turno.consultorio?.descripcion"> - {{ turno.consultorio.descripcion }}</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Motivo:</strong> {{ turno.motivo }}
+                    </div>
+                    <div class="info-item" *ngIf="turno.observaciones">
+                        <strong>Observaciones:</strong> {{ turno.observaciones }}
+                    </div>
+                </div>
 
-            <div class="turno-actions">
-                <button
-                    class="btn-action btn-confirmar"
-                    *ngIf="turno.estado === 'Pendiente'"
-                    (click)="cambiarEstadoTurno(turno, 'Confirmado')">
-                    Confirmar
-                </button>
-                <button
-                    class="btn-action btn-iniciar"
-                    *ngIf="turno.estado === 'Confirmado'"
-                    (click)="cambiarEstadoTurno(turno, 'EnProceso')">
-                    Iniciar Consulta
-                </button>
-                <button
-                    class="btn-action btn-completar"
-                    *ngIf="turno.estado === 'EnProceso'"
-                    (click)="cambiarEstadoTurno(turno, 'Completado')">
-                    Completar
-                </button>
-                <button
-                    class="btn-action btn-cancelar"
-                    *ngIf="turno.estado !== 'Cancelado' && turno.estado !== 'Completado'"
-                    (click)="cancelarTurno(turno)">
-                    Cancelar
-                </button>
+                <div class="turno-status">
+                    <span class="estado" [ngClass]="getEstadoClass(turno.estado)">
+                        {{ getEstadoLabel(turno.estado) }}
+                    </span>
+                </div>
+
+                <div class="turno-actions">
+                    <button
+                        class="btn-action btn-confirmar"
+                        *ngIf="turno.estado === 'Pendiente'"
+                        (click)="cambiarEstadoTurno(turno, 'Confirmado')">
+                        Confirmar
+                    </button>
+                    <button
+                        class="btn-action btn-iniciar"
+                        *ngIf="turno.estado === 'Confirmado'"
+                        (click)="cambiarEstadoTurno(turno, 'EnProceso')">
+                        Iniciar Consulta
+                    </button>
+                    <button
+                        class="btn-action btn-completar"
+                        *ngIf="turno.estado === 'EnProceso'"
+                        (click)="cambiarEstadoTurno(turno, 'Completado')">
+                        Completar
+                    </button>
+                    <button
+                        class="btn-action btn-cancelar"
+                        *ngIf="turno.estado !== 'Cancelado' && turno.estado !== 'Completado'"
+                        (click)="cancelarTurno(turno)">
+                        Cancelar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
+
+    
 </div>

@@ -1,58 +1,112 @@
 <div class="consultorios-container">
-  <div class="page-header">
-    <h1>Gestión de Consultorios</h1>
-    <p class="subtitle">Vista general de todos los consultorios disponibles</p>
-  </div>
+  <div class="page-header">
+    <h1>🏥 Gestión de Consultorios</h1>
+    <p class="subtitle">Vista general de todos los consultorios disponibles en la clínica</p>
+    <div class="header-stats">
+      <span class="stat-badge total">Total: {{ consultorios.length }}</span>
+      <span class="stat-badge disponible">Disponibles: {{ getCountByEstado('Disponible') }}</span>
+      <span class="stat-badge ocupado">Ocupados: {{ getCountByEstado('Ocupado') }}</span>
+    </div>
+  </div>
 
-    <div *ngIf="loading" class="loading-container">
-    <div class="loading-spinner"></div>
-    <p>Cargando consultorios...</p>
-  </div>
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Cargando consultorios...</p>
+  </div>
 
-  <div *ngIf="error" class="error-container">
-    <div class="error-message">
-      <strong>Error:</strong> {{ error }}
-    </div>
-    <button (click)="cargarConsultorios()" class="btn-retry">Reintentar</button>
-  </div>
+  <div *ngIf="error" class="error-container">
+    <div class="error-message">
+      <strong>⚠️ Error:</strong> {{ error }}
+    </div>
+    <button (click)="ngOnInit()" class="btn-retry">🔄 Reintentar</button>
+  </div>
 
-    <div *ngIf="!loading && !error" class="consultorios-grid">
-    <div *ngFor="let consultorio of consultorios" class="consultorio-card">
-      <div class="consultorio-header">
-        <div class="consultorio-numero">
-          <span class="numero">{{ consultorio.numero }}</span>
-          <span class="estado-icon" [ngClass]="getEstadoClass(consultorio.estado)">
-            {{ getEstadoIcon(consultorio.estado) }}
-          </span>
-        </div>
-        <div class="consultorio-piso">
-          Piso {{ consultorio.piso }}
-        </div>
-      </div>
+  <div *ngIf="!loading && !error" class="consultorios-content">
+    <!-- Filtros por estado -->
+    <div class="filtros-container">
+      <button
+        class="filtro-btn active"
+        (click)="filtroEstado = 'Todos'"
+        [class.active]="filtroEstado === 'Todos'">
+        Todos ({{ consultorios.length }})
+      </button>
+      <button
+        class="filtro-btn"
+        (click)="filtroEstado = 'Disponible'"
+        [class.active]="filtroEstado === 'Disponible'">
+        ✅ Disponibles ({{ getCountByEstado('Disponible') }})
+      </button>
+      <button
+        class="filtro-btn"
+        (click)="filtroEstado = 'Ocupado'"
+        [class.active]="filtroEstado === 'Ocupado'">
+        ❌ Ocupados ({{ getCountByEstado('Ocupado') }})
+      </button>
+      <button
+        class="filtro-btn"
+        (click)="filtroEstado = 'Mantenimiento'"
+        [class.active]="filtroEstado === 'Mantenimiento'">
+        🔧 Mantenimiento ({{ getCountByEstado('Mantenimiento') }})
+      </button>
+    </div>
 
-      <div class="consultorio-body">
-        <h3 class="consultorio-descripcion">{{ consultorio.descripcion }}</h3>
+    <!-- Grid de consultorios -->
+    <div class="consultorios-grid">
+      <div
+        *ngFor="let consultorio of consultoriosFiltrados"
+        class="consultorio-card"
+        [ngClass]="getEstadoClass(consultorio.estado)">
+        <div class="consultorio-header">
+          <div class="consultorio-numero">
+            <span class="numero">{{ consultorio.numero }}</span>
+            <span class="estado-icon">
+              {{ getEstadoIcon(consultorio.estado) }}
+            </span>
+          </div>
+          <div class="consultorio-piso">
+            🏢 Piso {{ consultorio.piso }}
+          </div>
+        </div>
 
-        <div class="consultorio-estado">
-          <span class="estado-label" [ngClass]="getEstadoClass(consultorio.estado)">
-            {{ consultorio.estado }}
-          </span>
-        </div>
-      </div>
+        <div class="consultorio-body">
+          <h3 class="consultorio-descripcion">{{ consultorio.descripcion }}</h3>
 
-      <div class="consultorio-footer">
-        <div class="consultorio-info">
-          <small class="info-text">
-            <strong>ID:</strong> {{ consultorio.idConsultorio }}
-          </small>
-        </div>
-      </div>
-    </div>
-  </div>
+          <div class="consultorio-estado">
+            <span class="estado-label">
+              {{ consultorio.estado }}
+            </span>
+          </div>
 
-    <div *ngIf="!loading && !error && consultorios.length === 0" class="no-data">
-    <div class="no-data-icon">🏥</div>
-    <h3>No hay consultorios disponibles</h3>
-    <p>No se encontraron consultorios en el sistema.</p>
-  </div>
+          <!-- Información adicional -->
+          <div class="consultorio-detalles">
+            <div class="detalle-item">
+              <strong>📍 Ubicación:</strong> Piso {{ consultorio.piso }}, Consultorio {{ consultorio.numero }}
+            </div>
+            <div class="detalle-item">
+              <strong>🆔 ID:</strong> {{ consultorio.idConsultorio }}
+            </div>
+            <div class="detalle-item" *ngIf="consultorio.estado === 'Ocupado'">
+              <strong>⏰ Estado:</strong> Actualmente en uso
+            </div>
+            <div class="detalle-item" *ngIf="consultorio.estado === 'Disponible'">
+              <strong>✅ Estado:</strong> Disponible para asignación
+            </div>
+          </div>
+        </div>
+
+        <div class="consultorio-footer">
+          <button class="btn-ver-detalles">
+            📋 Ver Detalles Completos
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !error && consultoriosFiltrados.length === 0" class="no-data">
+    <div class="no-data-icon">🏥</div>
+    <h3>No hay consultorios {{ filtroEstado === 'Todos' ? 'disponibles' : filtroEstado.toLowerCase() }}</h3>
+    <p>No se encontraron consultorios con el filtro seleccionado.</p>
+    <button (click)="filtroEstado = 'Todos'" class="btn-reset-filtro">Mostrar Todos</button>
+  </div>
 </div>

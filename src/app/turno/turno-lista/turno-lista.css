@@ -205,8 +205,112 @@
     background-color: #c82333;
 }
 
+/* Estilos para los paneles separados */
+.panel-section {
+    margin-bottom: 30px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #e9ecef;
+}
+
+.panel-header {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #007bff;
+}
+
+.panel-header h3 {
+    margin: 0;
+    color: #007bff;
+    font-size: 1.3em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-info {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.info-badge {
+    background: #17a2b8;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Estilos para pacientes sin turno */
+.pacientes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.paciente-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    border-left: 4px solid #ffc107;
+}
+
+.paciente-header {
+    margin-bottom: 12px;
+}
+
+.paciente-header h4 {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-size: 16px;
+}
+
+.paciente-dni {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.paciente-info {
+    margin-bottom: 12px;
+}
+
+.estado-sin-turno {
+    color: #856404;
+    font-weight: 500;
+    font-size: 12px;
+}
+
+.paciente-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-asignar {
+    background-color: #ffc107;
+    color: #212529;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.btn-asignar:hover {
+    background-color: #e0a800;
+}
+
 @media (max-width: 768px) {
-    .turnos-grid {
+    .turnos-grid, .pacientes-grid {
         grid-template-columns: 1fr;
     }
 
@@ -216,11 +320,15 @@
         text-align: center;
     }
 
-    .turno-actions {
+    .turno-actions, .paciente-actions {
         flex-direction: column;
     }
 
-    .btn-action {
+    .btn-action, .btn-asignar {
         width: 100%;
+    }
+
+    .panel-section {
+        padding: 15px;
     }
 }

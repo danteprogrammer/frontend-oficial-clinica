@@ -17,15 +17,15 @@ export const routes: Routes = [
         path: '', 
         component: Main,
         canActivate: [authGuard], 
-        children: [ 
+        children: [
             { path: 'pacientes/registrados', component: PacienteBusqueda },
             { path: 'pacientes/nuevo', component: PacienteRegistro },
             { path: 'pacientes/modificar/:id', component: PacienteModificar },
-            { path: 'pacientes/inactivos', component: PacienteInactivos }, 
+            { path: 'pacientes/inactivos', component: PacienteInactivos },
             { path: 'turno/asignar', component: TurnoAsignacion },
             { path: 'turno/proximos', component: TurnoLista },
             { path: 'consultorios', component: Consultorio },
-            { path: '', redirectTo: 'pacientes/registrados', pathMatch: 'full' }
+            { path: '', redirectTo: 'dashboard/turnos', pathMatch: 'full' }
         ]
     },
     { path: '**', redirectTo: '' } 

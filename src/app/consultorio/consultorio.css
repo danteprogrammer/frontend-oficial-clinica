@@ -191,6 +191,128 @@
   margin: 0;
 }
 
+/* Header con estadísticas */
+.header-stats {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.stat-badge {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: white;
+}
+
+.stat-badge.total {
+  background-color: #17a2b8;
+}
+
+.stat-badge.disponible {
+  background-color: #28a745;
+}
+
+.stat-badge.ocupado {
+  background-color: #dc3545;
+}
+
+/* Contenedor de filtros */
+.filtros-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.filtro-btn {
+  padding: 10px 20px;
+  border: 2px solid #007bff;
+  background-color: white;
+  color: #007bff;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.filtro-btn:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.filtro-btn.active {
+  background-color: #007bff;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+/* Contenido principal */
+.consultorios-content {
+  background: white;
+  border-radius: 10px;
+  padding: 25px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Detalles del consultorio */
+.consultorio-detalles {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e9ecef;
+}
+
+.detalle-item {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.detalle-item strong {
+  color: #333;
+  display: inline-block;
+  min-width: 120px;
+}
+
+/* Botón de ver detalles */
+.btn-ver-detalles {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.3s;
+  width: 100%;
+}
+
+.btn-ver-detalles:hover {
+  background-color: #5a6268;
+}
+
+/* Botón reset filtro */
+.btn-reset-filtro {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 15px;
+  transition: background-color 0.3s;
+}
+
+.btn-reset-filtro:hover {
+  background-color: #0056b3;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .consultorios-container {
@@ -199,6 +321,30 @@
 
   .page-header h1 {
     font-size: 2rem;
+  }
+
+  .header-stats {
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .stat-badge {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+
+  .filtros-container {
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .filtro-btn {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
+
+  .consultorios-content {
+    padding: 20px 15px;
   }
 
   .consultorios-grid {
@@ -216,5 +362,11 @@
 
   .consultorio-footer {
     padding: 10px 15px;
+  }
+
+  .detalle-item strong {
+    display: block;
+    min-width: auto;
+    margin-bottom: 4px;
   }
 }
