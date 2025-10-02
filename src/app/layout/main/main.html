@@ -6,40 +6,26 @@
 
     <nav class="main-nav">
       <ul>
-        <li class="menu-item has-submenu">
-          <a (click)="togglePacientesMenu()">
-            <span>Pacientes</span>
-          </a>
-          <ul class="submenu" *ngIf="isPacientesMenuOpen">
-            <li><a routerLink="/pacientes/nuevo" routerLinkActive="active">Registrar Paciente</a></li>
-            <li><a routerLink="/pacientes/registrados" routerLinkActive="active">Pacientes Registrados</a></li>
-          </ul>
-        </li>
+        <li *ngFor="let menu of navMenus" class="menu-item">
 
-        <li class="menu-item has-submenu">
-          <a (click)="toggleCitasMenu()">
-            <span>Citas</span>
+          <a *ngIf="menu.path" [routerLink]="menu.path" routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{exact: true}" (click)="toggleMenu(menu)">
+            <span class="menu-icon">{{ menu.icon }}</span>
+            <span>{{ menu.name }}</span>
           </a>
-          <ul class="submenu" *ngIf="isCitasMenuOpen">
-            <li><a routerLink="/cita/registrar" routerLinkActive="active">Programar Nueva Cita</a></li>
-            <li><a routerLink="/cita/lista" routerLinkActive="active">Citas Registradas</a></li>
-          </ul>
-        </li>
 
-        <li class="menu-item has-submenu">
-          <a (click)="toggleTurnosMenu()">
-            <span>Turnos</span>
+          <a *ngIf="!menu.path" (click)="toggleMenu(menu)" [class.active-parent]="menu.isOpen">
+            <span class="menu-icon">{{ menu.icon }}</span>
+            <span>{{ menu.name }}</span>
+            <span class="submenu-arrow" [class.rotated]="menu.isOpen"></span>
           </a>
-          <ul class="submenu" *ngIf="isTurnosMenuOpen">
-            <li><a routerLink="/turno/asignar" routerLinkActive="active">Asignar Turno</a></li>
-            <li><a routerLink="/turno/proximos" routerLinkActive="active">Próximos Turnos</a></li>
-          </ul>
-        </li>
 
-        <li class="menu-item">
-          <a routerLink="/consultorios" routerLinkActive="active">
-            <span>Consultorios</span>
-          </a>
+          <ul class="submenu" *ngIf="menu.submenus" [class.open]="menu.isOpen">
+            <li *ngFor="let submenu of menu.submenus">
+              <a [routerLink]="submenu.path" routerLinkActive="active-link">{{ submenu.name }}</a>
+            </li>
+          </ul>
+
         </li>
       </ul>
     </nav>

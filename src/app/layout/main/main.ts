@@ -1,7 +1,16 @@
 import { Component } from '@angular/core';
-import { Router ,RouterModule} from '@angular/router';
-import { Auth } from '../../auth/auth'; 
+import { Router, RouterModule } from '@angular/router';
+import { Auth } from '../../auth/auth';
 import { CommonModule } from '@angular/common';
+
+// Interfaz para definir la estructura de nuestro menú
+interface NavMenu {
+  name: string;
+  icon: string; // Añadimos un campo para el ícono
+  path?: string;
+  isOpen?: boolean;
+  submenus?: { name: string; path: string; }[];
+}
 
 @Component({
   selector: 'app-main',
@@ -14,31 +23,57 @@ import { CommonModule } from '@angular/common';
 })
 export class Main {
 
-  isPacientesMenuOpen = false;
-  isCitasMenuOpen = false;
-  isTurnosMenuOpen = false;
+  // Estructura de menú definitiva y lógica
+  navMenus: NavMenu[] = [
+    { name: 'Dashboard', path: '/dashboard', icon: '🏠' },
+    {
+      name: 'Pacientes',
+      icon: '👥',
+      isOpen: true, // Abierto por defecto
+      submenus: [
+        { name: 'Listado de Pacientes', path: '/pacientes/registrados' },
+        { name: 'Registrar Paciente', path: '/pacientes/nuevo' }
+      ]
+    },
+    {
+      name: 'Agenda',
+      icon: '📅',
+      isOpen: false,
+      submenus: [
+        { name: 'Programar Cita', path: '/citas/programar' },
+        { name: 'Asignar Turno', path: '/turnos/asignar' },
+        { name: 'Próximos Turnos', path: '/turnos/proximos' },
+      ]
+    },
+    {
+      name: 'Administración',
+      icon: '⚙️',
+      isOpen: false,
+      submenus: [
+        { name: 'Consultorios', path: '/consultorios' },
+      ]
+    }
+  ];
 
-  constructor(private authService: Auth, private router: Router) {}
+  constructor(private authService: Auth, private router: Router) { }
 
-  togglePacientesMenu(): void {
-    this.isPacientesMenuOpen = !this.isPacientesMenuOpen;
-    // Cerrar otros menús
-    this.isCitasMenuOpen = false;
-    this.isTurnosMenuOpen = false;
-  }
+  toggleMenu(clickedMenu: NavMenu): void {
+    // Si el menú no tiene submenús, no hace nada más
+    if (!clickedMenu.submenus) {
+      // Cierra todos los demás menús al navegar a un link principal
+      this.navMenus.forEach(menu => menu.isOpen = false);
+      return;
+    }
 
-  toggleCitasMenu(): void {
-    this.isCitasMenuOpen = !this.isCitasMenuOpen;
-    // Cerrar otros menús
-    this.isPacientesMenuOpen = false;
-    this.isTurnosMenuOpen = false;
-  }
+    // Cierra los otros menús desplegables
+    this.navMenus.forEach(menu => {
+      if (menu !== clickedMenu) {
+        menu.isOpen = false;
+      }
+    });
 
-  toggleTurnosMenu(): void {
-    this.isTurnosMenuOpen = !this.isTurnosMenuOpen;
-    // Cerrar otros menús
-    this.isPacientesMenuOpen = false;
-    this.isCitasMenuOpen = false;
+    // Abre o cierra el menú clickeado
+    clickedMenu.isOpen = !clickedMenu.isOpen;
   }
 
   logout(): void {

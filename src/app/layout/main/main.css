@@ -3,34 +3,36 @@
     display: flex;
     height: 100vh;
     width: 100vw;
-    background-color: #ffffff;
+    background-color: var(--background-light);
 }
 
 .sidebar {
-    width: 300px;
+    width: 280px;
     background-color: #B2D9E3;
     display: flex;
     flex-direction: column;
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px;
-    padding: 20px 0;
-    height: 100%;
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+    padding: 25px 0;
+    transition: width 0.3s ease;
+    box-shadow: var(--shadow-lg);
+    z-index: 10;
 }
 
-
 .sidebar-header {
-    padding: 0 20px;
-    margin-bottom: 30px;
+    padding: 0 25px;
+    margin-bottom: 40px;
     text-align: center;
 }
 
 .logo {
-    max-width: 150px;
+    max-width: 160px;
+    height: auto;
 }
 
 .main-nav {
-    flex-grow: 0;       /* 🔹 el menú ocupa el espacio sobrante */
-    overflow-y: auto;   /* 🔹 scroll solo en el menú */
+    flex-grow: 1;
+    overflow-y: auto;
 }
 
 .main-nav ul {
@@ -42,47 +44,97 @@
 .menu-item a {
     display: flex;
     align-items: center;
-    padding: 15px 25px;
-    color: #909090;
+    padding: 16px 25px;
+    color: var(--primary-dark);
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    position: relative;
 }
 
-.menu-item a:hover,
-.submenu li a.active {
-    background-color: #005792;
-    color: #FFFFFF;
+.menu-icon {
+    font-size: 1.2rem;
+    margin-right: 15px;
+    width: 24px;
+    text-align: center;
+}
+
+.menu-item a.active-link,
+.menu-item a.active-parent {
+    color: var(--primary-main);
+    background-color: var(--primary-lightest);
+}
+
+.menu-item a:hover {
+    background-color: var(--primary-lightest);
+    color: var(--primary-main);
+}
+
+.submenu-arrow {
+    margin-left: auto;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--primary-dark);
+    transition: transform 0.3s ease;
+}
+
+.menu-item a:hover .submenu-arrow,
+.menu-item a.active-parent .submenu-arrow {
+    border-top-color: var(--primary-main);
+}
+
+.submenu-arrow.rotated {
+    transform: rotate(180deg);
 }
 
 .submenu {
     list-style: none;
-    padding-left: 30px;
-    max-height: 290px;
+    padding: 0;
+    background-color: rgba(255, 255, 255, 0.4);
     overflow: hidden;
-    transition: max-height 0.5s ease-in-out;
+    max-height: 0;
+    transition: max-height 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.submenu.open {
+    max-height: 500px;
+    /* Anima la altura para mostrar el contenido */
 }
 
 .submenu li a {
-    padding: 12px 15px;
-    color: #909090;
+    padding: 14px 25px 14px 70px;
+    /* Mayor indentación para los sub-items */
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
+.submenu li a.active-link {
+    background-color: var(--primary-main);
+    color: white;
+}
+
+.submenu li a:not(.active-link):hover {
+    background-color: var(--primary-lighter);
 }
 
 .sidebar-footer {
-    padding: 0 20px;
+    padding: 10px 25px 0;
     margin-top: auto;
-    display: flex;
-    justify-content: flex-end;
+    border-top: 1px solid rgba(0, 87, 146, 0.1);
 }
 
 .logout-button {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     cursor: pointer;
-    padding: 10px;
+    padding: 15px 5px;
     border-radius: 5px;
     transition: background-color 0.2s;
+    text-decoration: none;
 }
 
 .logout-button:hover {
@@ -91,7 +143,7 @@
 
 .logout-button span {
     color: #034471;
-    font-weight: 600;
+    font-weight: 700;
     margin-right: 10px;
 }
 
@@ -102,103 +154,6 @@
 
 .content {
     flex: 1;
-    padding: 30px;
+    padding: 40px;
     overflow-y: auto;
-}
-
-/* Panel de Turnos Asignados */
-.turnos-panel {
-    margin-top: 30px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    animation: slideInUp 0.3s ease-out;
-}
-
-@keyframes slideInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Responsive para el panel de turnos */
-@media (max-width: 768px) {
-    .turnos-panel {
-        margin-top: 20px;
-        border-radius: 8px;
-    }
-}
-
-/* Estilos para destacar "Próximos Turnos" en el menú */
-.turnos-link {
-    position: relative;
-}
-
-.turnos-link::before {
-    content: "🔥";
-    position: absolute;
-    right: 10px;
-    font-size: 0.8em;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-/* Hover especial para turnos */
-.turnos-link:hover {
-    background-color: #005792 !important;
-    color: #FFFFFF !important;
-    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
-}
-
-/* Estilos para el enlace de Programar Nueva Cita */
-.cita-link {
-    position: relative;
-    background: linear-gradient(135deg, #005792, #007acc);
-    color: #FFFFFF !important;
-    box-shadow: 0 2px 4px rgba(0, 87, 146, 0.2);
-}
-
-.cita-link:hover {
-    background: linear-gradient(135deg, #007acc, #005792) !important;
-    box-shadow: 0 4px 8px rgba(0, 87, 146, 0.3);
-    transform: translateY(-1px);
-}
-
-.cita-link::before {
-    content: "📅";
-    position: absolute;
-    right: 15px;
-    font-size: 0.9em;
-}
-
-/* Badge para mostrar número de turnos pendientes */
-.turnos-badge {
-    background: #ff4757;
-    color: white;
-    font-size: 0.7em;
-    font-weight: bold;
-    padding: 2px 6px;
-    border-radius: 10px;
-    margin-left: 8px;
-    position: relative;
-    top: -2px;
-    box-shadow: 0 2px 4px rgba(255, 71, 87, 0.3);
-    animation: badgePulse 2s infinite;
-}
-
-@keyframes badgePulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
 }
