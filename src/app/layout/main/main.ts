@@ -15,15 +15,34 @@ import { CommonModule } from '@angular/common';
 export class Main {
 
   isPacientesMenuOpen = false;
+  isCitasMenuOpen = false;
+  isTurnosMenuOpen = false;
 
   constructor(private authService: Auth, private router: Router) {}
 
   togglePacientesMenu(): void {
     this.isPacientesMenuOpen = !this.isPacientesMenuOpen;
+    // Cerrar otros menús
+    this.isCitasMenuOpen = false;
+    this.isTurnosMenuOpen = false;
+  }
+
+  toggleCitasMenu(): void {
+    this.isCitasMenuOpen = !this.isCitasMenuOpen;
+    // Cerrar otros menús
+    this.isPacientesMenuOpen = false;
+    this.isTurnosMenuOpen = false;
+  }
+
+  toggleTurnosMenu(): void {
+    this.isTurnosMenuOpen = !this.isTurnosMenuOpen;
+    // Cerrar otros menús
+    this.isPacientesMenuOpen = false;
+    this.isCitasMenuOpen = false;
   }
 
   logout(): void {
-    this.authService.logout(); 
-    this.router.navigate(['/login']); 
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

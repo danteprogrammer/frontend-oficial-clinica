@@ -13,10 +13,33 @@
           <ul class="submenu" *ngIf="isPacientesMenuOpen">
             <li><a routerLink="/pacientes/nuevo" routerLinkActive="active">Registrar Paciente</a></li>
             <li><a routerLink="/pacientes/registrados" routerLinkActive="active">Pacientes Registrados</a></li>
+          </ul>
+        </li>
+
+        <li class="menu-item has-submenu">
+          <a (click)="toggleCitasMenu()">
+            <span>Citas</span>
+          </a>
+          <ul class="submenu" *ngIf="isCitasMenuOpen">
+            <li><a routerLink="/cita/registrar" routerLinkActive="active">Programar Nueva Cita</a></li>
+            <li><a routerLink="/cita/lista" routerLinkActive="active">Citas Registradas</a></li>
+          </ul>
+        </li>
+
+        <li class="menu-item has-submenu">
+          <a (click)="toggleTurnosMenu()">
+            <span>Turnos</span>
+          </a>
+          <ul class="submenu" *ngIf="isTurnosMenuOpen">
             <li><a routerLink="/turno/asignar" routerLinkActive="active">Asignar Turno</a></li>
-            <li><a routerLink="/consultorios" routerLinkActive="active">Gestión de Consultorios</a></li>
             <li><a routerLink="/turno/proximos" routerLinkActive="active">Próximos Turnos</a></li>
           </ul>
+        </li>
+
+        <li class="menu-item">
+          <a routerLink="/consultorios" routerLinkActive="active">
+            <span>Consultorios</span>
+          </a>
         </li>
       </ul>
     </nav>

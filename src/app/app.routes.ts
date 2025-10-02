@@ -8,7 +8,10 @@ import { PacienteModificar } from './pacientes/paciente-modificar/paciente-modif
 import { PacienteInactivos } from './pacientes/paciente-inactivos/paciente-inactivos';
 import { TurnoAsignacion } from './turno/turno-asignacion/turno-asignacion';
 import { TurnoLista } from './turno/turno-lista/turno-lista';
+import { TurnoRegistro } from './turno/turno-registro/turno-registro';
 import { Consultorio } from './consultorio/consultorio';
+import { CitaLista } from './cita/cita-lista/cita-lista';
+import { CitaModificar } from './cita/cita-modificar/cita-modificar';
 
 
 export const routes: Routes = [
@@ -24,6 +27,10 @@ export const routes: Routes = [
             { path: 'pacientes/inactivos', component: PacienteInactivos },
             { path: 'turno/asignar', component: TurnoAsignacion },
             { path: 'turno/proximos', component: TurnoLista },
+            { path: 'turno/registrar', component: TurnoRegistro },
+            { path: 'cita/lista', component: CitaLista },
+            { path: 'cita/registrar', component: TurnoRegistro },
+            { path: 'cita/modificar/:id', component: CitaModificar },
             { path: 'consultorios', component: Consultorio },
             { path: '', redirectTo: 'dashboard/turnos', pathMatch: 'full' }
         ]

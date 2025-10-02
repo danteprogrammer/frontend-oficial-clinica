@@ -1,0 +1,64 @@
+<div class="busqueda-container">
+    <div class="header">
+        <h2>Citas Registradas</h2>
+        <div class="actions">
+            <button class="btn-accion" routerLink="/turno/registrar">Registrar Cita</button>
+        </div>
+    </div>
+
+    <form [formGroup]="busquedaForm" (ngSubmit)="buscarCitas()">
+        <div class="filtros">
+            <select formControlName="filtro">
+                <option value="paciente">Por Paciente</option>
+                <option value="medico">Por Médico</option>
+                <option value="fecha">Por Fecha</option>
+            </select>
+            <input type="text" formControlName="termino" placeholder="Ingrese término de búsqueda...">
+            <button type="submit">Buscar</button>
+        </div>
+    </form>
+
+    <div class="resultados-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Paciente</th>
+                    <th>Médico</th>
+                    <th>Consultorio</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let cita of citas">
+                    <td>{{ cita.idCita }}</td>
+                    <td>{{ cita.paciente.nombres }} {{ cita.paciente.apellidos }}</td>
+                    <td>{{ cita.medico.nombres }} {{ cita.medico.apellidos }}</td>
+                    <td>{{ cita.consultorio.numero }}</td>
+                    <td>{{ cita.fecha | date }}</td>
+                    <td>{{ cita.hora }}</td>
+                    <td>{{ cita.estado }}</td>
+                    <td>
+                        <div class="acciones-botones">
+                            <a [routerLink]="['/cita/modificar', cita.idCita]" class="btn-accion-tabla btn-modificar">Modificar</a>
+                            <button class="btn-accion-tabla btn-cancelar" (click)="cancelarCita(cita)">Cancelar</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div *ngIf="busquedaRealizada && citas.length === 0" class="no-resultados">
+            <p>No se encontraron citas.</p>
+        </div>
+
+        <div *ngIf="totalPages > 0" class="paginacion">
+            <button (click)="irAPagina(currentPage - 1)" [disabled]="currentPage === 0">Anterior</button>
+            <span>Página {{ currentPage + 1 }} de {{ totalPages }}</span>
+            <button (click)="irAPagina(currentPage + 1)" [disabled]="currentPage + 1 >= totalPages">Siguiente</button>
+        </div>
+    </div>
+</div>

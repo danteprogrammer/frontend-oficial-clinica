@@ -161,6 +161,27 @@
     box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
 }
 
+/* Estilos para el enlace de Programar Nueva Cita */
+.cita-link {
+    position: relative;
+    background: linear-gradient(135deg, #005792, #007acc);
+    color: #FFFFFF !important;
+    box-shadow: 0 2px 4px rgba(0, 87, 146, 0.2);
+}
+
+.cita-link:hover {
+    background: linear-gradient(135deg, #007acc, #005792) !important;
+    box-shadow: 0 4px 8px rgba(0, 87, 146, 0.3);
+    transform: translateY(-1px);
+}
+
+.cita-link::before {
+    content: "📅";
+    position: absolute;
+    right: 15px;
+    font-size: 0.9em;
+}
+
 /* Badge para mostrar número de turnos pendientes */
 .turnos-badge {
     background: #ff4757;
