@@ -1,9 +1,6 @@
 <div class="form-container">
     <h2>Asignación de Turnos</h2>
 
-    <div *ngIf="mensajeExito" class="mensaje exito">{{ mensajeExito }}</div>
-    <div *ngIf="mensajeError" class="mensaje error">{{ mensajeError }}</div>
-
     <form [formGroup]="asignacionForm" (ngSubmit)="onSubmit()">
         <div class="form-grid">
             <div class="form-group">

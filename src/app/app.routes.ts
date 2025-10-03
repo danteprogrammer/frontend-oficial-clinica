@@ -13,6 +13,7 @@ import { Consultorio } from './consultorio/consultorio';
 import { CitaLista } from './cita/cita-lista/cita-lista';
 import { CitaModificar } from './cita/cita-modificar/cita-modificar';
 import { Dashboard } from './pages/dashboard/dashboard';
+import { RegistrarConsulta } from './atencion/registrar-consulta/registrar-consulta';
 
 
 export const routes: Routes = [
@@ -33,12 +34,12 @@ export const routes: Routes = [
             { path: 'cita/lista', component: CitaLista },
             { path: 'cita/modificar/:id', component: CitaModificar },
             { path: 'consultorios', component: Consultorio },
-            // Nuevas rutas (a implementar)
-            // { path: 'atencion/registrar-consulta', component: RegistrarConsultaComponent },
-            // { path: 'facturacion/validar-seguro', component: ValidarSeguroComponent },
-            // { path: 'facturacion/generar-factura', component: GenerarFacturaComponent },
-            // { path: 'admin/medicos', component: GestionMedicosComponent },
-            // { path: 'admin/roles', component: GestionRolesComponent },
+            // Nuevas rutas a implementar y quizas hay otra
+            { path: 'atencion/registrar-consulta', component: RegistrarConsulta },
+            // { path: 'facturacion/validar-seguro', component: ValidarSeguro},
+            // { path: 'facturacion/generar-factura', component: GenerarFactura},
+            // { path: 'admin/medicos', component: GestionMedicos },
+            // { path: 'admin/roles', component: GestionRoles },
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
         ]
     },

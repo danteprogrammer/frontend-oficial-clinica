@@ -1,0 +1,64 @@
+<div class="form-container">
+    <h2>Registro de Consulta Médica</h2>
+
+    <div class="buscador-paciente">
+        <div class="form-group">
+            <label for="pacienteBusqueda">Buscar Paciente por DNI o Nombre</label>
+            <input id="pacienteBusqueda" type="text" [formControl]="pacienteBusquedaControl" placeholder="Escriba para buscar...">
+        </div>
+
+        <div *ngIf="pacientesEncontrados.length > 0" class="resultados-busqueda">
+            <div *ngFor="let paciente of pacientesEncontrados" class="resultado-item" (click)="seleccionarPaciente(paciente)">
+                {{ paciente.nombres }} {{ paciente.apellidos }} - DNI: {{ paciente.dni }}
+            </div>
+        </div>
+
+        <div *ngIf="pacienteSeleccionado" class="paciente-seleccionado">
+            <h4>Paciente: <strong>{{ pacienteSeleccionado.nombres }} {{ pacienteSeleccionado.apellidos }}</strong></h4>
+        </div>
+    </div>
+    <form [formGroup]="consultaForm" (ngSubmit)="onSubmit()" *ngIf="pacienteSeleccionado">
+        <h4>Signos Vitales</h4>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="peso">Peso (kg)</label>
+                <input id="peso" type="number" formControlName="peso">
+            </div>
+            <div class="form-group">
+                <label for="altura">Altura (cm)</label>
+                <input id="altura" type="number" formControlName="altura">
+            </div>
+            <div class="form-group">
+                <label for="presionArterial">Presión Arterial</label>
+                <input id="presionArterial" type="text" formControlName="presionArterial">
+            </div>
+            <div class="form-group">
+                <label for="ritmoCardiaco">Ritmo Cardíaco</label>
+                <input id="ritmoCardiaco" type="number" formControlName="ritmoCardiaco">
+            </div>
+        </div>
+
+        <h4>Detalles de la Consulta</h4>
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="motivo">Motivo de la Consulta</label>
+                <textarea id="motivo" formControlName="motivo" rows="3" required></textarea>
+            </div>
+            <div class="form-group full-width">
+                <label for="diagnostico">Diagnóstico</label>
+                <textarea id="diagnostico" formControlName="diagnostico" rows="5" required></textarea>
+            </div>
+            <div class="form-group full-width">
+                <label for="tratamiento">Tratamiento y Receta</label>
+                <textarea id="tratamiento" formControlName="tratamiento" rows="5"></textarea>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn-cancelar" (click)="limpiarFormulario()">Limpiar</button>
+            <button type="submit" [disabled]="consultaForm.invalid || cargando">
+                {{ cargando ? 'Guardando...' : 'Guardar Consulta' }}
+            </button>
+        </div>
+    </form>
+</div>
