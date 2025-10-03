@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Paciente } from '../paciente';
+import { Paciente, Paciente as PacienteService } from '../paciente';
 import { CommonModule } from '@angular/common';
 
 declare var Swal: any;
@@ -15,17 +15,15 @@ declare var Swal: any;
 export class PacienteModificar implements OnInit {
   modificarForm: FormGroup;
   pacienteId!: number;
-  mensajeExito: string | null = null;
-  mensajeError: string | null = null;
-  dniPaciente: string = '';
 
   constructor(
     private fb: FormBuilder,
-    private paciente: Paciente,
+    private pacienteService: PacienteService,
     private router: Router,
     private route: ActivatedRoute
   ) {
     this.modificarForm = this.fb.group({
+      // Datos Personales
       nombres: ['', Validators.required],
       apellidos: ['', Validators.required],
       sexo: ['', Validators.required],
@@ -33,15 +31,20 @@ export class PacienteModificar implements OnInit {
       direccion: [''],
       telefono: ['', [Validators.pattern('^[0-9]{9}$')]],
       email: ['', [Validators.email]],
+      // Historia Clínica
       alergias: [''],
       antecedentes: [''],
-      enfermedadesCronicas: ['']
+      enfermedadesCronicas: [''],
+      // --- NUEVOS CAMPOS DE SEGURO ---
+      nombreAseguradora: [''],
+      numeroPoliza: [''],
+      cobertura: ['']
     });
   }
 
   ngOnInit(): void {
     this.pacienteId = this.route.snapshot.params['id'];
-    this.paciente.obtenerPacientePorId(this.pacienteId).subscribe(data => {
+    this.pacienteService.obtenerPacientePorId(this.pacienteId).subscribe(data => {
       this.modificarForm.patchValue(data);
     });
   }
@@ -51,7 +54,7 @@ export class PacienteModificar implements OnInit {
       Swal.fire('Error', 'Por favor, revise los campos del formulario.', 'error');
       return;
     }
-    this.paciente.modificarPaciente(this.pacienteId, this.modificarForm.value).subscribe({
+    this.pacienteService.modificarPaciente(this.pacienteId, this.modificarForm.value).subscribe({
       next: () => {
         Swal.fire('¡Actualizado!', 'Los datos del paciente han sido actualizados.', 'success');
       },
@@ -73,7 +76,7 @@ export class PacienteModificar implements OnInit {
       confirmButtonText: 'Sí, inactivar'
     }).then((result: any) => {
       if (result.isConfirmed) {
-        this.paciente.inactivarPaciente(this.pacienteId).subscribe(() => {
+        this.pacienteService.inactivarPaciente(this.pacienteId).subscribe(() => {
           Swal.fire('¡Inactivado!', 'El paciente ha sido inactivado.', 'success')
             .then(() => this.router.navigate(['/pacientes/registrados']));
         });

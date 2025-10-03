@@ -1,9 +1,6 @@
 <div class="form-container">
     <h2>Modificar Datos del Paciente</h2>
 
-    <div *ngIf="mensajeExito" class="mensaje exito">{{ mensajeExito }}</div>
-    <div *ngIf="mensajeError" class="mensaje error">{{ mensajeError }}</div>
-
     <form [formGroup]="modificarForm" (ngSubmit)="onGuardarCambios()">
 
         <h3>Datos Personales</h3>
@@ -60,7 +57,21 @@
                 <textarea id="enfermedadesCronicas" formControlName="enfermedadesCronicas" rows="3"></textarea>
             </div>
         </div>
-
+        <h3>Datos del Seguro Médico</h3>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="nombreAseguradora">Aseguradora</label>
+                <input id="nombreAseguradora" type="text" formControlName="nombreAseguradora">
+            </div>
+            <div class="form-group">
+                <label for="numeroPoliza">N° de Póliza</label>
+                <input id="numeroPoliza" type="text" formControlName="numeroPoliza">
+            </div>
+            <div class="form-group full-width">
+                <label for="cobertura">Cobertura</label>
+                <input id="cobertura" type="text" formControlName="cobertura">
+            </div>
+        </div>
         <div class="form-actions">
             <button type="button" class="btn-accion-tabla btn-inactivar" (click)="inactivar()">Inactivar</button>
             <button type="button" class="btn-secundario" (click)="volver()">Volver</button>
