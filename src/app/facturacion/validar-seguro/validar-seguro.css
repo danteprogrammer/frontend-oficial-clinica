@@ -1,0 +1,112 @@
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+h2 {
+    text-align: center;
+    color: #00355d;
+    margin-bottom: 2rem;
+}
+
+.buscador-paciente {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #252733;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #DFE0EB;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #005792;
+    box-shadow: 0 0 0 3px #e1ebff;
+}
+
+.resultados-busqueda {
+    position: absolute;
+    width: 100%;
+    background-color: white;
+    border: 1px solid #DFE0EB;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.resultado-item {
+    padding: 12px 15px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.resultado-item:hover {
+    background-color: #f7f8fc;
+}
+
+.info-paciente {
+    background-color: #f7f8fc;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #DFE0EB;
+}
+
+.info-paciente h3 {
+    margin-top: 0;
+    color: #005792;
+}
+
+.info-paciente p {
+    margin: 0.5rem 0;
+}
+
+.info-paciente button {
+    margin-top: 1rem;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #005792;
+    color: white;
+    transition: all 0.2s ease;
+}
+
+.info-paciente button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
+.info-paciente button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 87, 146, 0.3);
+}
+
+.placeholder {
+    text-align: center;
+    padding: 2rem;
+    color: #909090;
+    border: 2px dashed #DFE0EB;
+    border-radius: 8px;
+}

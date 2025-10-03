@@ -1,0 +1,31 @@
+<div class="container">
+    <h2>Validación de Seguro Médico</h2>
+
+    <div class="buscador-paciente">
+        <div class="form-group">
+            <label for="pacienteBusqueda">Buscar Paciente por DNI o Nombre</label>
+            <input id="pacienteBusqueda" type="text" [formControl]="pacienteBusquedaControl"
+                placeholder="Escriba al menos 3 caracteres...">
+        </div>
+
+        <div *ngIf="pacientesEncontrados.length > 0" class="resultados-busqueda">
+            <div *ngFor="let paciente of pacientesEncontrados" class="resultado-item"
+                (click)="seleccionarPaciente(paciente)">
+                {{ paciente.nombres }} {{ paciente.apellidos }} - DNI: {{ paciente.dni }}
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="pacienteSeleccionado" class="info-paciente">
+        <h3>Paciente Seleccionado</h3>
+        <p><strong>Nombre:</strong> {{ pacienteSeleccionado.nombres }} {{ pacienteSeleccionado.apellidos }}</p>
+        <p><strong>DNI:</strong> {{ pacienteSeleccionado.dni }}</p>
+        <button (click)="validarSeguro()" [disabled]="cargando">
+            {{ cargando ? 'Validando...' : 'Validar Cobertura de Seguro' }}
+        </button>
+    </div>
+
+    <div *ngIf="!pacienteSeleccionado" class="placeholder">
+        <p>Seleccione un paciente para validar su seguro.</p>
+    </div>
+</div>
