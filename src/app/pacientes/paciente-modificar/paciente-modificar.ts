@@ -4,6 +4,8 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Paciente } from '../paciente';
 import { CommonModule } from '@angular/common';
 
+declare var Swal: any;
+
 @Component({
   selector: 'app-paciente-modificar',
   imports: [ReactiveFormsModule, CommonModule, RouterModule],
@@ -40,32 +42,43 @@ export class PacienteModificar implements OnInit {
   ngOnInit(): void {
     this.pacienteId = this.route.snapshot.params['id'];
     this.paciente.obtenerPacientePorId(this.pacienteId).subscribe(data => {
-      this.modificarForm.patchValue(data); 
+      this.modificarForm.patchValue(data);
     });
   }
 
   onGuardarCambios(): void {
     if (this.modificarForm.invalid) {
-      this.mensajeError = "Por favor, revise los campos del formulario.";
+      Swal.fire('Error', 'Por favor, revise los campos del formulario.', 'error');
       return;
     }
     this.paciente.modificarPaciente(this.pacienteId, this.modificarForm.value).subscribe({
       next: () => {
-        this.mensajeExito = "Datos del paciente actualizados con éxito.";
+        Swal.fire('¡Actualizado!', 'Los datos del paciente han sido actualizados.', 'success');
       },
       error: (err) => {
-        this.mensajeError = "Ocurrió un error al guardar los cambios.";
+        Swal.fire('Error', 'Ocurrió un error al guardar los cambios.', 'error');
         console.error(err);
       }
     });
   }
 
   inactivar(): void {
-    if (confirm('¿Está seguro que desea inactivar a este paciente?')) {
-      this.paciente.inactivarPaciente(this.pacienteId).subscribe(() => {
-        this.router.navigate(['/pacientes/registrados']);
-      });
-    }
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: '¿Deseas inactivar a este paciente?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, inactivar'
+    }).then((result: any) => {
+      if (result.isConfirmed) {
+        this.paciente.inactivarPaciente(this.pacienteId).subscribe(() => {
+          Swal.fire('¡Inactivado!', 'El paciente ha sido inactivado.', 'success')
+            .then(() => this.router.navigate(['/pacientes/registrados']));
+        });
+      }
+    });
   }
 
   volver(): void {

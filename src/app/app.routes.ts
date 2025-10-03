@@ -12,28 +12,35 @@ import { TurnoRegistro } from './turno/turno-registro/turno-registro';
 import { Consultorio } from './consultorio/consultorio';
 import { CitaLista } from './cita/cita-lista/cita-lista';
 import { CitaModificar } from './cita/cita-modificar/cita-modificar';
+import { Dashboard } from './pages/dashboard/dashboard';
 
 
 export const routes: Routes = [
     { path: 'login', component: Login },
     {
-        path: '', 
+        path: '',
         component: Main,
-        canActivate: [authGuard], 
+        canActivate: [authGuard],
         children: [
+            { path: 'dashboard', component: Dashboard },
             { path: 'pacientes/registrados', component: PacienteBusqueda },
             { path: 'pacientes/nuevo', component: PacienteRegistro },
             { path: 'pacientes/modificar/:id', component: PacienteModificar },
             { path: 'pacientes/inactivos', component: PacienteInactivos },
             { path: 'turno/asignar', component: TurnoAsignacion },
             { path: 'turno/proximos', component: TurnoLista },
-            { path: 'turno/registrar', component: TurnoRegistro },
-            { path: 'cita/lista', component: CitaLista },
             { path: 'cita/registrar', component: TurnoRegistro },
+            { path: 'cita/lista', component: CitaLista },
             { path: 'cita/modificar/:id', component: CitaModificar },
             { path: 'consultorios', component: Consultorio },
-            { path: '', redirectTo: 'dashboard/turnos', pathMatch: 'full' }
+            // Nuevas rutas (a implementar)
+            // { path: 'atencion/registrar-consulta', component: RegistrarConsultaComponent },
+            // { path: 'facturacion/validar-seguro', component: ValidarSeguroComponent },
+            // { path: 'facturacion/generar-factura', component: GenerarFacturaComponent },
+            // { path: 'admin/medicos', component: GestionMedicosComponent },
+            // { path: 'admin/roles', component: GestionRolesComponent },
+            { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
         ]
     },
-    { path: '**', redirectTo: '' } 
+    { path: '**', redirectTo: '' }
 ];

@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Paciente } from '../paciente';
 import { CommonModule } from '@angular/common';
 
+declare var Swal: any;
+
 @Component({
   selector: 'app-paciente-registro',
   imports: [ReactiveFormsModule, CommonModule],
@@ -29,20 +31,29 @@ export class PacienteRegistro {
 
   onSubmit(): void {
     if (this.registroForm.invalid) {
-      this.mensajeError = "Por favor, complete todos los campos requeridos correctamente.";
+      Swal.fire({
+        title: 'Formulario Incompleto',
+        text: 'Por favor, complete todos los campos requeridos correctamente.',
+        icon: 'error'
+      });
       return;
     }
 
-    this.mensajeExito = null;
-    this.mensajeError = null;
-
     this.paciente.registrarPaciente(this.registroForm.value).subscribe({
       next: (pacienteRegistrado) => {
-        this.mensajeExito = `Paciente ${pacienteRegistrado.nombres} ${pacienteRegistrado.apellidos} registrado con éxito.`;
+        Swal.fire({
+          title: '¡Registrado!',
+          text: `El paciente ${pacienteRegistrado.nombres} ${pacienteRegistrado.apellidos} ha sido registrado con éxito.`,
+          icon: 'success'
+        });
         this.registroForm.reset();
       },
       error: (err) => {
-        this.mensajeError = err.error?.message || 'Ocurrió un error al registrar el paciente.';
+        Swal.fire({
+          title: 'Error',
+          text: err.error?.message || 'Ocurrió un error al registrar el paciente.',
+          icon: 'error'
+        });
         console.error(err);
       }
     });
