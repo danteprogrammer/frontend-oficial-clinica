@@ -18,7 +18,7 @@
                 <label for="nombres">Nombres</label>
                 <input id="nombres" type="text" formControlName="nombres" [class.is-invalid]="f['nombres'].touched && f['nombres'].errors">
                 <div *ngIf="f['nombres'].touched && f['nombres'].errors" class="invalid-feedback">
-                    <div *ngIf="f['nombres'].errors['required']">El nombre es obligatorio.</div>
+                    <div *ngIf="f['nombres'].errors['required']">Los nombres son obligatorios.</div>
                 </div>
             </div>
 
@@ -26,7 +26,7 @@
                 <label for="apellidos">Apellidos</label>
                 <input id="apellidos" type="text" formControlName="apellidos" [class.is-invalid]="f['apellidos'].touched && f['apellidos'].errors">
                 <div *ngIf="f['apellidos'].touched && f['apellidos'].errors" class="invalid-feedback">
-                    <div *ngIf="f['apellidos'].errors['required']">El apellido es obligatorio.</div>
+                    <div *ngIf="f['apellidos'].errors['required']">Los apellidos son obligatorios.</div>
                 </div>
             </div>
 
@@ -55,7 +55,7 @@
                 <input id="telefono" type="text" formControlName="telefono" [class.is-invalid]="f['telefono'].touched && f['telefono'].errors">
                 <div *ngIf="f['telefono'].touched && f['telefono'].errors" class="invalid-feedback">
                     <div *ngIf="f['telefono'].errors['required']">El teléfono es obligatorio.</div>
-                    <div *ngIf="f['telefono'].errors['pattern']">El teléfono solo debe contener números.</div>
+                    <div *ngIf="f['telefono'].errors['pattern']">Debe empezar con 9 y solo debe contener números.</div>
                     <div *ngIf="f['telefono'].errors['minlength'] || f['telefono'].errors['maxlength']">El teléfono debe tener 9 dígitos.</div>
                 </div>
             </div>
