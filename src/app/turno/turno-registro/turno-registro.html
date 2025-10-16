@@ -70,17 +70,6 @@
                         <option *ngFor="let hora of horasDisponibles" [value]="hora">{{ hora }}</option>
                     </select>
                 </div>
-
-                <div class="form-group">
-                    <label for="consultorioId">Consultorio</label>
-                    <select id="consultorioId" formControlName="consultorioId">
-                        <option value="" disabled>Seleccione...</option>
-                        <option *ngFor="let cons of consultorios" [value]="cons.idConsultorio">
-                            {{ cons.numero }} - {{ cons.descripcion }}
-                        </option>
-                    </select>
-                </div>
-
             </div>
         </div>
 

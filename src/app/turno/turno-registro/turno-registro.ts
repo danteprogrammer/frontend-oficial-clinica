@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { PacienteService } from '../../shared/paciente.service';
 import { MedicoService } from '../../shared/medico.service';
 import { CitaService } from '../../shared/cita.service';
-import { ConsultorioService } from '../../shared/consultorio.service';
 import { debounceTime, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -29,7 +28,6 @@ registroForm!: FormGroup;
   pacientesEncontrados: any[] = [];
   pacienteSeleccionado: any = null;
 
-  consultorios: any[] = [];
   especialidades: string[] = [];
   medicos: any[] = [];
   horarioMedico: any = null;
@@ -41,7 +39,6 @@ registroForm!: FormGroup;
     private pacienteService: PacienteService,
     private medicoService: MedicoService,
     private citaService: CitaService,
-    private consultorioService: ConsultorioService,
     private router: Router
   ) {
     const navigation = this.router.getCurrentNavigation();
@@ -55,8 +52,7 @@ registroForm!: FormGroup;
       especialidad: ['', [Validators.required]],
       medicoId: ['', [Validators.required]],
       fecha: ['', [Validators.required]],
-      hora: ['', [Validators.required]],
-      consultorioId: ['', [Validators.required]]
+      hora: ['', [Validators.required]]
     });
 
     if (this.pacienteSeleccionado) {
@@ -67,16 +63,6 @@ registroForm!: FormGroup;
 
     this.cargarEspecialidades();
     this.setupPacienteSearch();
-    this.cargarConsultorios();
-  }
-
-  private cargarConsultorios(): void {
-    this.consultorioService.getConsultoriosDisponibles().subscribe({
-      next: (data) => {
-        this.consultorios = data.filter(c => c.estado === 'Disponible');
-      },
-      error: (err) => this.mensajeError = "No se pudieron cargar los consultorios."
-    });
   }
   
   private setupPacienteSearch(): void {
@@ -172,7 +158,6 @@ registroForm!: FormGroup;
       // El consultorio ahora se podría asignar en el backend o dejarlo para un paso posterior (triaje)
       // Por ahora lo omitimos para simplificar el formulario como se pidió.
       // consultorio: { idConsultorio: 1 }, // ID de consultorio de ejemplo
-      consultorio: { idConsultorio: formData.consultorioId },
       tieneSeguro: formData.tieneSeguro,
       fecha: formData.fecha,
       hora: formData.hora,

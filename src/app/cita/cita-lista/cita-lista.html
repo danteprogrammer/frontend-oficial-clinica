@@ -37,13 +37,19 @@
                     <td>{{ cita.idCita }}</td>
                     <td>{{ cita.paciente.nombres }} {{ cita.paciente.apellidos }}</td>
                     <td>{{ cita.medico.nombres }} {{ cita.medico.apellidos }}</td>
-                    <td>{{ cita.consultorio?.numero || 'No asignado' }}</td>
+                    <td>
+                        <span *ngIf="cita.consultorio">{{ cita.consultorio.numero }} - {{ cita.consultorio.descripcion
+                            }}</span>
+                        <span *ngIf="!cita.consultorio" style="color: #ffc107; font-weight: 500;">Pendiente de
+                            Asignación</span>
+                    </td>
                     <td>{{ cita.fecha | date }}</td>
                     <td>{{ cita.hora }}</td>
                     <td>{{ cita.estado }}</td>
                     <td>
                         <div class="acciones-botones">
-                            <a [routerLink]="['/cita/modificar', cita.idCita]" class="btn-accion-tabla btn-modificar">Modificar</a>
+                            <a [routerLink]="['/cita/modificar', cita.idCita]"
+                                class="btn-accion-tabla btn-modificar">Modificar</a>
                             <button class="btn-accion-tabla btn-cancelar" (click)="cancelarCita(cita)">Cancelar</button>
                         </div>
                     </td>
