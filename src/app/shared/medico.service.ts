@@ -7,7 +7,7 @@ import { catchError, retry } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class MedicoService {
-  private apiUrl = 'http://localhost:8080/api/medicos';
+private apiUrl = 'http://localhost:8080/api/medicos';
 
   constructor(private http: HttpClient) {}
 
@@ -16,7 +16,7 @@ export class MedicoService {
    */
   getMedicos(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl).pipe(
-      retry(2), // Reintentar hasta 2 veces en caso de error
+      retry(2),
       catchError(this.handleError)
     );
   }
@@ -26,6 +26,33 @@ export class MedicoService {
    */
   getMedico(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+  
+  /**
+   * NUEVO MÉTODO: Obtiene la lista de especialidades únicas
+   */
+  getEspecialidades(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/especialidades`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * NUEVO MÉTODO: Obtiene médicos por especialidad
+   */
+  getMedicosPorEspecialidad(especialidad: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/especialidad/${especialidad}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+  
+  /**
+   * NUEVO MÉTODO: Obtiene el horario de un médico (simulado)
+   */
+  getHorarioMedico(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}/horario`).pipe(
       catchError(this.handleError)
     );
   }

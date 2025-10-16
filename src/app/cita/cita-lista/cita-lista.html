@@ -37,7 +37,7 @@
                     <td>{{ cita.idCita }}</td>
                     <td>{{ cita.paciente.nombres }} {{ cita.paciente.apellidos }}</td>
                     <td>{{ cita.medico.nombres }} {{ cita.medico.apellidos }}</td>
-                    <td>{{ cita.consultorio.numero }}</td>
+                    <td>{{ cita.consultorio?.numero || 'No asignado' }}</td>
                     <td>{{ cita.fecha | date }}</td>
                     <td>{{ cita.hora }}</td>
                     <td>{{ cita.estado }}</td>

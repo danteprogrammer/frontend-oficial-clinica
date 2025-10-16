@@ -1,125 +1,91 @@
 <div class="form-container">
-    <h2>Registrar Nueva Cita</h2>
+    <h2>Programar Nueva Cita</h2>
 
     <div *ngIf="mensajeExito" class="mensaje exito">{{ mensajeExito }}</div>
     <div *ngIf="mensajeError" class="mensaje error">{{ mensajeError }}</div>
 
     <form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
-        <div class="form-grid">
-            <!-- Paciente -->
-            <div class="form-group">
-                <label for="pacienteId">Paciente</label>
-                <select id="pacienteId" formControlName="pacienteId" required>
-                    <option value="">Seleccionar paciente</option>
-                    <option *ngFor="let paciente of pacientes" [value]="paciente.idPaciente">
-                        {{ paciente.nombres }} {{ paciente.apellidos }} - DNI: {{ paciente.dni }}
-                    </option>
-                </select>
-            </div>
 
-            <!-- Médico -->
+        <div class="form-section">
+            <h3>1. Paciente</h3>
             <div class="form-group">
-                <label for="medicoId">Médico</label>
-                <select id="medicoId" formControlName="medicoId" required>
-                    <option value="">Seleccionar médico</option>
-                    <option *ngFor="let medico of medicos" [value]="medico.idMedico">
-                        Dr. {{ medico.nombres }} {{ medico.apellidos }}
-                    </option>
-                </select>
-            </div>
-
-            <!-- Tipo de Consulta -->
-            <div class="form-group">
-                <label>Tipo de Consulta</label>
-                <div class="radio-group">
-                    <label class="radio-label">
-                        <input type="radio" formControlName="tipoConsulta" value="paciente_nuevo">
-                        Paciente nuevo
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" formControlName="tipoConsulta" value="paciente_existente">
-                        Paciente existente
-                    </label>
+                <label for="pacienteBusqueda">Buscar Paciente por DNI</label>
+                <input id="pacienteBusqueda" type="text" [formControl]="pacienteBusquedaControl"
+                    placeholder="Escriba el DNI del paciente...">
+                <div *ngIf="cargando" class="spinner"></div>
+                <div *ngIf="pacientesEncontrados.length > 0" class="resultados-busqueda">
+                    <div *ngFor="let p of pacientesEncontrados" class="resultado-item" (click)="seleccionarPaciente(p)">
+                        {{ p.nombres }} {{ p.apellidos }} - DNI: {{ p.dni }}
+                    </div>
                 </div>
-            </div>
-
-            <!-- Seguro Médico -->
-            <div class="form-group">
-                <label>¿Cuenta con seguro médico?</label>
-                <div class="radio-group">
-                    <label class="radio-label">
-                        <input type="radio" formControlName="tieneSeguro" [value]="true">
-                        Sí
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" formControlName="tieneSeguro" [value]="false">
-                        No
-                    </label>
-                </div>
-            </div>
-
-            <!-- Fecha de Cita -->
-            <div class="form-group">
-                <label for="fecha">Fecha de Cita</label>
-                <input id="fecha" type="date" formControlName="fecha" [min]="getMinDate()" required>
-            </div>
-
-            <!-- Hora de Cita -->
-            <div class="form-group">
-                <label for="hora">Hora de Cita</label>
-                <input id="hora" type="time" formControlName="hora" min="08:00" max="18:00" required>
-            </div>
-
-            <!-- Motivo de la Cita -->
-            <div class="form-group full-width">
-                <label for="motivo">Motivo de la Cita</label>
-                <textarea id="motivo" formControlName="motivo" rows="3"
-                    placeholder="Describe brevemente el motivo de su cita" required></textarea>
-            </div>
-
-            <!-- Síntomas Principales -->
-            <div class="form-group full-width">
-                <label>Síntomas Principales (si aplica):</label>
-                <div class="checkbox-group">
-                    <label class="checkbox-label" *ngFor="let sintoma of sintomasDisponibles">
-                        <input type="checkbox" [formControlName]="sintoma.id">
-                        {{ sintoma.label }}
-                    </label>
-
-                </div>
-            </div>
-
-            <!-- Alérgico -->
-            <div class="form-group">
-                <label>Alérgico</label>
-                <div class="radio-group">
-                    <label class="radio-label">
-                        <input type="radio" formControlName="alergico" [value]="true">
-                        Sí
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" formControlName="alergico" [value]="false">
-                        No
-                    </label>
-                </div>
-            </div>
-
-            <!-- Consultorio -->
-            <div class="form-group">
-                <label for="consultorioId">Consultorio</label>
-                <select id="consultorioId" formControlName="consultorioId" required>
-                    <option value="">Seleccionar consultorio</option>
-                    <option *ngFor="let consultorio of consultorios" [value]="consultorio.idConsultorio">
-                        {{ consultorio.numero }} - {{ consultorio.descripcion }}
-                    </option>
-                </select>
             </div>
         </div>
 
-        <div class="form-actions">
-            <button type="button" class="btn-cancelar" (click)="limpiarFormulario()">
-                Limpiar
-            </button>
+        <div class="form-section" *ngIf="pacienteSeleccionado">
+            <h3>2. Detalles de la Cita</h3>
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>¿Cuenta con seguro médico?</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" formControlName="tieneSeguro" [value]="true"> Sí
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" formControlName="tieneSeguro" [value]="false"> No
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="especialidad">Especialidad</label>
+                    <select id="especialidad" formControlName="especialidad" (change)="onEspecialidadChange()">
+                        <option value="" disabled>Seleccione...</option>
+                        <option *ngFor="let esp of especialidades" [value]="esp">{{ esp }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="medicoId">Médico</label>
+                    <select id="medicoId" formControlName="medicoId" (change)="onMedicoChange()">
+                        <option value="" disabled>Seleccione...</option>
+                        <option *ngFor="let med of medicos" [value]="med.idMedico">
+                            Dr. {{ med.nombres }} {{ med.apellidos }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="fecha">Fecha de Cita</label>
+                    <select id="fecha" formControlName="fecha" (change)="onFechaChange()">
+                        <option value="" disabled>Seleccione...</option>
+                        <option *ngFor="let dia of diasDisponibles" [value]="dia">{{ dia | date:'fullDate' }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="hora">Hora de Cita</label>
+                    <select id="hora" formControlName="hora">
+                        <option value="" disabled>Seleccione...</option>
+                        <option *ngFor="let hora of horasDisponibles" [value]="hora">{{ hora }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="consultorioId">Consultorio</label>
+                    <select id="consultorioId" formControlName="consultorioId">
+                        <option value="" disabled>Seleccione...</option>
+                        <option *ngFor="let cons of consultorios" [value]="cons.idConsultorio">
+                            {{ cons.numero }} - {{ cons.descripcion }}
+                        </option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="form-actions" *ngIf="pacienteSeleccionado">
+            <button type="button" class="btn-cancelar" (click)="limpiarFormulario()">Limpiar</button>
             <button type="submit" [disabled]="registroForm.invalid || cargando" class="btn-registrar">
                 {{ cargando ? 'Registrando...' : 'Registrar Cita' }}
             </button>

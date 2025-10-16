@@ -1,22 +1,38 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
+import { PaginaPacientes } from '../pacientes/paciente'; // Importamos la interfaz
 
 @Injectable({
   providedIn: 'root'
 })
 export class PacienteService {
-  private apiUrl = 'http://localhost:8080/api/pacientes';
+private apiUrl = 'http://localhost:8080/api/pacientes';
 
   constructor(private http: HttpClient) {}
 
   /**
-   * Obtiene todos los pacientes
+   * Obtiene todos los pacientes (puede estar paginado por el backend)
    */
-  getPacientes(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl).pipe(
-      retry(2), // Reintentar hasta 2 veces en caso de error
+  getPacientes(): Observable<any> { // Cambiado a 'any' para manejar la paginación
+    return this.http.get<any>(this.apiUrl).pipe(
+      retry(2),
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * NUEVO MÉTODO: Busca pacientes activos por un término y filtro
+   */
+  buscarPacientesActivos(termino: string, filtro: string, page: number, size: number): Observable<PaginaPacientes> {
+    const params = new HttpParams()
+      .set('termino', termino)
+      .set('filtro', filtro)
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    return this.http.get<PaginaPacientes>(`${this.apiUrl}/activos`, { params }).pipe(
       catchError(this.handleError)
     );
   }

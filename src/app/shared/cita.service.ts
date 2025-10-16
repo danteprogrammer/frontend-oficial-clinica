@@ -56,7 +56,7 @@ export class CitaService {
    * Actualiza el estado de una cita
    */
   actualizarEstado(id: number, estado: string): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${id}/estado?estado=${ estado }`,{});
+    return this.http.put<any>(`${this.apiUrl}/${id}/estado?estado=${estado}`, {});
   }
 
   /**
@@ -113,7 +113,14 @@ export class CitaService {
     );
   }
 
-
+  /**
+     * Actualiza una cita existente
+     */
+  actualizarCita(id: number, cita: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, cita).pipe(
+      catchError(this.handleError)
+    );
+  }
 
   /**
    * Manejo de errores HTTP

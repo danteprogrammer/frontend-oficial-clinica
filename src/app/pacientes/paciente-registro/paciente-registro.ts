@@ -44,7 +44,7 @@ export class PacienteRegistro {
 
   get f() { return this.registroForm.controls; }
 
-  onSubmit(): void {
+onSubmit(): void {
     if (this.registroForm.invalid) {
       Swal.fire({
         title: 'Formulario Incompleto',
@@ -68,9 +68,10 @@ export class PacienteRegistro {
         });
       },
       error: (err) => {
+        const mensajeError = err.error?.message || 'Ocurrió un error al registrar el paciente. Verifique que el DNI no esté duplicado.';
         Swal.fire({
           title: 'Error de Registro',
-          text: err.error?.message || 'Ocurrió un error al registrar el paciente.',
+          text: mensajeError,
           icon: 'error'
         });
       }
