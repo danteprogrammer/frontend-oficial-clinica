@@ -57,7 +57,7 @@ export class Main {
       icon: '💰',
       isOpen: false,
       submenus: [
-        { name: 'Validar Seguro', path: '/facturacion/validar-seguro' },
+        //{ name: 'Validar Seguro', path: '/facturacion/validar-seguro' },
         { name: 'Generar Factura', path: '/facturacion/generar-factura' },
       ]
     },

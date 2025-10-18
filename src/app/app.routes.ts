@@ -15,6 +15,7 @@ import { CitaModificar } from './cita/cita-modificar/cita-modificar';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { RegistrarConsulta } from './atencion/registrar-consulta/registrar-consulta';
 import { ValidarSeguro } from './facturacion/validar-seguro/validar-seguro';
+import { GenerarFactura } from './facturacion/generar-factura/generar-factura'; 
 
 
 export const routes: Routes = [
@@ -37,7 +38,8 @@ export const routes: Routes = [
             { path: 'consultorios', component: Consultorio },
             // Nuevas rutas a implementar y quizas hay otra
             { path: 'atencion/registrar-consulta', component: RegistrarConsulta },
-            { path: 'facturacion/validar-seguro', component: ValidarSeguro },
+            // { path: 'facturacion/validar-seguro', component: ValidarSeguro }, // ELIMINA O COMENTA ESTA LÍNEA
+            { path: 'facturacion/generar-factura', component: GenerarFactura }, // ASEGÚRATE DE QUE ESTA LÍNEA EXISTA
             // { path: 'facturacion/generar-factura', component: GenerarFactura},
             // { path: 'admin/medicos', component: GestionMedicos },
             // { path: 'admin/roles', component: GestionRoles },

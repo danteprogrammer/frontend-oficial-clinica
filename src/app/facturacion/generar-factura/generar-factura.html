@@ -1,0 +1,98 @@
+<div class="facturacion-container">
+    <h2><i class="fas fa-file-invoice-dollar"></i> Generar Factura / Boleta</h2>
+
+    <div class="card">
+        <div class="card-header">
+            <h4>1. Buscar Paciente por DNI</h4>
+        </div>
+        <div class="card-body">
+            <form [formGroup]="busquedaForm" (ngSubmit)="buscarCitas()" class="search-form">
+                <input type="text" formControlName="dni" placeholder="Ingrese DNI del paciente...">
+                <button type="submit" [disabled]="busquedaForm.invalid || cargando">
+                    {{ cargando ? 'Buscando...' : 'Buscar Citas Pendientes' }}
+                </button>
+            </form>
+            <div *ngIf="mensajeError" class="alert alert-danger mt-3">{{ mensajeError }}</div>
+        </div>
+    </div>
+
+    <div class="card mt-4" *ngIf="citasPendientes.length > 0 && !citaSeleccionada">
+        <div class="card-header">
+            <h4>2. Seleccionar Cita a Pagar</h4>
+        </div>
+        <div class="card-body">
+            <div class="list-group">
+                <button *ngFor="let cita of citasPendientes" (click)="seleccionarCita(cita)" class="list-group-item list-group-item-action">
+                    <strong>{{ cita.especialidad }}</strong> con {{ cita.medico }} a las {{ cita.hora }}
+                    <span class="badge bg-primary rounded-pill">S/ {{ cita.precioConsulta }}</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4" *ngIf="citaSeleccionada">
+        <div class="card-header">
+            <h4>3. Procesar Pago</h4>
+        </div>
+        <div class="card-body">
+            <h5>Detalles de la Cita</h5>
+            <p><strong>Paciente:</strong> {{ citaSeleccionada.nombresPaciente }} {{ citaSeleccionada.apellidosPaciente }}</p>
+            <p><strong>Cita:</strong> {{ citaSeleccionada.especialidad }} a las {{ citaSeleccionada.hora }}</p>
+            <hr>
+
+            <form [formGroup]="pagoForm">
+                <div *ngIf="citaSeleccionada.tieneSeguro; else pagoDirecto">
+                    <h5>Pago con Seguro</h5>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Aseguradora</label>
+                            <input type="text" formControlName="nombreAseguradora">
+                        </div>
+                         <div class="form-group">
+                            <label>N° de Póliza</label>
+                            <input type="text" formControlName="numeroPoliza">
+                        </div>
+                         <div class="form-group">
+                            <label>Cobertura</label>
+                            <input type="text" formControlName="cobertura">
+                        </div>
+                    </div>
+                    <button (click)="validarSeguro()" [disabled]="cargando" class="btn btn-info mb-3">
+                        {{ cargando ? 'Validando...' : 'Validar Seguro' }}
+                    </button>
+                </div>
+
+                <ng-template #pagoDirecto>
+                    <h5>Pago Directo</h5>
+                     <div class="form-group">
+                        <label>Método de Pago</label>
+                        <select formControlName="metodoPago" class="form-control">
+                            <option value="efectivo">Efectivo</option>
+                            <option value="tarjeta">Tarjeta de Crédito/Débito</option>
+                        </select>
+                    </div>
+                </ng-template>
+
+                <hr>
+                <div class="total-section">
+                    <h4>Total a Pagar: <span>S/ {{ seguroValidado ? '0.00 (Cubierto por seguro)' : citaSeleccionada.precioConsulta }}</span></h4>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de Comprobante</label>
+                    <select formControlName="tipoComprobante" class="form-control">
+                        <option value="boleta">Boleta de Venta</option>
+                        <option value="factura">Factura</option>
+                    </select>
+                </div>
+            </form>
+
+            <div class="form-actions">
+                 <button (click)="citaSeleccionada = null" class="btn btn-secondary">Cancelar</button>
+                <button (click)="generarComprobante()" class="btn btn-success">
+                    Generar Comprobante
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
