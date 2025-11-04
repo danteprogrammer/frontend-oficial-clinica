@@ -22,8 +22,13 @@
         </div>
         <div class="card-body">
             <div class="list-group">
-                <button *ngFor="let cita of citasPendientes" (click)="seleccionarCita(cita)" class="list-group-item list-group-item-action">
-                    <strong>{{ cita.especialidad }}</strong> con {{ cita.medico }} a las {{ cita.hora }}
+                <button *ngFor="let cita of citasPendientes" (click)="seleccionarCita(cita)"
+                    class="list-group-item list-group-item-action">
+                    <div class="cita-info">
+                        <div><strong>{{ cita.especialidad }}</strong></div>
+                        <div>{{ cita.medico }}</div>
+                        <div>{{ cita.fecha | date:'dd/MM/yyyy' }} a las {{ cita.hora }}</div>
+                    </div>
                     <span class="badge bg-primary rounded-pill">S/ {{ cita.precioConsulta }}</span>
                 </button>
             </div>
@@ -36,50 +41,81 @@
         </div>
         <div class="card-body">
             <h5>Detalles de la Cita</h5>
-            <p><strong>Paciente:</strong> {{ citaSeleccionada.nombresPaciente }} {{ citaSeleccionada.apellidosPaciente }}</p>
-            <p><strong>Cita:</strong> {{ citaSeleccionada.especialidad }} a las {{ citaSeleccionada.hora }}</p>
+            <div class="cita-detalles">
+                <p><strong>Paciente:</strong> {{ citaSeleccionada.nombresPaciente }} {{
+                    citaSeleccionada.apellidosPaciente }} (DNI: {{ citaSeleccionada.dniPaciente }})</p>
+                <p><strong>Fecha y Hora:</strong> {{ citaSeleccionada.fecha | date:'fullDate' }} a las {{
+                    citaSeleccionada.hora }}</p>
+                <p><strong>Especialidad:</strong> {{ citaSeleccionada.especialidad }}</p>
+                <p><strong>Médico:</strong> {{ citaSeleccionada.medico }}</p>
+            </div>
             <hr>
 
             <form [formGroup]="pagoForm">
-                <div *ngIf="citaSeleccionada.tieneSeguro; else pagoDirecto">
-                    <h5>Pago con Seguro</h5>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Aseguradora</label>
-                            <input type="text" formControlName="nombreAseguradora">
-                        </div>
-                         <div class="form-group">
-                            <label>N° de Póliza</label>
-                            <input type="text" formControlName="numeroPoliza">
-                        </div>
-                         <div class="form-group">
-                            <label>Cobertura</label>
-                            <input type="text" formControlName="cobertura">
-                        </div>
+                <div class="pago-section">
+                    <div class="modo-pago-toggle mb-3">
+                        <button type="button" class="btn"
+                            [ngClass]="{'btn-primary': modoPago === 'seguro', 'btn-outline-primary': modoPago !== 'seguro'}"
+                            (click)="cambiarModoPago('seguro')" [disabled]="!citaSeleccionada.tieneSeguro">
+                            <i class="fas fa-shield-alt"></i> Pagar con Seguro
+                        </button>
+                        <button type="button" class="btn"
+                            [ngClass]="{'btn-primary': modoPago === 'directo', 'btn-outline-primary': modoPago !== 'directo'}"
+                            (click)="cambiarModoPago('directo')">
+                            <i class="fas fa-money-bill-wave"></i> Pago Directo
+                        </button>
                     </div>
-                    <button (click)="validarSeguro()" [disabled]="cargando" class="btn btn-info mb-3">
-                        {{ cargando ? 'Validando...' : 'Validar Seguro' }}
-                    </button>
-                </div>
 
-                <ng-template #pagoDirecto>
-                    <h5>Pago Directo</h5>
-                     <div class="form-group">
-                        <label>Método de Pago</label>
-                        <select formControlName="metodoPago" class="form-control">
-                            <option value="efectivo">Efectivo</option>
-                            <option value="tarjeta">Tarjeta de Crédito/Débito</option>
-                        </select>
+                    <div *ngIf="modoPago === 'seguro'">
+                        <h5><i class="fas fa-id-card"></i> Datos del Seguro</h5>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Aseguradora</label>
+                                <input type="text" formControlName="nombreAseguradora" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>N° de Póliza</label>
+                                <input type="text" formControlName="numeroPoliza" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Cobertura / Plan</label>
+                                <input type="text" formControlName="cobertura" class="form-control">
+                            </div>
+                        </div>
+                        <button (click)="validarSeguro()" [disabled]="cargando || seguroValidado"
+                            class="btn btn-info mb-3">
+                            <i class="fas fa-check-circle"></i>
+                            {{ cargando ? 'Validando...' : (seguroValidado ? 'SeguroValidado' : 'Validar Seguro') }}
+                        </button>
+                        <div *ngIf="seguroValidado === false && intentoValidacion" class="alert alert-warning">
+                            El seguro no es válido o no cubre esta consulta. Proceda con Pago Directo.
+                            <button type="button" class="btn btn-sm btn-link"
+                                (click)="cambiarModoPago('directo')">Cambiar a Pago Directo</button>
+                        </div>
                     </div>
-                </ng-template>
+
+                    <div *ngIf="modoPago === 'directo'">
+                        <h5><i class="fas fa-cash-register"></i> Pago Directo</h5>
+                        <div class="form-group">
+                            <label>Método de Pago</label>
+                            <select formControlName="metodoPago" class="form-control">
+                                <option value="efectivo">Efectivo</option>
+                                <option value="tarjeta">Tarjeta de Crédito/Débito</option>
+                                <option value="yape">Yape/Plin</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
 
                 <hr>
                 <div class="total-section">
-                    <h4>Total a Pagar: <span>S/ {{ seguroValidado ? '0.00 (Cubierto por seguro)' : citaSeleccionada.precioConsulta }}</span></h4>
+                    <h4>Total a Pagar: <span>S/ {{ (modoPago === 'seguro' && seguroValidado) ? '0.00' :
+                            citaSeleccionada.precioConsulta }}</span></h4>
+                    <small *ngIf="modoPago === 'seguro' && seguroValidado">(Cubierto por seguro)</small>
                 </div>
 
                 <div class="form-group">
-                    <label>Tipo de Comprobante</label>
+                    <label><i class="fas fa-receipt"></i> Tipo de Comprobante</label>
                     <select formControlName="tipoComprobante" class="form-control">
                         <option value="boleta">Boleta de Venta</option>
                         <option value="factura">Factura</option>
@@ -88,11 +124,39 @@
             </form>
 
             <div class="form-actions">
-                 <button (click)="citaSeleccionada = null" class="btn btn-secondary">Cancelar</button>
-                <button (click)="generarComprobante()" class="btn btn-success">
-                    Generar Comprobante
+                <button type="button" (click)="citaSeleccionada = null; modoPago = 'directo'"
+                    class="btn btn-secondary">Cancelar</button>
+                <button type="button" (click)="generarComprobante()" class="btn btn-success"
+                    [disabled]="modoPago === 'seguro' && !seguroValidado">
+                    <i class="fas fa-print"></i> Generar Comprobante
                 </button>
             </div>
         </div>
     </div>
+</div>
+
+<div class="printable-receipt" *ngIf="citaSeleccionada">
+    <h2>Clínica SaludVida - {{ pagoForm.value.tipoComprobante | titlecase }} de Venta</h2>
+    <p><strong>Fecha Emisión:</strong> {{ currentDate | date:'dd/MM/yyyy HH:mm' }}</p>
+    <hr>
+    <h4>Datos del Paciente</h4>
+    <p><strong>DNI:</strong> {{ citaSeleccionada.dniPaciente }}</p>
+    <p><strong>Nombre:</strong> {{ citaSeleccionada.nombresPaciente }} {{ citaSeleccionada.apellidosPaciente }}</p>
+    <hr>
+    <h4>Detalle de la Atención</h4>
+    <p><strong>Fecha Cita:</strong> {{ citaSeleccionada.fecha | date:'dd/MM/yyyy' }}</p>
+    <p><strong>Hora Cita:</strong> {{ citaSeleccionada.hora }}</p>
+    <p><strong>Especialidad:</strong> {{ citaSeleccionada.especialidad }}</p>
+    <p><strong>Médico:</strong> {{ citaSeleccionada.medico }}</p>
+    <hr>
+    <h4>Detalle del Pago</h4>
+    <p><strong>Método:</strong>
+        <span *ngIf="modoPago === 'seguro' && seguroValidado">Seguro ({{ pagoForm.value.nombreAseguradora }} - Póliza {{
+            pagoForm.value.numeroPoliza }})</span>
+        <span *ngIf="modoPago === 'directo'">{{ pagoForm.value.metodoPago | titlecase }}</span>
+    </p>
+    <p><strong>Monto Pagado:</strong> S/ {{ (modoPago === 'seguro' && seguroValidado) ? '0.00' :
+        citaSeleccionada.precioConsulta }}</p>
+    <hr>
+    <p style="text-align: center;">¡Gracias por su preferencia!</p>
 </div>

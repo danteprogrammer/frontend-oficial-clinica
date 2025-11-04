@@ -14,8 +14,9 @@ export class SeguroService {
 
   constructor(private http: HttpClient) { }
 
-  validarSeguro(idPaciente: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/validar/paciente/${idPaciente}`);
+  validarSeguro(idPaciente: number, datosSeguro?: any): Observable<any> { // Aceptar datos opcionales
+    // Cambia a post y envía los datos
+    return this.http.post(`${this.apiUrl}/validar/paciente/${idPaciente}`, datosSeguro || {});
   }
 }
 
