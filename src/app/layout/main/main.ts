@@ -50,6 +50,7 @@ export class Main {
       isOpen: false,
       submenus: [
         { name: 'Registrar Consulta', path: '/atencion/registrar-consulta' },
+        { name: 'Registrar Triaje', path: '/atencion/triaje' }
       ]
     },
     {
@@ -57,7 +58,6 @@ export class Main {
       icon: '💰',
       isOpen: false,
       submenus: [
-        //{ name: 'Validar Seguro', path: '/facturacion/validar-seguro' },
         { name: 'Generar Factura', path: '/facturacion/generar-factura' },
       ]
     },

@@ -16,6 +16,7 @@ import { Dashboard } from './pages/dashboard/dashboard';
 import { RegistrarConsulta } from './atencion/registrar-consulta/registrar-consulta';
 import { ValidarSeguro } from './facturacion/validar-seguro/validar-seguro';
 import { GenerarFactura } from './facturacion/generar-factura/generar-factura'; 
+import { TriajeRegistro } from './atencion/triaje-registro/triaje-registro';
 
 
 export const routes: Routes = [
@@ -36,13 +37,9 @@ export const routes: Routes = [
             { path: 'cita/lista', component: CitaLista },
             { path: 'cita/modificar/:id', component: CitaModificar },
             { path: 'consultorios', component: Consultorio },
-            // Nuevas rutas a implementar y quizas hay otra
             { path: 'atencion/registrar-consulta', component: RegistrarConsulta },
-            // { path: 'facturacion/validar-seguro', component: ValidarSeguro }, // ELIMINA O COMENTA ESTA LÍNEA
-            { path: 'facturacion/generar-factura', component: GenerarFactura }, // ASEGÚRATE DE QUE ESTA LÍNEA EXISTA
-            // { path: 'facturacion/generar-factura', component: GenerarFactura},
-            // { path: 'admin/medicos', component: GestionMedicos },
-            // { path: 'admin/roles', component: GestionRoles },
+            { path: 'atencion/triaje', component: TriajeRegistro },
+            { path: 'facturacion/generar-factura', component: GenerarFactura }, 
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
         ]
     },
