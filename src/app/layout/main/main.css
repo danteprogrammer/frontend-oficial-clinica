@@ -157,3 +157,12 @@
     padding: 40px;
     overflow-y: auto;
 }
+
+@media print {
+
+    .sidebar,
+    .content {
+        display: none !important;
+        visibility: hidden !important;
+    }
+}
