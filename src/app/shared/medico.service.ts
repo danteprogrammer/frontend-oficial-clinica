@@ -3,19 +3,35 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 
+// --- AÑADIR ESTA INTERFAZ ---
+export interface Medico {
+  idMedico?: number;
+  dni: string;
+  nombres: string;
+  apellidos: string;
+  sexo: 'Masculino' | 'Femenino';
+  especialidad: string;
+  telefono: string;
+  email: string;
+  licenciaMedica: string;
+  estado: 'Activo' | 'Inactivo' | 'Licencia';
+}
+// --- FIN DE LA INTERFAZ ---
+
+
 @Injectable({
   providedIn: 'root'
 })
 export class MedicoService {
-private apiUrl = 'http://localhost:8080/api/medicos';
+  private apiUrl = 'http://localhost:8080/api/medicos';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Obtiene todos los médicos
    */
-  getMedicos(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl).pipe(
+  getMedicos(): Observable<Medico[]> { // <-- Cambiamos 'any[]' por 'Medico[]'
+    return this.http.get<Medico[]>(this.apiUrl).pipe(
       retry(2),
       catchError(this.handleError)
     );
@@ -24,12 +40,12 @@ private apiUrl = 'http://localhost:8080/api/medicos';
   /**
    * Obtiene un médico por ID
    */
-  getMedico(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
+  getMedico(id: number): Observable<Medico> { // <-- Cambiamos 'any' por 'Medico'
+    return this.http.get<Medico>(`${this.apiUrl}/${id}`).pipe(
       catchError(this.handleError)
     );
   }
-  
+
   /**
    * NUEVO MÉTODO: Obtiene la lista de especialidades únicas
    */
@@ -42,12 +58,12 @@ private apiUrl = 'http://localhost:8080/api/medicos';
   /**
    * NUEVO MÉTODO: Obtiene médicos por especialidad
    */
-  getMedicosPorEspecialidad(especialidad: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/especialidad/${especialidad}`).pipe(
+  getMedicosPorEspecialidad(especialidad: string): Observable<Medico[]> { // <-- Cambiamos 'any[]' por 'Medico[]'
+    return this.http.get<Medico[]>(`${this.apiUrl}/especialidad/${especialidad}`).pipe(
       catchError(this.handleError)
     );
   }
-  
+
   /**
    * NUEVO MÉTODO: Obtiene el horario de un médico (simulado)
    */
@@ -60,8 +76,8 @@ private apiUrl = 'http://localhost:8080/api/medicos';
   /**
    * Obtiene médicos disponibles
    */
-  getMedicosDisponibles(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl).pipe(
+  getMedicosDisponibles(): Observable<Medico[]> { // <-- Cambiamos 'any[]' por 'Medico[]'
+    return this.http.get<Medico[]>(this.apiUrl).pipe(
       retry(2),
       catchError(this.handleError)
     );
@@ -70,7 +86,7 @@ private apiUrl = 'http://localhost:8080/api/medicos';
   /**
    * Crea un nuevo médico
    */
-  crearMedico(medico: any): Observable<any> {
+  crearMedico(medico: Medico): Observable<any> { // <-- Cambiamos 'any' por 'Medico'
     return this.http.post<any>(this.apiUrl, medico).pipe(
       catchError(this.handleError)
     );
@@ -79,7 +95,7 @@ private apiUrl = 'http://localhost:8080/api/medicos';
   /**
    * Actualiza un médico existente
    */
-  actualizarMedico(id: number, medico: any): Observable<any> {
+  actualizarMedico(id: number, medico: Medico): Observable<any> { // <-- Cambiamos 'any' por 'Medico'
     return this.http.put<any>(`${this.apiUrl}/${id}`, medico).pipe(
       catchError(this.handleError)
     );
