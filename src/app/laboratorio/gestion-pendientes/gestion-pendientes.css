@@ -1,0 +1,172 @@
+.lab-container {
+    max-width: 1200px;
+    margin: 1rem auto;
+    padding: 1rem;
+}
+
+h2 {
+    text-align: center;
+    color: var(--primary-dark);
+}
+
+.loading-container,
+.no-data-container,
+.error-container {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+
+.error-container {
+    color: var(--danger);
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+}
+
+.no-data-container i {
+    font-size: 3rem;
+    color: var(--success);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.ordenes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.orden-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    border-left: 5px solid;
+    transition: all 0.2s ease;
+}
+
+.orden-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+}
+
+.orden-card.estado-pendiente {
+    border-color: var(--warning);
+}
+
+.orden-card.estado-en-proceso {
+    border-color: var(--primary-light);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-header h3 {
+    margin: 0;
+    color: var(--primary-dark);
+}
+
+.estado-badge {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    color: white;
+}
+
+.estado-pendiente .estado-badge {
+    background-color: var(--warning);
+    color: #333;
+}
+
+.estado-en-proceso .estado-badge {
+    background-color: var(--primary-light);
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.info-item strong {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 2px;
+}
+
+.info-item span {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.info-item.examenes span {
+    white-space: pre-wrap;
+    background: #f8f9fa;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.card-actions {
+    display: flex;
+    gap: 10px;
+    padding: 0 1.25rem 1.25rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+}
+
+.btn {
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    flex-grow: 1;
+    /* Hacen que los botones ocupen el espacio */
+}
+
+.btn i {
+    font-size: 0.8rem;
+}
+
+.btn-proceso {
+    background-color: #e1ebff;
+    color: var(--primary-dark);
+}
+
+.btn-proceso:hover {
+    background-color: var(--primary-main);
+    color: white;
+}
+
+.btn-registrar-resultados {
+    background-color: var(--success);
+    color: white;
+}
+
+.btn-registrar-resultados:hover {
+    background-color: #218838;
+}
+
+/* Estilos para el SweetAlert Textarea */
+.swal2-textarea {
+    width: 90% !important;
+    height: 150px !important;
+    margin-top: 10px !important;
+}

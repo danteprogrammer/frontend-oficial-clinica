@@ -6,6 +6,7 @@ import { Observable, of } from 'rxjs';
 import { debounceTime, switchMap, catchError } from 'rxjs/operators';
 import { Paciente, PaginaPacientes, Paciente as PacienteServiceClase } from '../../pacientes/paciente'; // Renombrado
 import { TriajeService } from '../../shared/triaje.service'; // <-- Importar TriajeService
+import { LaboratorioService } from '../../shared/laboratorio.service';
 
 // Importaciones de PDFMake
 import * as pdfMake from 'pdfmake/build/pdfmake';
@@ -52,11 +53,18 @@ export class RegistrarConsulta implements OnInit {
   historialTriajes: any[] = [];
   cargandoTriaje: boolean = false;
 
+  // --- AÑADIR PROPIEDADES PARA LABORATORIO ---
+  historialLaboratorio: any[] = [];
+  cargandoLaboratorio: boolean = false;
+  idMedicoLogueado: number = 3; // Mantenemos el ID quemado por ahora
+  // --- FIN ---
+
   constructor(
     private fb: FormBuilder,
     private consultaService: ConsultaService,
     private pacienteService: PacienteServiceClase, // Usamos el nombre renombrado
     private triajeService: TriajeService, // <-- Inyectar TriajeService
+    private laboratorioService: LaboratorioService, // <-- Inyectar LaboratorioService
     private datePipe: DatePipe // <-- Inyectar DatePipe
   ) { }
 
@@ -91,41 +99,46 @@ export class RegistrarConsulta implements OnInit {
     });
   }
 
-  /**
-   * MÉTODO MODIFICADO
-   * Ahora también carga el historial de triaje.
-   */
+  // ✅ --- seleccionarPaciente MODIFICADO ---
   seleccionarPaciente(paciente: Paciente): void {
     this.pacienteSeleccionado = paciente;
     this.pacientesEncontrados = [];
     this.pacienteBusquedaControl.setValue(`${paciente.nombres} ${paciente.apellidos}`, { emitEvent: false });
 
-    this.cargandoTriaje = true; // Inicia carga de triaje
+    this.cargandoTriaje = true;
+    this.cargandoLaboratorio = true; // <-- 3. Iniciar carga de lab
     this.ultimoTriaje = null;
     this.historialTriajes = [];
+    this.historialLaboratorio = []; // <-- Limpiar historial de lab
 
     this.consultaService.obtenerHistoriaPorPacienteId(paciente.idPaciente!).subscribe({
       next: (historia) => {
         this.idHistoriaClinicaSeleccionada = historia.idHistoriaClinica;
 
-        // Ahora, buscamos el triaje
+        // Cargar Triaje
         this.triajeService.getTriajesPorHistoria(historia.idHistoriaClinica).subscribe({
           next: (historial) => {
             this.mostrarDatosTriaje(historial);
             this.cargandoTriaje = false;
           },
           error: (err) => {
-            Swal.fire('Error de Triaje', 'No se pudo cargar el historial de triaje.', 'error');
+            console.error('Error cargando triaje:', err);
             this.cargandoTriaje = false;
           }
         });
+
+        // --- 4. AÑADIR CARGA DE LABORATORIO ---
+        this.cargarHistorialLaboratorio();
+        // --- FIN ---
       },
       error: (err) => {
         Swal.fire('Error', 'No se pudo obtener la historia clínica del paciente.', 'error');
         this.cargandoTriaje = false;
+        this.cargandoLaboratorio = false; // <-- Detener carga
       }
     });
   }
+  // --- FIN seleccionarPaciente ---
 
   /**
    * NUEVO MÉTODO
@@ -346,6 +359,83 @@ export class RegistrarConsulta implements OnInit {
   }
   // --- FIN generarPdfReceta MODIFICADO ---
 
+  // ✅ --- AÑADIR NUEVOS MÉTODOS PARA LABORATORIO ---
+
+  /**
+   * Carga el historial de órdenes de laboratorio para el paciente seleccionado
+   */
+  cargarHistorialLaboratorio(): void {
+    if (!this.idHistoriaClinicaSeleccionada) return;
+
+    this.cargandoLaboratorio = true;
+    this.laboratorioService.getOrdenesPorHistoria(this.idHistoriaClinicaSeleccionada).subscribe({
+      next: (data) => {
+        this.historialLaboratorio = data;
+        this.cargandoLaboratorio = false;
+      },
+      error: (err) => {
+        console.error('Error cargando historial de laboratorio:', err);
+        this.cargandoLaboratorio = false;
+      }
+    });
+  }
+
+  /**
+   * Abre un modal para solicitar exámenes de laboratorio
+   */
+  async generarOrdenLaboratorio() {
+    if (!this.idHistoriaClinicaSeleccionada) return;
+
+    const { value: examenes } = await Swal.fire({
+      title: 'Generar Orden de Laboratorio',
+      html: `
+        <p>Escriba los exámenes solicitados, separados por comas.</p>
+        <textarea id="swal-examenes" class="swal2-textarea" placeholder="Ej: Hemograma, Glucosa, Perfil Lipídico"></textarea>
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Generar Orden',
+      cancelButtonText: 'Cancelar',
+      preConfirm: () => {
+        const examenesTexto = (document.getElementById('swal-examenes') as HTMLTextAreaElement).value;
+        if (!examenesTexto) {
+          Swal.showValidationMessage('Debe ingresar al menos un examen.');
+          return false;
+        }
+        return examenesTexto;
+      }
+    });
+
+    if (examenes) {
+      this.cargando = true;
+      const request = {
+        idHistoriaClinica: this.idHistoriaClinicaSeleccionada,
+        idMedico: this.idMedicoLogueado,
+        examenesSolicitados: examenes
+      };
+
+      this.laboratorioService.crearOrden(request).subscribe({
+        next: () => {
+          this.cargando = false;
+          Swal.fire('Orden Generada', 'La orden de laboratorio se envió correctamente.', 'success');
+          this.cargarHistorialLaboratorio(); // Actualizar la lista
+        },
+        error: (err) => {
+          this.cargando = false;
+          Swal.fire('Error', err.message, 'error');
+        }
+      });
+    }
+  }
+
+  getEstadoOrdenClass(estado: string): string {
+    if (estado === 'PENDIENTE') return 'lab-pendiente';
+    if (estado === 'EN_PROCESO') return 'lab-en-proceso';
+    if (estado === 'COMPLETADO') return 'lab-completado';
+    return '';
+  }
+  // --- FIN NUEVOS MÉTODOS ---
+
   /**
      * ✅ --- MÉTODO limpiarFormulario MODIFICADO ---
      * Ahora también limpia el FormArray de recetas.
@@ -362,5 +452,8 @@ export class RegistrarConsulta implements OnInit {
     this.ultimoTriaje = null;
     this.historialTriajes = [];
     this.cargandoTriaje = false;
+
+    this.historialLaboratorio = []; // <-- Limpiar historial lab
+    this.cargandoLaboratorio = false; // <-- Limpiar carga lab
   }
 }

@@ -53,6 +53,15 @@ export class Main {
         { name: 'Registrar Triaje', path: '/atencion/triaje' }
       ]
     },
+    // --- AÑADIR NUEVO MENÚ ---
+    {
+      name: 'Laboratorio',
+      icon: '🔬',
+      isOpen: false,
+      submenus: [
+        { name: 'Órdenes Pendientes', path: '/laboratorio/pendientes' }
+      ]
+    },
     {
       name: 'Caja y Facturación',
       icon: '💰',

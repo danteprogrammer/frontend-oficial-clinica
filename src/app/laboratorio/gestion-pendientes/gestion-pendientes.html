@@ -1,0 +1,57 @@
+<div class="lab-container">
+    <h2><i class="fas fa-flask"></i> Gestión de Órdenes de Laboratorio</h2>
+    <p>Órdenes pendientes y en proceso.</p>
+
+    <div *ngIf="cargando" class="loading-container">
+        Cargando órdenes pendientes...
+    </div>
+
+    <div *ngIf="error" class="error-container">
+        {{ error }}
+    </div>
+
+    <div *ngIf="!cargando && ordenes.length === 0" class="no-data-container">
+        <i class="fas fa-check-circle"></i>
+        <p>¡Buen trabajo! No hay órdenes pendientes.</p>
+    </div>
+
+    <div class="ordenes-grid" *ngIf="!cargando && ordenes.length > 0">
+        <div class="orden-card" *ngFor="let orden of ordenes" [ngClass]="getEstadoClass(orden.estado)">
+            <div class="card-header">
+                <h3>Orden #{{ orden.idOrden }}</h3>
+                <span class="estado-badge">{{ orden.estado }}</span>
+            </div>
+            <div class="card-body">
+                <div class="info-item">
+                    <strong>Paciente:</strong>
+                    <span>{{ orden.historiaClinica.paciente.nombres }} {{ orden.historiaClinica.paciente.apellidos
+                        }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>DNI:</strong>
+                    <span>{{ orden.historiaClinica.paciente.dni }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Solicitó:</strong>
+                    <span>Dr. {{ orden.medico.nombres }} {{ orden.medico.apellidos }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Fecha Orden:</strong>
+                    <span>{{ orden.fechaOrden | date:'dd/MM/yyyy' }}</span>
+                </div>
+                <div class="info-item examenes">
+                    <strong>Exámenes:</strong>
+                    <span>{{ orden.examenesSolicitados }}</span>
+                </div>
+            </div>
+            <div class="card-actions">
+                <button *ngIf="orden.estado === 'PENDIENTE'" (click)="marcarEnProceso(orden)" class="btn btn-proceso">
+                    <i class="fas fa-hourglass-half"></i> Marcar en Proceso
+                </button>
+                <button (click)="abrirModalResultados(orden)" class="btn btn-registrar-resultados">
+                    <i class="fas fa-clipboard-check"></i> Registrar Resultados
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -352,3 +352,121 @@ button[type="submit"]:hover:not(:disabled) {
         /* Una columna en móvil */
     }
 }
+
+/* --- NUEVOS ESTILOS PARA ACCIONES DEL FORMULARIO --- */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    /* Para responsive */
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #DFE0EB;
+}
+
+.btn-laboratorio {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #17a2b8;
+    /* Un color cian/info */
+    color: white;
+    transition: all 0.2s ease;
+}
+
+.btn-laboratorio:hover:not(:disabled) {
+    background-color: #138496;
+    transform: translateY(-2px);
+}
+
+.btn-laboratorio:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
+
+/* --- NUEVOS ESTILOS PARA HISTORIAL DE LABORATORIO --- */
+.card-lab {
+    margin-top: 2rem;
+}
+
+.card-lab .card-header h4 {
+    border: none;
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.card-lab .card-header .fas {
+    margin-right: 8px;
+}
+
+.lab-list {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.lab-item {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.lab-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.lab-header strong {
+    color: var(--primary-dark);
+}
+
+.lab-estado {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    color: white;
+}
+
+.lab-pendiente {
+    background-color: var(--warning);
+    color: #333;
+}
+
+.lab-en-proceso {
+    background-color: var(--primary-light);
+}
+
+.lab-completado {
+    background-color: var(--success);
+}
+
+.lab-body {
+    padding: 15px;
+}
+
+.lab-body p {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.lab-resultados {
+    background: #fdfdfd;
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    /* Mantiene los saltos de línea */
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: #333;
+}
