@@ -18,6 +18,7 @@ import { ValidarSeguro } from './facturacion/validar-seguro/validar-seguro';
 import { GenerarFactura } from './facturacion/generar-factura/generar-factura'; 
 import { TriajeRegistro } from './atencion/triaje-registro/triaje-registro';
 import { GestionPendientes } from './laboratorio/gestion-pendientes/gestion-pendientes';
+import { GestionMedicos } from './administracion/gestion-medicos/gestion-medicos';
 
 
 export const routes: Routes = [
@@ -42,6 +43,7 @@ export const routes: Routes = [
             { path: 'atencion/triaje', component: TriajeRegistro },
             { path: 'facturacion/generar-factura', component: GenerarFactura }, 
             { path: 'laboratorio/pendientes', component: GestionPendientes },
+            { path: 'admin/medicos', component: GestionMedicos },
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
         ]
     },

@@ -1,0 +1,149 @@
+<div class="admin-container">
+    <h2><i class="fas fa-user-md"></i> Gestión de Médicos</h2>
+
+    <div class="form-card">
+        <h3>{{ modoEdicion ? 'Editar Médico' : 'Registrar Nuevo Médico' }}</h3>
+        <form [formGroup]="medicoForm" (ngSubmit)="onSubmit()">
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="dni">DNI</label>
+                    <input id="dni" type="text" formControlName="dni" [class.is-invalid]="esCampoInvalido('dni')">
+                    <div *ngIf="esCampoInvalido('dni')" class="invalid-feedback">
+                        {{ getMensajeError('dni') }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="nombres">Nombres</label>
+                    <input id="nombres" type="text" formControlName="nombres"
+                        [class.is-invalid]="esCampoInvalido('nombres')">
+                    <div *ngIf="esCampoInvalido('nombres')" class="invalid-feedback">
+                        {{ getMensajeError('nombres') }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="apellidos">Apellidos</label>
+                    <input id="apellidos" type="text" formControlName="apellidos"
+                        [class.is-invalid]="esCampoInvalido('apellidos')">
+                    <div *ngIf="esCampoInvalido('apellidos')" class="invalid-feedback">
+                        {{ getMensajeError('apellidos') }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="sexo">Sexo</label>
+                    <select id="sexo" formControlName="sexo">
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="especialidad">Especialidad</label>
+                    <input id="especialidad" type="text" formControlName="especialidad"
+                        [class.is-invalid]="esCampoInvalido('especialidad')">
+                    <div *ngIf="esCampoInvalido('especialidad')" class="invalid-feedback">
+                        {{ getMensajeError('especialidad') }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <input id="telefono" type="text" formControlName="telefono"
+                        [class.is-invalid]="esCampoInvalido('telefono')">
+                    <div *ngIf="esCampoInvalido('telefono')" class="invalid-feedback">
+                        {{ getMensajeError('telefono') }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input id="email" type="email" formControlName="email"
+                        [class.is-invalid]="esCampoInvalido('email')">
+                    <div *ngIf="esCampoInvalido('email')" class="invalid-feedback">
+                        {{ getMensajeError('email') }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="licenciaMedica">Licencia Médica (CMP)</label>
+                    <input id="licenciaMedica" type="text" formControlName="licenciaMedica"
+                        [class.is-invalid]="esCampoInvalido('licenciaMedica')">
+                    <div *ngIf="esCampoInvalido('licenciaMedica')" class="invalid-feedback">
+                        {{ getMensajeError('licenciaMedica') }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="estado">Estado</label>
+                    <select id="estado" formControlName="estado">
+                        <option value="Activo">Activo</option>
+                        <option value="Inactivo">Inactivo</option>
+                        <option value="Licencia">Licencia</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-cancelar" (click)="resetFormulario()">Cancelar</button>
+                <button type="submit" [disabled]="cargando">
+                    <span *ngIf="!cargando">{{ modoEdicion ? 'Actualizar Médico' : 'Crear Médico' }}</span>
+                    <span *ngIf="cargando">Guardando...</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <h3>Lista de Médicos Registrados</h3>
+        <div *ngIf="cargando" class="loading-container">Cargando médicos...</div>
+        <div *ngIf="error" class="error-container">{{ error }}</div>
+
+        <div *ngIf="!cargando && !error && medicos.length === 0" class="no-data-container">
+            No hay médicos registrados.
+        </div>
+
+        <table *ngIf="!cargando && !error && medicos.length > 0">
+            <thead>
+                <tr>
+                    <th>DNI</th>
+                    <th>Nombre Completo</th>
+                    <th>Especialidad</th>
+                    <th>Teléfono</th>
+                    <th>Email</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let medico of medicos">
+                    <td>{{ medico.dni }}</td>
+                    <td>{{ medico.nombres }} {{ medico.apellidos }}</td>
+                    <td>{{ medico.especialidad }}</td>
+                    <td>{{ medico.telefono }}</td>
+                    <td>{{ medico.email }}</td>
+                    <td>
+                        <span class="badge" [ngClass]="{
+                            'badge-success': medico.estado === 'Activo',
+                            'badge-warning': medico.estado === 'Licencia',
+                            'badge-danger': medico.estado === 'Inactivo'
+                        }">
+                            {{ medico.estado }}
+                        </span>
+                    </td>
+                    <td class="acciones">
+                        <button class="btn-accion btn-editar" (click)="cargarMedicoParaEditar(medico)">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-accion btn-eliminar" (click)="eliminarMedico(medico.idMedico!)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
