@@ -1,16 +1,24 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FacturacionService } from '../../shared/facturacion.service';
 import { SeguroService } from '../validar-seguro/validar-seguro';
+
+// ✅ Importaciones correctas para PDFMake en Angular moderno
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+
+// ✅ Solución: crear instancia editable en lugar de modificar import
+const pdfMakeInstance: any = (pdfMake as any);
+pdfMakeInstance.vfs = (pdfFonts as any).vfs;
 
 declare var Swal: any;
 
 @Component({
   selector: 'app-generar-factura',
-  imports: [ReactiveFormsModule, CommonModule, DatePipe, TitleCasePipe],
+  imports: [ReactiveFormsModule, CommonModule, DatePipe],
   templateUrl: './generar-factura.html',
-  styleUrl: './generar-factura.css'
+  styleUrls: ['./generar-factura.css']
 })
 export class GenerarFactura implements OnInit {
 
@@ -23,14 +31,12 @@ export class GenerarFactura implements OnInit {
   mensajeError: string | null = null;
   seguroValidado: boolean | null = null;
   modoPago: 'seguro' | 'directo' = 'directo';
-  intentoValidacion: boolean = false;
-  mostrarRecibo: boolean = false; // Mostrar el recibo tras generar comprobante
+  intentoValidacion = false;
 
   constructor(
     private fb: FormBuilder,
     private facturacionService: FacturacionService,
-    private seguroService: SeguroService,
-    private cd: ChangeDetectorRef
+    private seguroService: SeguroService
   ) {
     this.busquedaForm = this.fb.group({
       dni: ['', [Validators.required, Validators.pattern('^[0-9]{8}$')]]
@@ -42,16 +48,6 @@ export class GenerarFactura implements OnInit {
       numeroPoliza: [''],
       cobertura: [''],
       metodoPago: ['efectivo']
-    });
-
-    // ✅ Listeners para el diálogo de impresión
-    window.addEventListener('beforeprint', () => {
-      console.log('🖨️ Diálogo de impresión abierto');
-    });
-
-    window.addEventListener('afterprint', () => {
-      console.log('✅ Diálogo de impresión cerrado');
-      // Aquí puedes agregar lógica extra si lo necesitas
     });
   }
 
@@ -67,15 +63,14 @@ export class GenerarFactura implements OnInit {
     this.mensajeError = null;
     this.citasPendientes = [];
     this.citaSeleccionada = null;
-    this.mostrarRecibo = false;
 
     const dni = this.busquedaForm.value.dni;
     this.facturacionService.getCitasPendientesPorDni(dni).subscribe({
       next: (citas) => {
+        this.citasPendientes = citas;
         if (citas.length === 0) {
           this.mensajeError = 'El paciente no tiene citas pendientes de pago para hoy.';
         }
-        this.citasPendientes = citas;
         this.cargando = false;
       },
       error: (err) => {
@@ -89,7 +84,6 @@ export class GenerarFactura implements OnInit {
     this.citaSeleccionada = cita;
     this.seguroValidado = null;
     this.intentoValidacion = false;
-    this.mostrarRecibo = false;
     this.modoPago = cita.tieneSeguro ? 'seguro' : 'directo';
     this.pagoForm.reset({
       tipoComprobante: 'boleta',
@@ -175,72 +169,85 @@ export class GenerarFactura implements OnInit {
         this.citaSeleccionada.estado = citaActualizada.estado;
         this.citaSeleccionada.estadoPago = citaActualizada.estadoPago;
 
-        this.mostrarRecibo = true;
-        this.cd.detectChanges();
-
-        console.log('=== DEBUG IMPRESIÓN ===');
-        console.log('Recibo activado:', this.mostrarRecibo);
-
-        // Esperar para renderizado completo
-        setTimeout(() => {
-          this.cd.detectChanges();
-
-          Swal.fire({
-            title: '¡Pago Registrado!',
-            text: `Se ha generado la ${this.pagoForm.value.tipoComprobante} para la cita.`,
-            icon: 'success',
-            showCancelButton: true,
-            confirmButtonText: '🖨️ Imprimir Comprobante',
-            cancelButtonText: '✅ Finalizar sin Imprimir',
-            allowOutsideClick: false
-          }).then((result: any) => {
-            if (result.isConfirmed) {
-              this.cd.detectChanges();
-
-              requestAnimationFrame(() => {
-                try {
-                  console.log('🖨️ Intentando imprimir...');
-                  window.print();
-                  console.log('✅ window.print() ejecutado');
-                  setTimeout(() => this.limpiarTrasPago(), 1000);
-                } catch (error) {
-                  console.error('❌ Error en impresión:', error);
-                  this.imprimirComprobante();
-                  setTimeout(() => this.limpiarTrasPago(), 1000);
-                }
-              });
-            } else {
-              Swal.fire({
-                title: 'Comprobante Guardado',
-                text: '¿Desea imprimir el comprobante ahora? También puede presionar Ctrl+P',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: '🖨️ Sí, Imprimir',
-                cancelButtonText: 'No, Gracias'
-              }).then((printResult: any) => {
-                if (printResult.isConfirmed) {
-                  this.imprimirComprobante();
-                  setTimeout(() => this.limpiarTrasPago(), 1000);
-                } else {
-                  this.limpiarTrasPago();
-                }
-              });
-            }
-          });
-        }, 300);
+        Swal.fire({
+          title: '¡Pago Registrado!',
+          text: `Se ha generado la ${this.pagoForm.value.tipoComprobante}. ¿Desea imprimirla ahora?`,
+          icon: 'success',
+          showCancelButton: true,
+          confirmButtonText: '🖨️ Imprimir Comprobante',
+          cancelButtonText: '✅ Finalizar sin Imprimir',
+          allowOutsideClick: false
+        }).then((result: any) => {
+          if (result.isConfirmed) {
+            this.generarPDF(this.citaSeleccionada);
+          }
+          this.limpiarTrasPago();
+        });
       },
       error: (err) => {
         this.cargando = false;
-        Swal.fire('Error al Pagar', 'No se pudo registrar el pago en el sistema. ' + err.message, 'error');
+        Swal.fire('Error al Pagar', 'No se pudo registrar el pago. ' + err.message, 'error');
       }
     });
+  }
+
+  private generarPDF(cita: any) {
+    const tipoComprobante = this.pagoForm.value.tipoComprobante.toUpperCase();
+    const esSeguro = (this.modoPago === 'seguro' && this.seguroValidado);
+    const pipeFecha = new DatePipe('es-ES');
+
+    const precio = cita.precioConsulta || 0;
+    const total = precio;
+    const montoPagado = esSeguro ? 0.00 : total;
+    const metodoPago = esSeguro
+      ? `Seguro: ${this.pagoForm.value.nombreAseguradora || 'N/A'} (Póliza: ${this.pagoForm.value.numeroPoliza || 'N/A'})`
+      : this.pagoForm.value.metodoPago.charAt(0).toUpperCase() + this.pagoForm.value.metodoPago.slice(1);
+
+    const docDefinition: any = {
+      content: [
+        { text: 'Clínica SaludVida', style: 'header' },
+        { text: `${tipoComprobante} DE VENTA`, style: 'subheader' },
+        {
+          columns: [
+            { text: `Fecha: ${pipeFecha.transform(this.currentDate, 'dd/MM/yyyy HH:mm')}`, alignment: 'left' },
+            { text: `N° ${cita.idCita}`, alignment: 'right' }
+          ]
+        },
+        { text: '\nDatos del Paciente', style: 'sectionHeader' },
+        { text: `DNI: ${cita.dniPaciente}` },
+        { text: `Nombre: ${cita.nombresPaciente} ${cita.apellidosPaciente}` },
+        { text: '\nDetalle de la Atención', style: 'sectionHeader' },
+        { text: `Especialidad: ${cita.especialidad}` },
+        { text: `Médico: ${cita.medico}` },
+        { text: '\nDetalle del Pago', style: 'sectionHeader' },
+        {
+          table: {
+            widths: ['*', 'auto', 'auto'],
+            body: [
+              ['Descripción', 'Cant.', 'Total'],
+              [`Consulta - ${cita.especialidad}`, '1', `S/ ${total.toFixed(2)}`]
+            ]
+          },
+          layout: 'lightHorizontalLines'
+        },
+        { text: `\nMétodo de Pago: ${metodoPago}` },
+        { text: `Monto Pagado: S/ ${montoPagado.toFixed(2)}` },
+        { text: '\n¡Gracias por su preferencia!', alignment: 'center', margin: [0, 20, 0, 0] }
+      ],
+      styles: {
+        header: { fontSize: 18, bold: true, alignment: 'center', color: '#005792' },
+        subheader: { fontSize: 14, alignment: 'center', margin: [0, 0, 0, 10] },
+        sectionHeader: { fontSize: 13, bold: true, color: '#005792', margin: [0, 10, 0, 5] }
+      }
+    };
+
+    pdfMakeInstance.createPdf(docDefinition).print();
   }
 
   limpiarTrasPago(): void {
     this.busquedaForm.reset();
     this.citasPendientes = [];
     this.citaSeleccionada = null;
-    this.mostrarRecibo = false;
     this.modoPago = 'directo';
     this.seguroValidado = null;
     this.intentoValidacion = false;
@@ -248,34 +255,5 @@ export class GenerarFactura implements OnInit {
       tipoComprobante: 'boleta',
       metodoPago: 'efectivo'
     });
-  }
-
-  imprimirComprobante(): void {
-    console.log('🖨️ Método alternativo de impresión');
-
-    window.focus();
-
-    setTimeout(() => {
-      try {
-        const recibo = document.querySelector('.printable-receipt.ready-to-print');
-        if (!recibo) {
-          console.error('❌ Recibo no encontrado en el DOM');
-          Swal.fire('Error', 'No se pudo preparar el recibo para impresión', 'error');
-          return;
-        }
-
-        console.log('✅ Recibo encontrado, iniciando impresión...');
-        window.print();
-        console.log('✅ Comando de impresión ejecutado');
-      } catch (error) {
-        console.error('❌ Error en imprimirComprobante:', error);
-        Swal.fire({
-          title: 'Error al Imprimir',
-          text: 'No se pudo abrir el diálogo de impresión automáticamente. Por favor presione Ctrl+P (Windows) o Cmd+P (Mac).',
-          icon: 'warning',
-          confirmButtonText: 'Entendido'
-        });
-      }
-    }, 100);
   }
 }

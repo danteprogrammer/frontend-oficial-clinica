@@ -157,30 +157,3 @@
     padding: 40px;
     overflow-y: auto;
 }
-
-@media print {
-
-    /* 1. Oculta la barra lateral */
-    .sidebar {
-        display: none !important;
-        visibility: hidden !important;
-    }
-
-    /* 2. MODIFICA el contenedor de contenido para que no interfiera */
-    .content {
-        overflow-y: visible !important;
-        /* Quita el scroll */
-        padding: 0 !important;
-        /* Quita el padding */
-        flex: none !important;
-        /* Quita el flex sizing */
-        width: 100% !important;
-        visibility: visible !important;
-        /* Asegura que el contenedor sea visible */
-    }
-
-    /* 3. Asegúrate de que el layout principal no sea 'flex' */
-    .main-layout {
-        display: block !important;
-    }
-}
