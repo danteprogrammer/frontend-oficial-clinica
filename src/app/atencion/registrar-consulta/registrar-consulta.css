@@ -240,3 +240,115 @@ button[type="submit"]:hover:not(:disabled) {
 .no-triaje .fas {
     margin-right: 8px;
 }
+
+/* ✅ --- NUEVOS ESTILOS PARA LA SECCIÓN DE RECETA --- */
+
+.receta-header {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.receta-container {
+    width: 100%;
+}
+
+.no-receta {
+    text-align: center;
+    padding: 15px;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px dashed #DFE0EB;
+}
+
+.receta-item {
+    display: grid;
+    /* 3 campos de texto + 1 botón */
+    grid-template-columns: 2.5fr 1.5fr 3fr auto;
+    gap: 15px;
+    align-items: flex-end;
+    /* Alinea el botón con la base de los inputs */
+    padding: 15px;
+    border: 1px solid #e1ebff;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background-color: #fdfdff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.receta-item .form-group {
+    margin-bottom: 0;
+}
+
+.btn-quitar-med {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 12px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 600;
+    height: 48px;
+    /* Para alinear con los inputs */
+}
+
+.btn-quitar-med:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-quitar-med .fas {
+    margin-right: 5px;
+}
+
+.btn-agregar-med {
+    background: #e1ebff;
+    color: #00355d;
+    border: 1px solid #005792;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: bold;
+    margin-top: 10px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-agregar-med:hover {
+    background: #005792;
+    color: white;
+}
+
+.btn-agregar-med .fas {
+    margin-right: 8px;
+}
+
+/* Responsive para la receta */
+@media (max-width: 900px) {
+    .receta-item {
+        /* 2 columnas: (Medicamento + Dosis) y (Posología + Botón) */
+        grid-template-columns: 1fr 1fr;
+    }
+
+    /* Hacemos que la posología ocupe todo el ancho de la segunda fila */
+    .receta-item .form-group:nth-child(3) {
+        grid-column: 1 / -1;
+    }
+
+    /* Hacemos que el botón ocupe todo el ancho de la tercera fila */
+    .btn-quitar-med {
+        grid-column: 1 / -1;
+        margin-top: 10px;
+        height: auto;
+    }
+}
+
+@media (max-width: 576px) {
+    .receta-item {
+        grid-template-columns: 1fr;
+        /* Una columna en móvil */
+    }
+}

@@ -4,11 +4,13 @@
     <div class="buscador-paciente">
         <div class="form-group">
             <label for="pacienteBusqueda">Buscar Paciente por DNI o Nombre</label>
-            <input id="pacienteBusqueda" type="text" [formControl]="pacienteBusquedaControl" placeholder="Escriba para buscar...">
+            <input id="pacienteBusqueda" type="text" [formControl]="pacienteBusquedaControl"
+                placeholder="Escriba para buscar...">
         </div>
 
         <div *ngIf="pacientesEncontrados.length > 0" class="resultados-busqueda">
-            <div *ngFor="let paciente of pacientesEncontrados" class="resultado-item" (click)="seleccionarPaciente(paciente)">
+            <div *ngFor="let paciente of pacientesEncontrados" class="resultado-item"
+                (click)="seleccionarPaciente(paciente)">
                 {{ paciente.nombres }} {{ paciente.apellidos }} - DNI: {{ paciente.dni }}
             </div>
         </div>
@@ -25,7 +27,8 @@
 
     <div *ngIf="!cargandoTriaje && pacienteSeleccionado && ultimoTriaje" class="card card-triaje">
         <div class="card-header">
-            <h4><i class="fas fa-notes-medical"></i> Datos de Triaje (Del {{ ultimoTriaje.fechaRegistro | date:'dd/MM/yyyy HH:mm' }})</h4>
+            <h4><i class="fas fa-notes-medical"></i> Datos de Triaje (Del {{ ultimoTriaje.fechaRegistro |
+                date:'dd/MM/yyyy HH:mm' }})</h4>
         </div>
         <div class="card-body">
             <div class="triaje-datos">
@@ -61,9 +64,8 @@
         <i class="fas fa-exclamation-triangle"></i>
         El paciente no tiene ningún registro de triaje.
     </div>
-
     <form [formGroup]="consultaForm" (ngSubmit)="onSubmit()" *ngIf="pacienteSeleccionado">
-        
+
         <h4>Detalles de la Consulta</h4>
         <div class="form-grid">
             <div class="form-group full-width">
@@ -74,12 +76,44 @@
                 <label for="diagnostico">Diagnóstico</label>
                 <textarea id="diagnostico" formControlName="diagnostico" rows="5" required></textarea>
             </div>
+
             <div class="form-group full-width">
-                <label for="tratamiento">Tratamiento y Receta</label>
-                <textarea id="tratamiento" formControlName="tratamiento" rows="5"></textarea>
+                <label for="indicaciones">Indicaciones Generales (Tratamiento no farmacológico, reposo, próxima cita,
+                    etc.)</label>
+                <textarea id="indicaciones" formControlName="indicaciones" rows="4"></textarea>
+            </div>
+        </div>
+        <h4 class="receta-header">Receta Médica</h4>
+        <div class="receta-container" formArrayName="receta">
+
+            <div *ngIf="prescripciones.controls.length === 0" class="no-receta">
+                No se han agregado medicamentos.
+            </div>
+
+            <div *ngFor="let presc of prescripciones.controls; let i = index" [formGroupName]="i" class="receta-item">
+                <div class="form-group">
+                    <label for="medicamento-{{i}}">Medicamento</label>
+                    <input id="medicamento-{{i}}" type="text" formControlName="medicamento"
+                        placeholder="Ej: Paracetamol" required>
+                </div>
+                <div class="form-group">
+                    <label for="dosis-{{i}}">Dosis/Presentación</label>
+                    <input id="dosis-{{i}}" type="text" formControlName="dosis" placeholder="Ej: 500 mg">
+                </div>
+                <div class="form-group">
+                    <label for="posologia-{{i}}">Posología (Indicaciones)</label>
+                    <input id="posologia-{{i}}" type="text" formControlName="posologia"
+                        placeholder="Ej: 1 c/ 8h por 7 días" required>
+                </div>
+                <button type="button" (click)="quitarMedicamento(i)" class="btn-quitar-med">
+                    Quitar
+                </button>
             </div>
         </div>
 
+        <button type="button" (click)="agregarMedicamento()" class="btn-agregar-med">
+            + Agregar Medicamento
+        </button>
         <div class="form-actions">
             <button type="button" class="btn-cancelar" (click)="limpiarFormulario()">Limpiar</button>
             <button type="submit" [disabled]="consultaForm.invalid || cargando">

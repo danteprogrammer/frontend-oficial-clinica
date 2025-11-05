@@ -1,5 +1,5 @@
 import { Component, Injectable, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common'; // <-- Importar DatePipe
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
@@ -65,9 +65,9 @@ export class RegistrarConsulta implements OnInit {
     this.consultaForm = this.fb.group({
       motivo: ['', Validators.required],
       diagnostico: ['', Validators.required],
-      tratamiento: [''],
-      // Ya no necesitamos 'peso', 'altura', 'presionArterial', 'ritmoCardiaco'
-      medico: [{ idMedico: 3 }] // Dejamos el ID del médico quemado por ahora
+      indicaciones: [''], // 1. Campo para indicaciones generales
+      receta: this.fb.array([]), // 2. FormArray para la receta
+      medico: [{ idMedico: 3 }]
     });
 
     this.pacienteBusquedaControl.valueChanges.pipe(
@@ -141,10 +141,34 @@ export class RegistrarConsulta implements OnInit {
     }
   }
 
+  get prescripciones() {
+    return this.consultaForm.get('receta') as FormArray;
+  }
+
   /**
-   * MÉTODO MODIFICADO
-   * Pregunta si se desea imprimir la receta al finalizar.
+   * Añade un nuevo grupo de campos de medicamento al FormArray
    */
+  agregarMedicamento() {
+    const prescripcionForm = this.fb.group({
+      medicamento: ['', Validators.required],
+      dosis: [''], // Ej: "500 mg", "10ml/5mg"
+      posologia: ['', Validators.required] // Ej: "1 cada 8h por 7 días"
+    });
+    this.prescripciones.push(prescripcionForm);
+  }
+
+  /**
+   * Elimina un medicamento de la lista por su índice
+   */
+  quitarMedicamento(index: number) {
+    this.prescripciones.removeAt(index);
+  }
+  // --- FIN NUEVOS MÉTODOS ---
+
+  /**
+     * ✅ --- MÉTODO onSubmit MODIFICADO ---
+     * Ahora combina las indicaciones y la receta en un solo string para el backend.
+     */
   onSubmit(): void {
     if (this.consultaForm.invalid || !this.idHistoriaClinicaSeleccionada) {
       Swal.fire('Datos Incompletos', 'Debe seleccionar un paciente y completar el motivo y diagnóstico.', 'error');
@@ -152,10 +176,32 @@ export class RegistrarConsulta implements OnInit {
     }
 
     this.cargando = true;
-    this.consultaService.registrarConsulta(this.idHistoriaClinicaSeleccionada, this.consultaForm.value).subscribe({
+    const formValue = this.consultaForm.value;
+
+    // 1. Formatear la receta para el backend (campo 'tratamiento')
+    let recetaTexto = '';
+    if (formValue.receta.length > 0) {
+      recetaTexto = '\n\n--- RECETA MÉDICA ---\n';
+      formValue.receta.forEach((med: any) => {
+        recetaTexto += `- ${med.medicamento} (${med.dosis || 'N/A'}): ${med.posologia}\n`;
+      });
+    }
+
+    // 2. Combinar indicaciones y receta en el campo 'tratamiento'
+    const tratamientoCompleto = (formValue.indicaciones || 'Ninguna indicación.') + recetaTexto;
+
+    // 3. Preparar el payload
+    const payload = {
+      motivo: formValue.motivo,
+      diagnostico: formValue.diagnostico,
+      tratamiento: tratamientoCompleto, // Enviamos todo al campo 'tratamiento'
+      medico: formValue.medico
+      // Los datos de triaje ya no se envían desde aquí
+    };
+
+    this.consultaService.registrarConsulta(this.idHistoriaClinicaSeleccionada!, payload).subscribe({
       next: () => {
         this.cargando = false;
-
         Swal.fire({
           title: '¡Éxito!',
           text: 'La consulta ha sido registrada. ¿Desea imprimir la receta?',
@@ -169,7 +215,6 @@ export class RegistrarConsulta implements OnInit {
           }
           this.limpiarFormulario();
         });
-
       },
       error: (err) => {
         this.cargando = false;
@@ -179,15 +224,30 @@ export class RegistrarConsulta implements OnInit {
   }
 
   /**
-   * NUEVO MÉTODO
-   * Genera el PDF de la receta usando pdfMake.
-   */
+     * ✅ --- MÉTODO generarPdfReceta MODIFICADO ---
+     * Ahora genera una tabla bonita para la receta.
+     */
   generarPdfReceta(): void {
     if (!this.pacienteSeleccionado) return;
 
     const paciente = this.pacienteSeleccionado;
-    const consulta = this.consultaForm.value;
+    const consulta = this.consultaForm.value; // Ahora tiene 'indicaciones' y 'receta'
     const fechaHoy = this.datePipe.transform(new Date(), 'dd/MM/yyyy');
+
+    // --- Nueva sección de Receta para PDF ---
+    const recetaItems = consulta.receta.map((med: any) => {
+      return [
+        { text: med.medicamento, bold: true, style: 'recetaText' },
+        { text: med.dosis, style: 'recetaText' },
+        { text: med.posologia, style: 'recetaText' }
+      ];
+    });
+
+    const recetaBody = [
+      [{ text: 'Medicamento', style: 'tableHeader' }, { text: 'Dosis/Presentación', style: 'tableHeader' }, { text: 'Indicaciones (Posología)', style: 'tableHeader' }],
+      ...recetaItems
+    ];
+    // --- Fin de nueva sección ---
 
     const docDefinition: any = {
       content: [
@@ -221,10 +281,22 @@ export class RegistrarConsulta implements OnInit {
         { text: 'Diagnóstico', style: 'sectionHeader' },
         { text: consulta.diagnostico || 'No especificado', style: 'text' },
 
-        { text: 'Tratamiento y Receta (R/.)', style: 'sectionHeader' },
-        { text: consulta.tratamiento || 'No se indicaron medicamentos.', style: 'text' },
+        // --- CAMBIO AQUÍ ---
+        { text: 'Indicaciones Generales', style: 'sectionHeader' },
+        { text: consulta.indicaciones || 'No se indicaron recomendaciones.', style: 'text' },
 
-        // Si hay datos de triaje, los mostramos
+        { text: 'Receta Médica (R/.)', style: 'sectionHeader' },
+        consulta.receta.length > 0 ? {
+          table: {
+            widths: ['*', 'auto', '*'], // Medicamento, Dosis, Posología
+            body: recetaBody
+          },
+          layout: 'lightHorizontalLines',
+          margin: [0, 5, 0, 15]
+        } : { text: 'No se indicaron medicamentos.', style: 'text' },
+        // --- FIN CAMBIO ---
+
+        // ... (Signos vitales y Firma se mantienen igual) ...
         this.ultimoTriaje ? {
           stack: [
             { text: 'Signos Vitales (Referencial)', style: 'sectionHeader', margin: [0, 15, 0, 5] },
@@ -246,14 +318,13 @@ export class RegistrarConsulta implements OnInit {
             widths: ['*'],
             body: [
               [{ text: '\n\n\n\n_________________________', alignment: 'center', style: 'firma' }],
-              [{ text: 'Dr. (Nombre del Médico)', alignment: 'center', style: 'firma' }], // Aquí iría el nombre del médico logueado
-              [{ text: 'CMP: 123456', alignment: 'center', style: 'firma' }] // Aquí iría el CMP del médico logueado
+              [{ text: 'Dr. (Nombre del Médico)', alignment: 'center', style: 'firma' }],
+              [{ text: 'CMP: 123456', alignment: 'center', style: 'firma' }]
             ]
           },
           layout: 'noBorders',
           margin: [0, 50, 0, 10]
         },
-
         { text: 'Av. Principal 123, Lima - Perú | Teléfono: (01) 234-5678', style: 'footer' }
       ],
       styles: {
@@ -261,6 +332,10 @@ export class RegistrarConsulta implements OnInit {
         subheader: { fontSize: 16, bold: true, margin: [0, 0, 0, 10] },
         sectionHeader: { fontSize: 14, bold: true, margin: [0, 10, 0, 5], color: '#005792' },
         text: { margin: [0, 0, 0, 10], fontSize: 11, alignment: 'justify' },
+        // --- Nuevos estilos para la tabla de receta ---
+        tableHeader: { fontSize: 10, bold: true, margin: [0, 2, 0, 2], color: '#00355d' },
+        recetaText: { fontSize: 10, margin: [0, 2, 0, 2] },
+        // --- Fin nuevos estilos ---
         firma: { fontSize: 10, bold: false, color: '#333' },
         footer: { alignment: 'center', fontSize: 9, color: '#555', margin: [0, 20, 0, 0] }
       },
@@ -269,11 +344,12 @@ export class RegistrarConsulta implements OnInit {
 
     pdfMake.createPdf(docDefinition).print();
   }
+  // --- FIN generarPdfReceta MODIFICADO ---
 
   /**
-   * MÉTODO MODIFICADO
-   * Limpia también las variables de triaje.
-   */
+     * ✅ --- MÉTODO limpiarFormulario MODIFICADO ---
+     * Ahora también limpia el FormArray de recetas.
+     */
   limpiarFormulario(): void {
     this.consultaForm.reset();
     this.pacienteSeleccionado = null;
@@ -281,7 +357,8 @@ export class RegistrarConsulta implements OnInit {
     this.pacienteBusquedaControl.reset();
     this.consultaForm.patchValue({ medico: { idMedico: 3 } });
 
-    // Limpiar variables de triaje
+    this.prescripciones.clear(); // Limpiar el FormArray
+
     this.ultimoTriaje = null;
     this.historialTriajes = [];
     this.cargandoTriaje = false;
