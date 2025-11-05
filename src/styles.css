@@ -224,3 +224,57 @@ tbody tr:hover {
     background-color: #f8d7da;
     color: #721c24;
 }
+
+/* ==========================================================================
+   Estilos de Impresión Globales
+   ========================================================================== */
+
+@media print {
+
+    /* Oculta todo en la página (incluyendo sidebar, formularios, etc.) */
+    body * {
+        visibility: hidden;
+    }
+
+    /* Muestra ÚNICAMENTE el recibo imprimible y todo su contenido */
+    .printable-receipt,
+    .printable-receipt * {
+        visibility: visible;
+    }
+
+    /* Posiciona el recibo para que ocupe toda la página impresa */
+    .printable-receipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        font-size: 12pt;
+        color: #000;
+    }
+
+    /* Estilos específicos para el recibo (aseguran que se vea bien) */
+    .printable-receipt h2 {
+        font-size: 16pt;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .printable-receipt h4 {
+        font-size: 13pt;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .printable-receipt p {
+        margin: 5px 0;
+    }
+
+    .printable-receipt hr {
+        border: none;
+        border-top: 1px dashed #000;
+        margin: 15px 0;
+    }
+}
