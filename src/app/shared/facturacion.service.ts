@@ -35,9 +35,8 @@ export class FacturacionService {
       // Error del lado del cliente
       errorMessage = `Error: ${error.error.message}`;
     } else {
-      // El backend retornó un código de error
       if (error.status === 404) {
-        errorMessage = 'No se encontraron citas pendientes para el DNI proporcionado.';
+        errorMessage = error.error || 'No se encontraron citas pendientes para el DNI proporcionado.';
       } else if (error.status === 403) {
         errorMessage = 'No tiene permisos para realizar esta acción.';
       } else {

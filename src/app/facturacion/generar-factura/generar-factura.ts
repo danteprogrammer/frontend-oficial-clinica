@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { FacturacionService } from '../../shared/facturacion.service';
@@ -28,7 +28,8 @@ export class GenerarFactura implements OnInit {
   constructor(
     private fb: FormBuilder,
     private facturacionService: FacturacionService,
-    private seguroService: SeguroService
+    private seguroService: SeguroService,
+    private cd: ChangeDetectorRef
   ) {
     this.busquedaForm = this.fb.group({
       dni: ['', [Validators.required, Validators.pattern('^[0-9]{8}$')]]
@@ -87,10 +88,6 @@ export class GenerarFactura implements OnInit {
   }
 
   cambiarModoPago(modo: 'seguro' | 'directo'): void {
-    if (modo === 'seguro' && !this.citaSeleccionada.tieneSeguro) {
-      Swal.fire('Información', 'El paciente indicó no tener seguro al registrar la cita.', 'info');
-      return;
-    }
     this.modoPago = modo;
     this.intentoValidacion = false; // Resetear intento al cambiar manualmente
     this.seguroValidado = null; // Resetear estado de validación
@@ -164,14 +161,15 @@ export class GenerarFactura implements OnInit {
     }
 
     this.cargando = true;
-    // 1. LLAMAR AL BACKEND PARA MARCAR COMO PAGADO
     this.facturacionService.registrarPago(this.citaSeleccionada.idCita).subscribe({
       next: (citaActualizada) => {
         this.cargando = false;
-        // 2. SI ES EXITOSO, ACTUALIZAR FECHA Y MOSTRAR SWAL
-        this.currentDate = new Date(); // Actualizar fecha de emisión
+
+        this.currentDate = new Date();
         this.citaSeleccionada.estado = citaActualizada.estado;
         this.citaSeleccionada.estadoPago = citaActualizada.estadoPago;
+
+        this.cd.detectChanges();
 
         Swal.fire({
           title: '¡Pago Registrado!',
@@ -182,13 +180,10 @@ export class GenerarFactura implements OnInit {
           cancelButtonText: 'Finalizar sin Imprimir'
         }).then((result: any) => {
           if (result.isConfirmed) {
-            // 3. LLAMAR A IMPRIMIR (usamos un pequeño delay para que Angular actualice la vista)
-            setTimeout(() => {
-              window.print();
-              this.limpiarTrasPago(); // Limpiar después de imprimir
-            }, 100);
+            window.print();
+            this.limpiarTrasPago(); 
           } else {
-            this.limpiarTrasPago(); // Limpiar si no imprime
+            this.limpiarTrasPago(); 
           }
         });
       },
