@@ -1,2 +1,65 @@
-<p>dashboard works!</p>
-<button (click)="logout()">Cerrar Sesión</button>
+<div class="dashboard-container">
+    <h2>Dashboard - Resumen del Día</h2>
+
+    <div *ngIf="cargando" class="loading-container">
+        Cargando estadísticas...
+    </div>
+
+    <div *ngIf="error" class="error-container">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>Error al cargar el dashboard: {{ error }}</p>
+    </div>
+
+    <div *ngIf="!cargando && !error">
+        <div class="stats-grid">
+            <div class="stat-card stat-ingresos">
+                <div class="card-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="card-content">
+                    <h4>Ingresos de Hoy</h4>
+                    <span class="stat-value">{{ formatCurrency(stats.ingresosHoy) }}</span>
+                </div>
+            </div>
+
+            <div class="stat-card stat-pacientes">
+                <div class="card-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="card-content">
+                    <h4>Pacientes Atendidos</h4>
+                    <span class="stat-value">{{ stats.pacientesAtendidosHoy }}</span>
+                </div>
+            </div>
+
+            <div class="stat-card stat-especialidad">
+                <div class="card-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="card-content">
+                    <h4>Especialidad Principal</h4>
+                    <span class="stat-value" *ngIf="stats.consultasPorEspecialidadHoy.length > 0; else noEspecialidad">
+                        {{ stats.consultasPorEspecialidadHoy[0].especialidad }}
+                    </span>
+                    <ng-template #noEspecialidad>
+                        <span class="stat-value">N/A</span>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3>Consultas por Especialidad (Hoy)</h3>
+            <div *ngIf="stats.consultasPorEspecialidadHoy.length > 0; else noDataGrafico" class="chart-wrapper">
+                <canvas baseChart [data]="pieChartData" [type]="pieChartType" [options]="pieChartOptions">
+                </canvas>
+            </div>
+            <ng-template #noDataGrafico>
+                <div class="no-data-grafico">
+                    <p>No hay datos de consultas para mostrar.</p>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+
+</div>
