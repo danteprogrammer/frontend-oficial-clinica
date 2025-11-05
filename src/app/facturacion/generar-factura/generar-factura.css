@@ -243,24 +243,52 @@
 
 /* Estilos para impresión */
 .printable-receipt {
-    display: none; /* Oculto por defecto */
+    display: none;
+    /* Oculto por defecto */
 }
 
+/* Reemplaza la sección @media print existente por esta */
 @media print {
     body * {
-        visibility: hidden; /* Oculta todo por defecto */
+        visibility: hidden;
     }
-    .printable-receipt, .printable-receipt * {
-        visibility: visible; /* Muestra solo la sección de impresión */
+
+    .printable-receipt,
+    .printable-receipt * {
+        visibility: visible;
     }
+
     .printable-receipt {
         position: absolute;
         left: 0;
         top: 0;
         width: 100%;
         padding: 20px;
-        font-family: sans-serif;
+        font-family: Arial, sans-serif;
+        font-size: 12pt;
+        color: #000;
     }
-     h2, h4, h5 { margin: 10px 0; }
-     hr { border-top: 1px dashed #000; margin: 15px 0; }
+
+    .printable-receipt h2 {
+        font-size: 16pt;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .printable-receipt h4 {
+        font-size: 13pt;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .printable-receipt p {
+        margin: 5px 0;
+    }
+
+    .printable-receipt hr {
+        border: none;
+        border-top: 1px dashed #000;
+        margin: 15px 0;
+    }
 }

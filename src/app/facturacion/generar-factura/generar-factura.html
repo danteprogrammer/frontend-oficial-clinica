@@ -47,6 +47,8 @@
                 <p><strong>Fecha y Hora:</strong> {{ citaSeleccionada.fecha | date:'fullDate' }} a las {{
                     citaSeleccionada.hora }}</p>
                 <p><strong>Especialidad:</strong> {{ citaSeleccionada.especialidad }}</p>
+                <p><strong>Consultorio:</strong> {{ citaSeleccionada.consultorioNumero }} - {{
+                    citaSeleccionada.consultorioDescripcion }}</p>
                 <p><strong>Médico:</strong> {{ citaSeleccionada.medico }}</p>
             </div>
             <hr>
@@ -56,7 +58,7 @@
                     <div class="modo-pago-toggle mb-3">
                         <button type="button" class="btn"
                             [ngClass]="{'btn-primary': modoPago === 'seguro', 'btn-outline-primary': modoPago !== 'seguro'}"
-                            (click)="cambiarModoPago('seguro')" [disabled]="!citaSeleccionada.tieneSeguro">
+                            (click)="cambiarModoPago('seguro')">
                             <i class="fas fa-shield-alt"></i> Pagar con Seguro
                         </button>
                         <button type="button" class="btn"
@@ -147,6 +149,8 @@
     <p><strong>Fecha Cita:</strong> {{ citaSeleccionada.fecha | date:'dd/MM/yyyy' }}</p>
     <p><strong>Hora Cita:</strong> {{ citaSeleccionada.hora }}</p>
     <p><strong>Especialidad:</strong> {{ citaSeleccionada.especialidad }}</p>
+    <p><strong>Consultorio:</strong> {{ citaSeleccionada.consultorioNumero }} - {{
+        citaSeleccionada.consultorioDescripcion }}</p>
     <p><strong>Médico:</strong> {{ citaSeleccionada.medico }}</p>
     <hr>
     <h4>Detalle del Pago</h4>

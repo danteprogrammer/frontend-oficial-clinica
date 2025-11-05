@@ -9,13 +9,19 @@ import { catchError } from 'rxjs/operators';
 export class FacturacionService {
   private apiUrl = 'http://localhost:8080/api/facturacion';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Obtiene las citas pendientes de pago para un paciente por su DNI
    */
   getCitasPendientesPorDni(dni: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/citas-pendientes/${dni}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  registrarPago(idCita: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/registrar-pago/${idCita}`, {}).pipe(
       catchError(this.handleError)
     );
   }
