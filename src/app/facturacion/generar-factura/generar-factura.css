@@ -104,7 +104,6 @@
     text-align: left;
     line-height: 1.4;
     flex-grow: 1;
-    /* Para que ocupe el espacio disponible */
 }
 
 .cita-info div:first-child strong {
@@ -117,14 +116,11 @@
 
 .list-group-item {
     align-items: flex-start;
-    /* Alinea items al inicio */
 }
 
 .badge {
     margin-left: 1rem;
-    /* Espacio entre info y precio */
     align-self: center;
-    /* Centra el precio verticalmente */
 }
 
 /* Estilos adicionales para detalles y modo de pago */
@@ -152,11 +148,10 @@
 }
 
 .btn i {
-    /* Estilo para iconos en botones */
     margin-right: 0.5rem;
 }
 
-/* Clases para formularios (si no existen globales) */
+/* Clases para formularios */
 .form-control {
     display: block;
     width: 100%;
@@ -241,8 +236,201 @@
     border-color: #ffecb5;
 }
 
-/* Estilos para impresión */
+/* ============================================
+   ESTILOS PARA EL RECIBO IMPRIMIBLE
+   ============================================ */
+
+/* IMPORTANTE: El recibo está SIEMPRE en el DOM pero invisible */
 .printable-receipt {
-    display: none;
-    /* Oculto por defecto */
+    /* Mantenerlo en el DOM pero invisible para el usuario */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 210mm; /* Ancho A4 */
+    padding: 20mm;
+    background: white;
+    font-family: 'Arial', sans-serif;
+    font-size: 12pt;
+    line-height: 1.6;
+    color: #000;
+    /* Hacer invisible pero mantener en el DOM */
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Cuando está listo para imprimir */
+.printable-receipt.ready-to-print {
+    visibility: visible;
+    opacity: 1;
+    z-index: 9999;
+}
+
+.printable-receipt h2 {
+    text-align: center;
+    font-size: 20pt;
+    margin: 0 0 5px 0;
+    color: #005792;
+}
+
+.printable-receipt h3 {
+    text-align: center;
+    font-size: 16pt;
+    margin: 0 0 20px 0;
+    color: #333;
+}
+
+.printable-receipt h4 {
+    font-size: 14pt;
+    margin: 15px 0 10px 0;
+    color: #005792;
+    border-bottom: 2px solid #005792;
+    padding-bottom: 5px;
+}
+
+.printable-receipt hr {
+    border: none;
+    border-top: 1px dashed #999;
+    margin: 15px 0;
+}
+
+.printable-receipt p {
+    margin: 5px 0;
+}
+
+.receipt-section {
+    margin-bottom: 15px;
+}
+
+.receipt-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+.receipt-table th,
+.receipt-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.receipt-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.receipt-total {
+    text-align: right;
+    margin-top: 15px;
+}
+
+.receipt-total p {
+    margin: 5px 0;
+}
+
+.receipt-total .total-final {
+    font-size: 14pt;
+    font-weight: bold;
+    color: #005792;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 2px solid #005792;
+}
+
+.payment-method {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-left: 4px solid #005792;
+}
+
+.receipt-footer {
+    margin-top: 30px;
+    page-break-inside: avoid;
+}
+
+/* ============================================
+   ESTILOS DE IMPRESIÓN
+   ============================================ */
+
+@media print {
+    /* Ocultar TODO excepto el recibo */
+    body * {
+        visibility: hidden;
+    }
+
+    /* Hacer visible SOLO el recibo y su contenido */
+    .printable-receipt,
+    .printable-receipt * {
+        visibility: visible !important;
+    }
+
+    /* Posicionar el recibo para impresión */
+    .printable-receipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 20mm;
+        opacity: 1 !important;
+        pointer-events: auto;
+    }
+
+    /* Ocultar contenido no imprimible */
+    .no-print,
+    .facturacion-container {
+        display: none !important;
+    }
+
+    /* Asegurar que la página se vea bien */
+    @page {
+        size: A4;
+        margin: 10mm;
+    }
+
+    /* Evitar saltos de página innecesarios */
+    .receipt-section,
+    .receipt-table {
+        page-break-inside: avoid;
+    }
+
+    /* Estilos específicos para impresión */
+    .printable-receipt h2 {
+        color: #000 !important;
+    }
+
+    .printable-receipt h4 {
+        color: #000 !important;
+        border-bottom-color: #000 !important;
+    }
+
+    .receipt-total .total-final {
+        color: #000 !important;
+        border-top-color: #000 !important;
+    }
+}
+
+/* Estilos responsive */
+@media (max-width: 768px) {
+    .facturacion-container {
+        margin: 1rem;
+    }
+
+    .search-form {
+        flex-direction: column;
+    }
+
+    .modo-pago-toggle {
+        flex-direction: column;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions button {
+        width: 100%;
+    }
 }
