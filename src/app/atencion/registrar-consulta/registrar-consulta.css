@@ -22,7 +22,7 @@
 }
 
 .buscador-paciente {
-    position: relative; 
+    position: relative;
     margin-bottom: 2rem;
 }
 
@@ -65,7 +65,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     max-height: 200px;
     overflow-y: auto;
-    z-index: 100; 
+    z-index: 100;
 }
 
 .resultado-item {
@@ -95,7 +95,7 @@
     margin: 0;
     color: #00355d;
     font-size: 1.1rem;
-    border: none; 
+    border: none;
 }
 
 .form-grid {
@@ -117,7 +117,8 @@
     border-top: 1px solid #DFE0EB;
 }
 
-.btn-cancelar, button[type="submit"] {
+.btn-cancelar,
+button[type="submit"] {
     padding: 12px 25px;
     border: none;
     border-radius: 8px;
@@ -149,4 +150,93 @@ button[type="submit"]:disabled {
 button[type="submit"]:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+/* --- ESTILOS PARA LA TARJETA DE TRIAJE --- */
+.card-triaje {
+    background-color: #f8f9fa;
+    /* Un fondo gris muy claro */
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    margin-top: 15px;
+    margin-bottom: 25px;
+}
+
+.card-triaje .card-header {
+    background-color: #e9ecef;
+    color: #00355d;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.card-triaje .card-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-family: var(--font-display);
+    border: none;
+    /* Sobrescribe el h4 general */
+}
+
+.card-triaje .card-header .fas {
+    margin-right: 8px;
+}
+
+.card-triaje .card-body {
+    padding: 1.5rem;
+}
+
+.triaje-datos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px 25px;
+    /* Espacio vertical y horizontal */
+}
+
+.dato-item {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border-left: 4px solid #005792;
+    /* Línea azul */
+    min-width: 100px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.dato-item .etiqueta {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6c757d;
+    /* Gris secundario */
+    margin-bottom: 4px;
+}
+
+.dato-item .valor {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #00355d;
+    /* Azul oscuro */
+}
+
+.loading-triaje,
+.no-triaje {
+    text-align: center;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+}
+
+.loading-triaje {
+    color: #6c757d;
+}
+
+.no-triaje {
+    background-color: #fff8e1;
+    border: 1px solid #ffecb3;
+    color: #6d4c02;
+}
+
+.no-triaje .fas {
+    margin-right: 8px;
 }
