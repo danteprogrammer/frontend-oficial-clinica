@@ -35,7 +35,8 @@ export class ConsultaService {
   selector: 'app-registrar-consulta',
   imports: [ReactiveFormsModule, CommonModule, DatePipe],
   templateUrl: './registrar-consulta.html',
-  styleUrl: './registrar-consulta.css'
+  styleUrl: './registrar-consulta.css',
+  providers: [DatePipe]
 })
 export class RegistrarConsulta implements OnInit {
   consultaForm!: FormGroup;
