@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe,TitleCasePipe } from '@angular/common';
 import { FacturacionService } from '../../shared/facturacion.service';
 import { SeguroService } from '../validar-seguro/validar-seguro';
 
@@ -192,56 +192,144 @@ export class GenerarFactura implements OnInit {
   }
 
   private generarPDF(cita: any) {
+    // 1. Obtener datos del formulario y la cita
     const tipoComprobante = this.pagoForm.value.tipoComprobante.toUpperCase();
     const esSeguro = (this.modoPago === 'seguro' && this.seguroValidado);
-    const pipeFecha = new DatePipe('es-ES');
+    const pipeFecha = new DatePipe('es-ES'); // Usamos 'es-ES'
 
-    const precio = cita.precioConsulta || 0;
-    const total = precio;
+    // 2. Cálculos (corregidos para que coincidan con la imagen)
+    // Asumimos que precioConsulta es el SUB-TOTAL (sin IGV)
+    const subtotal = cita.precioConsulta || 0;
+    const igv = subtotal * 0.18;
+    const total = subtotal + igv; // Este es el total real
+
     const montoPagado = esSeguro ? 0.00 : total;
+
     const metodoPago = esSeguro
       ? `Seguro: ${this.pagoForm.value.nombreAseguradora || 'N/A'} (Póliza: ${this.pagoForm.value.numeroPoliza || 'N/A'})`
-      : this.pagoForm.value.metodoPago.charAt(0).toUpperCase() + this.pagoForm.value.metodoPago.slice(1);
+      : new TitleCasePipe().transform(this.pagoForm.value.metodoPago);
 
+    // 3. Definir una línea horizontal reutilizable (como en la imagen)
+    const hLine = {
+      canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 0.5, lineColor: '#999999' }],
+      margin: [0, 5, 0, 10] // Margen arriba/abajo
+    };
+
+    // 4. Definición del Documento PDF
     const docDefinition: any = {
       content: [
-        { text: 'Clínica SaludVida', style: 'header' },
-        { text: `${tipoComprobante} DE VENTA`, style: 'subheader' },
+        // --- ENCABEZADO ---
+        { text: 'CLINICA SALUDVIDA', style: 'header' },
+        { text: 'COMPROBANTE de PAGO', style: 'subheader' },
+        hLine,
+
+        // --- INFORMACIÓN DE LA CLÍNICA Y COMPROBANTE ---
         {
           columns: [
-            { text: `Fecha: ${pipeFecha.transform(this.currentDate, 'dd/MM/yyyy HH:mm')}`, alignment: 'left' },
-            { text: `N° ${cita.idCita}`, alignment: 'right' }
-          ]
+            {
+              stack: [
+                { text: [{ text: 'Fecha de Emisión: ', bold: true }, pipeFecha.transform(this.currentDate, 'dd/MM/yyyy HH:mm') || ''] },
+                { text: [{ text: 'N° Comprobante: ', bold: true }, `${cita.idCita}-${this.currentDate.getTime()}`] }
+              ]
+            },
+            {
+              stack: [
+                { text: 'Clínica SaludVida', bold: true, alignment: 'right' },
+                { text: 'RUC: 20123456789', alignment: 'right' },
+                { text: 'Av. Principal 123, Lima - Perú', alignment: 'right' }
+              ]
+            }
+          ],
+          margin: [0, 10, 0, 0]
         },
-        { text: '\nDatos del Paciente', style: 'sectionHeader' },
-        { text: `DNI: ${cita.dniPaciente}` },
-        { text: `Nombre: ${cita.nombresPaciente} ${cita.apellidosPaciente}` },
-        { text: '\nDetalle de la Atención', style: 'sectionHeader' },
-        { text: `Especialidad: ${cita.especialidad}` },
-        { text: `Médico: ${cita.medico}` },
-        { text: '\nDetalle del Pago', style: 'sectionHeader' },
+        hLine,
+
+        // --- DATOS DEL PACIENTE ---
+        { text: 'Datos del Paciente', style: 'sectionHeader' },
+        { text: [{ text: 'DNI: ', bold: true }, cita.dniPaciente || 'N/A'] },
+        { text: [{ text: 'Nombre Completo: ', bold: true }, `${cita.nombresPaciente} ${cita.apellidosPaciente}`] },
+        hLine,
+
+        // --- DETALLE DE LA ATENCIÓN ---
+        { text: 'Detalle de la Atención', style: 'sectionHeader' },
+        { text: [{ text: 'Fecha de Cita: ', bold: true }, `${pipeFecha.transform(cita.fecha, 'fullDate')} a las ${cita.hora}`] },
+        { text: [{ text: 'Especialidad: ', bold: true }, cita.especialidad] },
+        { text: [{ text: 'Médico Tratante: ', bold: true }, cita.medico] },
+        { text: [{ text: 'Consultorio: ', bold: true }, `${cita.consultorioNumero} - ${cita.consultorioDescripcion}`] },
+        hLine,
+
+        // --- DETALLE DEL PAGO (TABLA) ---
+        { text: 'Detalle del Pago', style: 'sectionHeader' },
         {
           table: {
-            widths: ['*', 'auto', 'auto'],
+            headerRows: 1,
+            widths: ['*', 'auto', 'auto', 'auto'],
             body: [
-              ['Descripción', 'Cant.', 'Total'],
-              [`Consulta - ${cita.especialidad}`, '1', `S/ ${total.toFixed(2)}`]
+              [{ text: 'Descripción', bold: true, style: 'tableHeader' }, { text: 'Cantidad', bold: true, style: 'tableHeader' }, { text: 'P. Unit.', bold: true, style: 'tableHeader' }, { text: 'Total', bold: true, style: 'tableHeader' }],
+              [`Consulta - ${cita.especialidad}`, '1', `S/ ${subtotal.toFixed(2)}`, `S/ ${subtotal.toFixed(2)}`]
             ]
           },
-          layout: 'lightHorizontalLines'
+          layout: 'lightHorizontalLines',
+          margin: [0, 5, 0, 10]
         },
-        { text: `\nMétodo de Pago: ${metodoPago}` },
-        { text: `Monto Pagado: S/ ${montoPagado.toFixed(2)}` },
-        { text: '\n¡Gracias por su preferencia!', alignment: 'center', margin: [0, 20, 0, 0] }
+
+        // --- TOTALES (SUBTOTAL, IGV, TOTAL) ---
+        {
+          columns: [
+            { width: '*', text: '' }, // Columna vacía para empujar a la derecha
+            {
+              width: 'auto',
+              alignment: 'right',
+              stack: [
+                { text: [{ text: 'Subtotal: ' }, `S/ ${subtotal.toFixed(2)}`] },
+                { text: [{ text: 'IGV (18%): ' }, `S/ ${igv.toFixed(2)}`] },
+                {
+                  text: [
+                    { text: 'TOTAL: ', bold: true, fontSize: 12 },
+                    { text: `S/ ${total.toFixed(2)}`, bold: true, fontSize: 12 }
+                  ],
+                  margin: [0, 5, 0, 0]
+                }
+              ]
+            }
+          ],
+          margin: [0, 10, 0, 10]
+        },
+
+        // --- MÉTODO DE PAGO ---
+        {
+          style: 'paymentMethod',
+          fillColor: '#f0f0f0', // Fondo gris claro como en la imagen
+          stack: [
+            { text: [{ text: 'Método de Pago: ', bold: true }, metodoPago] },
+            { text: [{ text: 'Monto Pagado: ', bold: true }, `S/ ${montoPagado.toFixed(2)} ${esSeguro ? '(Cubierto por seguro)' : ''}`] }
+          ]
+        },
+        hLine,
+
+        // --- PIE DE PÁGINA ---
+        { text: '¡Gracias por su preferencia!', style: 'footer' },
+        { text: '(Conservar este comprobante para cualquier reclamo)', style: 'footerSmall' },
+        { text: 'Este es un comprobante de pago, no tiene validez fiscal.', style: 'footerSmall' }
       ],
+
+      // --- ESTILOS DEL DOCUMENTO ---
       styles: {
-        header: { fontSize: 18, bold: true, alignment: 'center', color: '#005792' },
-        subheader: { fontSize: 14, alignment: 'center', margin: [0, 0, 0, 10] },
-        sectionHeader: { fontSize: 13, bold: true, color: '#005792', margin: [0, 10, 0, 5] }
+        header: { fontSize: 20, bold: true, alignment: 'center', margin: [0, 0, 0, 5], color: '#005792' },
+        subheader: { fontSize: 16, bold: true, alignment: 'center', margin: [0, 0, 0, 5] },
+        sectionHeader: { fontSize: 12, bold: true, margin: [0, 8, 0, 5], color: '#005792' }, // Margen reducido
+        tableHeader: { color: '#005792' },
+        paymentMethod: { margin: [0, 5, 0, 5], padding: 8, border: [false, false, false, false] }, // Padding añadido
+        footer: { alignment: 'center', margin: [0, 20, 0, 5], italics: true },
+        footerSmall: { alignment: 'center', fontSize: 9, color: '#777777', italics: true }
+      },
+      defaultStyle: {
+        fontSize: 10
       }
     };
 
-    pdfMakeInstance.createPdf(docDefinition).print();
+    // 5. Generar y mostrar el diálogo de impresión
+    pdfMake.createPdf(docDefinition).print();
   }
 
   limpiarTrasPago(): void {
