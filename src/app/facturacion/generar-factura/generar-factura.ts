@@ -24,9 +24,7 @@ export class GenerarFactura implements OnInit {
   seguroValidado: boolean | null = null;
   modoPago: 'seguro' | 'directo' = 'directo';
   intentoValidacion: boolean = false;
-  
-  // Nueva propiedad para controlar si se debe mostrar el recibo
-  mostrarRecibo: boolean = false;
+  mostrarRecibo: boolean = false; // Mostrar el recibo tras generar comprobante
 
   constructor(
     private fb: FormBuilder,
@@ -45,6 +43,16 @@ export class GenerarFactura implements OnInit {
       cobertura: [''],
       metodoPago: ['efectivo']
     });
+
+    // ✅ Listeners para el diálogo de impresión
+    window.addEventListener('beforeprint', () => {
+      console.log('🖨️ Diálogo de impresión abierto');
+    });
+
+    window.addEventListener('afterprint', () => {
+      console.log('✅ Diálogo de impresión cerrado');
+      // Aquí puedes agregar lógica extra si lo necesitas
+    });
   }
 
   ngOnInit(): void { }
@@ -54,6 +62,7 @@ export class GenerarFactura implements OnInit {
       this.mensajeError = 'Por favor, ingrese un DNI válido de 8 dígitos.';
       return;
     }
+
     this.cargando = true;
     this.mensajeError = null;
     this.citasPendientes = [];
@@ -93,7 +102,11 @@ export class GenerarFactura implements OnInit {
     this.intentoValidacion = false;
     this.seguroValidado = null;
     if (modo === 'directo') {
-      this.pagoForm.patchValue({ nombreAseguradora: '', numeroPoliza: '', cobertura: '' });
+      this.pagoForm.patchValue({
+        nombreAseguradora: '',
+        numeroPoliza: '',
+        cobertura: ''
+      });
     }
   }
 
@@ -113,9 +126,11 @@ export class GenerarFactura implements OnInit {
 
     this.cargando = true;
     this.intentoValidacion = true;
+
     this.seguroService.validarSeguro(this.citaSeleccionada.idPaciente, datosSeguro).subscribe({
       next: (response) => {
         this.cargando = false;
+
         if (response.datosSeguro) {
           this.pagoForm.patchValue({
             nombreAseguradora: response.datosSeguro.nombreAseguradora,
@@ -159,54 +174,57 @@ export class GenerarFactura implements OnInit {
         this.currentDate = new Date();
         this.citaSeleccionada.estado = citaActualizada.estado;
         this.citaSeleccionada.estadoPago = citaActualizada.estadoPago;
-        
-        // CLAVE: Activar la visibilidad del recibo ANTES de detectar cambios
+
         this.mostrarRecibo = true;
-        
-        // Forzar múltiples ciclos de detección de cambios
         this.cd.detectChanges();
-        
-        // Debug: Verificar que el contenido está en el DOM
+
         console.log('=== DEBUG IMPRESIÓN ===');
-        console.log('Mostrar recibo:', this.mostrarRecibo);
-        console.log('Cita seleccionada:', this.citaSeleccionada);
-        console.log('Fecha actual:', this.currentDate);
-        
-        // Delay más largo para asegurar el renderizado completo
+        console.log('Recibo activado:', this.mostrarRecibo);
+
+        // Esperar para renderizado completo
         setTimeout(() => {
-          // Segundo ciclo de detección
           this.cd.detectChanges();
-          
-          // Verificar que el elemento existe en el DOM
-          const reciboElement = document.querySelector('.printable-receipt');
-          console.log('Elemento recibo encontrado:', reciboElement);
-          console.log('Clases del recibo:', reciboElement?.className);
-          console.log('Contenido HTML del recibo:', reciboElement?.innerHTML.substring(0, 200));
-          
+
           Swal.fire({
             title: '¡Pago Registrado!',
             text: `Se ha generado la ${this.pagoForm.value.tipoComprobante} para la cita.`,
             icon: 'success',
             showCancelButton: true,
-            confirmButtonText: 'Imprimir y Finalizar',
-            cancelButtonText: 'Finalizar sin Imprimir'
+            confirmButtonText: '🖨️ Imprimir Comprobante',
+            cancelButtonText: '✅ Finalizar sin Imprimir',
+            allowOutsideClick: false
           }).then((result: any) => {
             if (result.isConfirmed) {
-              // Último ciclo antes de imprimir
               this.cd.detectChanges();
-              
-              // Pequeño delay antes de imprimir
-              setTimeout(() => {
-                console.log('Iniciando impresión...');
-                window.print();
-                
-                // Limpiar después de imprimir
-                setTimeout(() => {
-                  this.limpiarTrasPago();
-                }, 500);
-              }, 200);
+
+              requestAnimationFrame(() => {
+                try {
+                  console.log('🖨️ Intentando imprimir...');
+                  window.print();
+                  console.log('✅ window.print() ejecutado');
+                  setTimeout(() => this.limpiarTrasPago(), 1000);
+                } catch (error) {
+                  console.error('❌ Error en impresión:', error);
+                  this.imprimirComprobante();
+                  setTimeout(() => this.limpiarTrasPago(), 1000);
+                }
+              });
             } else {
-              this.limpiarTrasPago();
+              Swal.fire({
+                title: 'Comprobante Guardado',
+                text: '¿Desea imprimir el comprobante ahora? También puede presionar Ctrl+P',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '🖨️ Sí, Imprimir',
+                cancelButtonText: 'No, Gracias'
+              }).then((printResult: any) => {
+                if (printResult.isConfirmed) {
+                  this.imprimirComprobante();
+                  setTimeout(() => this.limpiarTrasPago(), 1000);
+                } else {
+                  this.limpiarTrasPago();
+                }
+              });
             }
           });
         }, 300);
@@ -230,5 +248,34 @@ export class GenerarFactura implements OnInit {
       tipoComprobante: 'boleta',
       metodoPago: 'efectivo'
     });
+  }
+
+  imprimirComprobante(): void {
+    console.log('🖨️ Método alternativo de impresión');
+
+    window.focus();
+
+    setTimeout(() => {
+      try {
+        const recibo = document.querySelector('.printable-receipt.ready-to-print');
+        if (!recibo) {
+          console.error('❌ Recibo no encontrado en el DOM');
+          Swal.fire('Error', 'No se pudo preparar el recibo para impresión', 'error');
+          return;
+        }
+
+        console.log('✅ Recibo encontrado, iniciando impresión...');
+        window.print();
+        console.log('✅ Comando de impresión ejecutado');
+      } catch (error) {
+        console.error('❌ Error en imprimirComprobante:', error);
+        Swal.fire({
+          title: 'Error al Imprimir',
+          text: 'No se pudo abrir el diálogo de impresión automáticamente. Por favor presione Ctrl+P (Windows) o Cmd+P (Mac).',
+          icon: 'warning',
+          confirmButtonText: 'Entendido'
+        });
+      }
+    }, 100);
   }
 }

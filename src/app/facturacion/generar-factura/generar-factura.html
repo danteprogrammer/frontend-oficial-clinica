@@ -133,6 +133,13 @@
                     <i class="fas fa-print"></i> Generar Comprobante
                 </button>
             </div>
+            
+            <!-- Botón de impresión manual (solo visible después de generar el comprobante) -->
+            <div *ngIf="mostrarRecibo" class="form-actions" style="margin-top: 15px; border-top: 1px solid #ddd; padding-top: 15px;">
+                <button type="button" (click)="imprimirComprobante()" class="btn btn-primary" style="width: 100%;">
+                    🖨️ Imprimir Comprobante (Ctrl+P)
+                </button>
+            </div>
         </div>
     </div>
 </div>
