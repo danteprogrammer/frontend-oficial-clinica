@@ -3,6 +3,19 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
+export interface OrdenLaboratorioResponseDto {
+  idOrden: number;
+  pacienteNombreCompleto: string;
+  pacienteDni: string;
+  medicoNombreCompleto: string;
+  fechaOrden: string;
+  estado: string; 
+  examenesSolicitados: string;
+  resultados: string | null;
+  fechaResultados: string | null; 
+  idHistoriaClinica: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -17,14 +30,15 @@ export class LaboratorioService {
     );
   }
 
-  getOrdenesPorHistoria(idHistoria: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/historia/${idHistoria}`).pipe(
+  getOrdenesPorHistoria(idHistoria: number): Observable<OrdenLaboratorioResponseDto[]> {
+    return this.http.get<OrdenLaboratorioResponseDto[]>(`${this.apiUrl}/historia/${idHistoria}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  getOrdenesPendientes(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/pendientes`).pipe(
+
+  getOrdenesPendientes(): Observable<OrdenLaboratorioResponseDto[]> {
+    return this.http.get<OrdenLaboratorioResponseDto[]>(`${this.apiUrl}/pendientes`).pipe(
       catchError(this.handleError)
     );
   }
@@ -36,7 +50,8 @@ export class LaboratorioService {
   }
 
   registrarResultados(idOrden: number, resultados: string): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${idOrden}/resultados`, { resultados }).pipe(
+    const payload = { resultados: resultados };
+    return this.http.put<any>(`${this.apiUrl}/${idOrden}/resultados`, payload).pipe(
       catchError(this.handleError)
     );
   }

@@ -13,6 +13,9 @@ export interface Paciente {
   telefono: string;
   email: string;
   estado?: 'Activo' | 'Inactivo'; 
+  historiaClinica?: { 
+        idHistoriaClinica: number;
+    };
 }
 
 export interface PaginaPacientes {

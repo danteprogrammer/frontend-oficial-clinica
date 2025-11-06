@@ -5,15 +5,19 @@
         <h4>1. Buscar Paciente</h4>
         <div class="search-form-container">
             <i class="fas fa-search search-icon"></i>
-            <input type="text" class="form-control" placeholder="Buscar por DNI o Nombre del paciente..."
-                [formControl]="pacienteBusquedaControl">
-
+            <input type="text" 
+                   class="form-control" 
+                   placeholder="Buscar por DNI o Nombre del paciente..." 
+                   [formControl]="pacienteBusquedaControl">
+            
             <button *ngIf="pacienteSeleccionado" (click)="limpiarPaciente()" class="btn-limpiar-paciente">
                 Limpiar
             </button>
 
             <div *ngIf="pacientesEncontrados.length > 0" class="resultados-busqueda">
-                <div *ngFor="let p of pacientesEncontrados" class="resultado-item" (click)="seleccionarPaciente(p)">
+                <div *ngFor="let p of pacientesEncontrados" 
+                     class="resultado-item" 
+                     (click)="seleccionarPaciente(p)">
                     <strong>{{ p.nombres }} {{ p.apellidos }}</strong> (DNI: {{ p.dni }})
                 </div>
             </div>
@@ -27,8 +31,7 @@
                 <h3>Datos del Paciente</h3>
             </div>
             <div class="card-body">
-                <p><strong>Paciente:</strong> {{ pacienteSeleccionado.nombres }} {{ pacienteSeleccionado.apellidos }}
-                </p>
+                <p><strong>Paciente:</strong> {{ pacienteSeleccionado.nombres }} {{ pacienteSeleccionado.apellidos }}</p>
                 <p><strong>DNI:</strong> {{ pacienteSeleccionado.dni }}</p>
                 <p><strong>Edad:</strong> {{ transformDateToAge(pacienteSeleccionado.fechaNacimiento) }} años</p>
                 <p><strong>N° Historia Clínica:</strong> {{ idHistoriaClinicaSeleccionada || 'N/A' }}</p>
@@ -54,12 +57,11 @@
                     <div *ngFor="let c of consultas" class="timeline-item">
                         <div class="timeline-date">
                             {{ c.fechaConsulta | date:'dd/MM/yyyy' }}
-                        </div>
+                            </div>
                         <div class="timeline-content card">
                             <div class="card-header">
                                 <strong>{{ c.medico.especialidad }}</strong>
-                                <span class="medico-info">Atendido por: {{ c.medico.sexo === 'Femenino' ? 'Dra.' : 'Dr.'
-                                    }} {{ c.medico.nombres }} {{ c.medico.apellidos }}</span>
+                                <span class="medico-info">Atendido por: {{ c.medico.sexo === 'Femenino' ? 'Dra.' : 'Dr.' }} {{ c.medico.nombres }} {{ c.medico.apellidos }}</span>
                             </div>
                             <div class="card-body">
                                 <div class="consulta-detalle">
@@ -103,10 +105,8 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let o of ordenesLab">
-                                <td>{{ o.fecha | date:'dd/MM/yyyy HH:mm' }}h</td>
-                                <td>
-                                    <pre classm="examenes-text">{{ o.examenes }}</pre>
-                                </td>
+                                <td>{{ o.fechaOrden | date:'dd/MM/yyyy' }}</td> 
+                                <td><pre class="examenes-text">{{ o.examenesSolicitados }}</pre></td>
                                 <td>
                                     <pre *ngIf="o.resultados" class="resultados-text">{{ o.resultados }}</pre>
                                     <span *ngIf="!o.resultados" class="no-data-small">Aún no disponible</span>

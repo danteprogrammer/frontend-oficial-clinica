@@ -1,16 +1,25 @@
 import { Component, Injectable, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
+import { HttpClient } from '@angular/common/http'; 
 import { Observable, of, Subject } from 'rxjs';
 import { debounceTime, switchMap, catchError, tap, distinctUntilChanged } from 'rxjs/operators';
-import { Paciente, PaginaPacientes, Paciente as PacienteServiceClase } from '../../pacientes/paciente';
+import { Paciente, PaginaPacientes } from '../../pacientes/paciente'; 
+import { PacienteService } from '../../shared/paciente.service'; 
 import { TriajeService } from '../../shared/triaje.service';
-import { LaboratorioService, OrdenLaboratorioResponseDto } from '../../shared/laboratorio.service';
-import { ConsultaService } from '../../shared/consulta.service';
-import { Auth, MedicoInfo } from '../../auth/auth';
-import { PdfService } from '../../shared/pdf.service';
+import { LaboratorioService, OrdenLaboratorioResponseDto } from '../../shared/laboratorio.service'; 
+import { ConsultaService } from '../../shared/consulta.service'; 
+import { Auth, MedicoInfo } from '../../auth/auth'; 
+import { PdfService } from '../../shared/pdf.service'; 
+
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+
+const pdfMakeInstance: any = (pdfMake as any);
+pdfMakeInstance.vfs = (pdfFonts as any).vfs;
 
 declare var Swal: any;
+
 
 @Component({
   selector: 'app-registrar-consulta',
@@ -23,7 +32,7 @@ export class RegistrarConsulta implements OnInit {
   consultaForm!: FormGroup;
   cargando = false;
 
-  pacienteBusquedaControl = new FormControl('');
+  pacienteBusquedaControl = new FormControl(''); 
   pacientesEncontrados: Paciente[] = [];
   pacienteSeleccionado: Paciente | null = null;
   idHistoriaClinicaSeleccionada: number | null = null;
@@ -32,28 +41,27 @@ export class RegistrarConsulta implements OnInit {
   historialTriajes: any[] = [];
   cargandoTriaje: boolean = false;
 
-  historialLaboratorio: OrdenLaboratorioResponseDto[] = [];
+  historialLaboratorio: OrdenLaboratorioResponseDto[] = []; 
   cargandoLaboratorio: boolean = false;
-
-  idMedicoLogueado: number | null = null;
-  medicoInfo: MedicoInfo | null = null;
+  idMedicoLogueado: number | null = null; 
+  medicoInfo: MedicoInfo | null = null; 
 
   private termBusqueda$ = new Subject<string>();
 
   constructor(
     private fb: FormBuilder,
-    private consultaService: ConsultaService,
-    private pacienteService: PacienteServiceClase,
+    private consultaService: ConsultaService, 
+    private pacienteService: PacienteService, 
     private triajeService: TriajeService,
     private laboratorioService: LaboratorioService,
     private datePipe: DatePipe,
-    private authService: Auth,
-    private pdfService: PdfService
+    private authService: Auth, 
+    private pdfService: PdfService 
   ) { }
 
   ngOnInit(): void {
     this.medicoInfo = this.authService.getMedicoInfo();
-    this.idMedicoLogueado = this.medicoInfo?.id || null;
+    this.idMedicoLogueado = this.medicoInfo?.id || null; 
 
     this.consultaForm = this.fb.group({
       motivo: ['', Validators.required],
@@ -93,13 +101,10 @@ export class RegistrarConsulta implements OnInit {
     });
   }
 
-  buscarPaciente(event: Event): void {
-  }
-
   seleccionarPaciente(paciente: Paciente): void {
     this.pacienteSeleccionado = paciente;
     this.pacientesEncontrados = [];
-    this.pacienteBusquedaControl.setValue(`${paciente.nombres} ${paciente.apellidos} (DNI: ${paciente.dni})`, { emitEvent: false }); // <-- Añadido DNI
+    this.pacienteBusquedaControl.setValue(`${paciente.nombres} ${paciente.apellidos} (DNI: ${paciente.dni})`, { emitEvent: false }); // <-- CORREGIDO
 
     this.cargandoTriaje = true;
     this.cargandoLaboratorio = true;
@@ -162,7 +167,7 @@ export class RegistrarConsulta implements OnInit {
   onSubmit(): void {
     if (this.consultaForm.invalid || !this.idHistoriaClinicaSeleccionada) {
       Swal.fire('Datos Incompletos', 'Debe seleccionar un paciente y completar el motivo y diagnóstico.', 'error');
-      this.consultaForm.markAllAsTouched();
+      this.consultaForm.markAllAsTouched(); 
       return;
     }
 
@@ -191,7 +196,7 @@ export class RegistrarConsulta implements OnInit {
       peso: this.ultimoTriaje?.peso,
       altura: this.ultimoTriaje?.altura,
       imc: this.ultimoTriaje?.imc,
-      medico: { idMedico: this.idMedicoLogueado }
+      medico: { idMedico: this.idMedicoLogueado } 
     };
 
     this.consultaService.registrarConsulta(this.idHistoriaClinicaSeleccionada!, payload).subscribe({
@@ -226,15 +231,16 @@ export class RegistrarConsulta implements OnInit {
 
     const consultaFormValue = {
       ...this.consultaForm.value,
-      motivo: this.consultaForm.value.motivo,
+      motivo: this.consultaForm.value.motivo, 
     };
 
     this.pdfService.generarPdfReceta(
       this.pacienteSeleccionado,
       consultaFormValue,
-      this.medicoInfo
+      this.medicoInfo 
     );
   }
+
 
   cargarHistorialLaboratorio(): void {
     if (!this.idHistoriaClinicaSeleccionada) return;
@@ -242,7 +248,7 @@ export class RegistrarConsulta implements OnInit {
     this.cargandoLaboratorio = true;
     this.laboratorioService.getOrdenesPorHistoria(this.idHistoriaClinicaSeleccionada).subscribe({
       next: (data) => {
-        this.historialLaboratorio = data;
+        this.historialLaboratorio = data; 
         this.cargandoLaboratorio = false;
       },
       error: (err) => {
@@ -254,6 +260,11 @@ export class RegistrarConsulta implements OnInit {
 
   async generarOrdenLaboratorio() {
     if (!this.idHistoriaClinicaSeleccionada) return;
+
+    if (!this.idMedicoLogueado) {
+      Swal.fire('Error de Autenticación', 'No se pudo identificar al médico. Por favor, inicie sesión de nuevo.', 'error');
+      return;
+    }
 
     const { value: examenes } = await Swal.fire({
       title: 'Generar Orden de Laboratorio',
@@ -278,7 +289,7 @@ export class RegistrarConsulta implements OnInit {
       this.cargando = true;
       const request = {
         idHistoriaClinica: this.idHistoriaClinicaSeleccionada,
-        idMedico: this.idMedicoLogueado,
+        idMedico: this.idMedicoLogueado, 
         examenesSolicitados: examenes
       };
 

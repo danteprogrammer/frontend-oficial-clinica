@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { Paciente, PacienteServiceClase, PaginaPacientes } from '../../shared/paciente.service';
-import { ConsultaService, HistorialConsulta } from '../../shared/consulta.service'; 
+import { Paciente, PaginaPacientes } from '../../pacientes/paciente'; 
+import { PacienteService } from '../../shared/paciente.service'; 
+import { ConsultaService, HistorialConsulta } from '../../shared/consulta.service';
 import { LaboratorioService, OrdenLaboratorioResponseDto } from '../../shared/laboratorio.service';
 import { Auth, MedicoInfo } from '../../auth/auth';
 import { PdfService } from '../../shared/pdf.service';
 import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
-import { Subject, of } from 'rxjs'; 
+import { Subject, of } from 'rxjs';
 
 declare var Swal: any;
 
@@ -27,16 +28,16 @@ export class HistorialConsultas implements OnInit {
   idHistoriaClinicaSeleccionada: number | null = null;
   private termBusqueda$ = new Subject<string>();
 
-  consultas: HistorialConsulta[] = []; 
-  ordenesLab: OrdenLaboratorioResponseDto[] = []; 
+  consultas: HistorialConsulta[] = [];
+  ordenesLab: OrdenLaboratorioResponseDto[] = [];
 
   cargandoHistorial = false;
   error: string | null = null;
-
-  medicoInfo: MedicoInfo | null;
+  
+  medicoInfo: MedicoInfo | null; 
 
   constructor(
-    private pacienteService: PacienteServiceClase,
+    private pacienteService: PacienteService, 
     private consultaService: ConsultaService,
     private laboratorioService: LaboratorioService,
     private authService: Auth,
@@ -52,7 +53,7 @@ export class HistorialConsultas implements OnInit {
       switchMap(term => {
         if (term && term.length > 2) {
           const filtro = /^\d+$/.test(term) ? 'DNI' : 'nombre';
-          return this.pacienteService.buscarPacientesActivos(term, filtro, 0, 5);
+          return this.pacienteService.buscarPacientesActivos(term, filtro, 0, 5); 
         } else {
           this.pacientesEncontrados = [];
           return of({ content: [], totalPages: 0, totalElements: 0, number: 0 } as PaginaPacientes);
@@ -68,7 +69,7 @@ export class HistorialConsultas implements OnInit {
         this.pacientesEncontrados = [];
       }
     });
-
+    
     this.pacienteBusquedaControl.valueChanges.pipe(
       tap(value => {
         if (!value) this.pacientesEncontrados = [];
@@ -79,43 +80,43 @@ export class HistorialConsultas implements OnInit {
       }
     });
   }
-
+  
   seleccionarPaciente(paciente: Paciente): void {
     this.pacienteSeleccionado = paciente;
-    this.pacientesEncontrados = []; 
+    this.pacientesEncontrados = [];
     this.pacienteBusquedaControl.setValue(`${paciente.nombres} ${paciente.apellidos} (DNI: ${paciente.dni})`, { emitEvent: false });
-
+    
     this.cargandoHistorial = true;
     this.consultaService.obtenerHistoriaPorPacienteId(paciente.idPaciente!).subscribe({
-      next: (historia) => {
-        this.idHistoriaClinicaSeleccionada = historia.idHistoriaClinica;
+        next: (historia) => {
+            this.idHistoriaClinicaSeleccionada = historia.idHistoriaClinica;
+            
+            this.consultas = [];
+            this.ordenesLab = [];
+            this.error = null;
 
-        this.consultas = [];
-        this.ordenesLab = [];
-        this.error = null;
+            if (this.idHistoriaClinicaSeleccionada) {
+              Promise.all([
+                this.consultaService.getConsultasPorHistoria(this.idHistoriaClinicaSeleccionada).toPromise(),
+                this.laboratorioService.getOrdenesPorHistoria(this.idHistoriaClinicaSeleccionada).toPromise() 
+              ]).then(([consultasData, ordenesData]) => {
+                this.consultas = consultasData || [];
+                this.ordenesLab = ordenesData || []; 
+                this.cargandoHistorial = false;
+              }).catch(err => {
+                this.error = 'Error al cargar el historial: ' + err.message;
+                this.cargandoHistorial = false;
+              });
 
-        if (this.idHistoriaClinicaSeleccionada) {
-          Promise.all([
-            this.consultaService.getConsultasPorHistoria(this.idHistoriaClinicaSeleccionada).toPromise(),
-            this.laboratorioService.getOrdenesPorHistoria(this.idHistoriaClinicaSeleccionada).toPromise()
-          ]).then(([consultasData, ordenesData]) => {
-            this.consultas = consultasData || [];
-            this.ordenesLab = ordenesData || [];
+            } else {
+              this.error = "Este paciente no tiene una historia clínica registrada.";
+              this.cargandoHistorial = false;
+            }
+        },
+        error: (err) => {
+            this.error = "Error al obtener la historia clínica: " + err.message;
             this.cargandoHistorial = false;
-          }).catch(err => {
-            this.error = 'Error al cargar el historial: ' + err.message;
-            this.cargandoHistorial = false;
-          });
-
-        } else {
-          this.error = "Este paciente no tiene una historia clínica registrada.";
-          this.cargandoHistorial = false;
         }
-      },
-      error: (err) => {
-        this.error = "Error al obtener la historia clínica: " + err.message;
-        this.cargandoHistorial = false;
-      }
     });
   }
 
@@ -132,18 +133,18 @@ export class HistorialConsultas implements OnInit {
     if (!this.pacienteSeleccionado) return;
 
     const consultaFormValue = {
-      motivoConsulta: consulta.motivo, 
+      motivo: consulta.motivo, 
       diagnostico: consulta.diagnostico,
       indicaciones: this.extraerIndicaciones(consulta.tratamiento),
       receta: this.parseReceta(consulta.tratamiento)
     };
-
+    
     const medicoConsulta: MedicoInfo = {
-      id: consulta.medico.idMedico!,
-      nombres: consulta.medico.nombres,
-      apellidos: consulta.medico.apellidos,
-      cmp: consulta.medico.licenciaMedica,
-      sexo: consulta.medico.sexo.toString() 
+        id: consulta.medico.idMedico!,
+        nombres: consulta.medico.nombres,
+        apellidos: consulta.medico.apellidos,
+        cmp: consulta.medico.licenciaMedica,
+        sexo: consulta.medico.sexo.toString() 
     };
 
     this.pdfService.generarPdfReceta(this.pacienteSeleccionado, consultaFormValue, medicoConsulta);
@@ -174,7 +175,7 @@ export class HistorialConsultas implements OnInit {
     lineas.forEach(linea => {
       linea = linea.replace(/^- /, ''); 
       const match = linea.match(/(.*) \(Cant: (.*)\) \((.*)\): (.*)/);
-
+      
       if (match) {
         recetaParseada.push({
           medicamento: match[1].trim(),
@@ -187,7 +188,7 @@ export class HistorialConsultas implements OnInit {
     return recetaParseada;
   }
 
-  transformDateToAge(value: string | Date): number {
+  transformDateToAge(value: string | Date | undefined): number {
     if (!value) return 0;
     const today = new Date();
     const birthDate = new Date(value);

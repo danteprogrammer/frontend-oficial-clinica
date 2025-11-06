@@ -27,6 +27,9 @@ export interface HistorialConsulta {
   altura: number;
   imc: number;
   medico: Medico;
+  historiaClinica: {
+    idHistoriaClinica: number;
+  };
 }
 
 @Injectable({
