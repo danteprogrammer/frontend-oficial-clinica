@@ -19,6 +19,7 @@ import { GestionMedicos } from './administracion/gestion-medicos/gestion-medicos
 import { GestionTarifario } from './administracion/gestion-tarifario/gestion-tarifario';
 import { GestionUsuarios } from './administracion/gestion-usuarios/gestion-usuarios';
 import { GestionHorarios } from './administracion/gestion-horarios/gestion-horarios';
+import { HistorialPagos } from './facturacion/historial-pagos/historial-pagos';
 
 
 export const routes: Routes = [
@@ -39,7 +40,8 @@ export const routes: Routes = [
             { path: 'consultorios', component: Consultorio },
             { path: 'atencion/registrar-consulta', component: RegistrarConsulta },
             { path: 'atencion/triaje', component: TriajeRegistro },
-            { path: 'facturacion/generar-factura', component: GenerarFactura }, 
+            { path: 'facturacion/generar-factura', component: GenerarFactura },
+            { path: 'facturacion/historial', component: HistorialPagos }, 
             { path: 'laboratorio/pendientes', component: GestionPendientes },
             { path: 'admin/medicos', component: GestionMedicos },
             { path: 'admin/tarifario', component: GestionTarifario },

@@ -1,0 +1,54 @@
+<div class="historial-container">
+    <h2><i class="fas fa-history"></i> Historial de Pagos</h2>
+    <p class="subtitle">Lista de todos los comprobantes generados.</p>
+
+    <div *ngIf="cargando" class="loading-container">
+        <p>Cargando historial...</p>
+    </div>
+
+    <div *ngIf="error" class="error-container">
+        <p>{{ error }}</p>
+    </div>
+
+    <div *ngIf="!cargando && !error && historial.length === 0" class="no-data-container">
+        <p>No se encontraron pagos registrados.</p>
+    </div>
+
+    <div *ngIf="!cargando && !error && historial.length > 0" class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha de Cita</th>
+                    <th>Paciente</th>
+                    <th>DNI</th>
+                    <th>Médico</th>
+                    <th>Comprobante</th>
+                    <th>Total</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let cita of historial">
+                    <td>{{ cita.fecha | date:'dd/MM/yyyy' }} - {{ cita.hora }}</td>
+                    <td>{{ cita.nombresPaciente }} {{ cita.apellidosPaciente }}</td>
+                    <td>{{ cita.dniPaciente }}</td>
+                    <td>{{ cita.medico }}</td>
+                    <td>
+                        <span class="badge" [ngClass]="{
+                            'badge-factura': cita.tipoComprobante === 'factura',
+                            'badge-boleta': cita.tipoComprobante === 'boleta'
+                        }">
+                            {{ cita.tipoComprobante | uppercase }}
+                        </span>
+                    </td>
+                    <td>S/ {{ cita.precioConsulta | number:'1.2-2' }}</td>
+                    <td class="acciones">
+                        <button class="btn-accion btn-ver" (click)="verPdf(cita)">
+                            <i class="fas fa-print"></i> Ver PDF
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

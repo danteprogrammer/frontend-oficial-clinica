@@ -71,6 +71,7 @@ export class Main implements OnInit {
       roles: ['CAJA'],
       submenus: [
         { name: 'Generar Factura', path: '/facturacion/generar-factura', roles: ['CAJA'] },
+        { name: 'Historial de Pagos', path: '/facturacion/historial', roles: ['CAJA'] },
       ]
     },
     {
