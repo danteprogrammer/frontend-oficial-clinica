@@ -24,27 +24,16 @@
   <div *ngIf="!loading && !error" class="consultorios-content">
     <!-- Filtros por estado -->
     <div class="filtros-container">
-      <button
-        class="filtro-btn active"
-        (click)="filtroEstado = 'Todos'"
-        [class.active]="filtroEstado === 'Todos'">
+      <button class="filtro-btn active" (click)="filtroEstado = 'Todos'" [class.active]="filtroEstado === 'Todos'">
         Todos ({{ consultorios.length }})
       </button>
-      <button
-        class="filtro-btn"
-        (click)="filtroEstado = 'Disponible'"
-        [class.active]="filtroEstado === 'Disponible'">
+      <button class="filtro-btn" (click)="filtroEstado = 'Disponible'" [class.active]="filtroEstado === 'Disponible'">
         ✅ Disponibles ({{ getCountByEstado('Disponible') }})
       </button>
-      <button
-        class="filtro-btn"
-        (click)="filtroEstado = 'Ocupado'"
-        [class.active]="filtroEstado === 'Ocupado'">
+      <button class="filtro-btn" (click)="filtroEstado = 'Ocupado'" [class.active]="filtroEstado === 'Ocupado'">
         ❌ Ocupados ({{ getCountByEstado('Ocupado') }})
       </button>
-      <button
-        class="filtro-btn"
-        (click)="filtroEstado = 'Mantenimiento'"
+      <button class="filtro-btn" (click)="filtroEstado = 'Mantenimiento'"
         [class.active]="filtroEstado === 'Mantenimiento'">
         🔧 Mantenimiento ({{ getCountByEstado('Mantenimiento') }})
       </button>
@@ -52,9 +41,7 @@
 
     <!-- Grid de consultorios -->
     <div class="consultorios-grid">
-      <div
-        *ngFor="let consultorio of consultoriosFiltrados"
-        class="consultorio-card"
+      <div *ngFor="let consultorio of consultoriosFiltrados" class="consultorio-card"
         [ngClass]="getEstadoClass(consultorio.estado)">
         <div class="consultorio-header">
           <div class="consultorio-numero">
@@ -92,12 +79,6 @@
               <strong>✅ Estado:</strong> Disponible para asignación
             </div>
           </div>
-        </div>
-
-        <div class="consultorio-footer">
-          <button class="btn-ver-detalles">
-            📋 Ver Detalles Completos
-          </button>
         </div>
       </div>
     </div>
