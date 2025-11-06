@@ -11,8 +11,6 @@ export class LaboratorioService {
 
   constructor(private http: HttpClient) { }
 
-  // --- Endpoints para MÉDICO ---
-
   crearOrden(orden: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/ordenar`, orden).pipe(
       catchError(this.handleError)
@@ -24,8 +22,6 @@ export class LaboratorioService {
       catchError(this.handleError)
     );
   }
-
-  // --- Endpoints para LABORATORIO ---
 
   getOrdenesPendientes(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/pendientes`).pipe(

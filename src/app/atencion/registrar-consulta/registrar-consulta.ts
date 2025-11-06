@@ -1,14 +1,13 @@
 import { Component, Injectable, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
-import { CommonModule, DatePipe } from '@angular/common'; // <-- Importar DatePipe
+import { CommonModule, DatePipe } from '@angular/common'; 
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { debounceTime, switchMap, catchError } from 'rxjs/operators';
-import { Paciente, PaginaPacientes, Paciente as PacienteServiceClase } from '../../pacientes/paciente'; // Renombrado
-import { TriajeService } from '../../shared/triaje.service'; // <-- Importar TriajeService
+import { Paciente, PaginaPacientes, Paciente as PacienteServiceClase } from '../../pacientes/paciente'; 
+import { TriajeService } from '../../shared/triaje.service'; 
 import { LaboratorioService } from '../../shared/laboratorio.service';
 
-// Importaciones de PDFMake
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 
@@ -48,33 +47,29 @@ export class RegistrarConsulta implements OnInit {
   pacienteSeleccionado: Paciente | null = null;
   idHistoriaClinicaSeleccionada: number | null = null;
 
-  // Nuevas variables para Triaje
   ultimoTriaje: any = null;
   historialTriajes: any[] = [];
   cargandoTriaje: boolean = false;
 
-  // --- AÑADIR PROPIEDADES PARA LABORATORIO ---
   historialLaboratorio: any[] = [];
   cargandoLaboratorio: boolean = false;
-  idMedicoLogueado: number = 3; // Mantenemos el ID quemado por ahora
-  // --- FIN ---
+  idMedicoLogueado: number = 3; 
 
   constructor(
     private fb: FormBuilder,
     private consultaService: ConsultaService,
-    private pacienteService: PacienteServiceClase, // Usamos el nombre renombrado
-    private triajeService: TriajeService, // <-- Inyectar TriajeService
-    private laboratorioService: LaboratorioService, // <-- Inyectar LaboratorioService
-    private datePipe: DatePipe // <-- Inyectar DatePipe
+    private pacienteService: PacienteServiceClase, 
+    private triajeService: TriajeService, 
+    private laboratorioService: LaboratorioService, 
+    private datePipe: DatePipe 
   ) { }
 
   ngOnInit(): void {
-    // FORMULARIO MODIFICADO: Quitamos los signos vitales
     this.consultaForm = this.fb.group({
       motivo: ['', Validators.required],
       diagnostico: ['', Validators.required],
-      indicaciones: [''], // 1. Campo para indicaciones generales
-      receta: this.fb.array([]), // 2. FormArray para la receta
+      indicaciones: [''], 
+      receta: this.fb.array([]), 
       medico: [{ idMedico: 3 }]
     });
 
@@ -82,7 +77,6 @@ export class RegistrarConsulta implements OnInit {
       debounceTime(300),
       switchMap(value => {
         if (value && value.length > 2) {
-          // Buscamos por DNI o nombre
           const filtro = /^\d+$/.test(value) ? 'DNI' : 'nombre';
           return this.pacienteService.buscarPacientesActivos(value, filtro, 0, 5);
         } else {
@@ -99,23 +93,21 @@ export class RegistrarConsulta implements OnInit {
     });
   }
 
-  // ✅ --- seleccionarPaciente MODIFICADO ---
   seleccionarPaciente(paciente: Paciente): void {
     this.pacienteSeleccionado = paciente;
     this.pacientesEncontrados = [];
     this.pacienteBusquedaControl.setValue(`${paciente.nombres} ${paciente.apellidos}`, { emitEvent: false });
 
     this.cargandoTriaje = true;
-    this.cargandoLaboratorio = true; // <-- 3. Iniciar carga de lab
+    this.cargandoLaboratorio = true; 
     this.ultimoTriaje = null;
     this.historialTriajes = [];
-    this.historialLaboratorio = []; // <-- Limpiar historial de lab
+    this.historialLaboratorio = []; 
 
     this.consultaService.obtenerHistoriaPorPacienteId(paciente.idPaciente!).subscribe({
       next: (historia) => {
         this.idHistoriaClinicaSeleccionada = historia.idHistoriaClinica;
 
-        // Cargar Triaje
         this.triajeService.getTriajesPorHistoria(historia.idHistoriaClinica).subscribe({
           next: (historial) => {
             this.mostrarDatosTriaje(historial);
@@ -127,27 +119,19 @@ export class RegistrarConsulta implements OnInit {
           }
         });
 
-        // --- 4. AÑADIR CARGA DE LABORATORIO ---
         this.cargarHistorialLaboratorio();
-        // --- FIN ---
       },
       error: (err) => {
         Swal.fire('Error', 'No se pudo obtener la historia clínica del paciente.', 'error');
         this.cargandoTriaje = false;
-        this.cargandoLaboratorio = false; // <-- Detener carga
+        this.cargandoLaboratorio = false; 
       }
     });
   }
-  // --- FIN seleccionarPaciente ---
 
-  /**
-   * NUEVO MÉTODO
-   * Procesa el historial de triajes y selecciona el más reciente.
-   */
   mostrarDatosTriaje(historial: any[]): void {
     this.historialTriajes = historial;
     if (historial && historial.length > 0) {
-      // El historial ya viene ordenado por fecha (el más reciente primero)
       this.ultimoTriaje = historial[0];
     } else {
       this.ultimoTriaje = null;
@@ -158,31 +142,20 @@ export class RegistrarConsulta implements OnInit {
     return this.consultaForm.get('receta') as FormArray;
   }
 
-  /**
-   * Añade un nuevo grupo de campos de medicamento al FormArray
-   */
   agregarMedicamento() {
     const prescripcionForm = this.fb.group({
       medicamento: ['', Validators.required],
       cantidad: ['', Validators.required],
-      dosis: [''], // Ej: "500 mg", "10ml/5mg"
-      posologia: ['', Validators.required] // Ej: "1 cada 8h por 7 días"
+      dosis: [''], 
+      posologia: ['', Validators.required] 
     });
     this.prescripciones.push(prescripcionForm);
   }
 
-  /**
-   * Elimina un medicamento de la lista por su índice
-   */
   quitarMedicamento(index: number) {
     this.prescripciones.removeAt(index);
   }
-  // --- FIN NUEVOS MÉTODOS ---
 
-  /**
-     * ✅ --- MÉTODO onSubmit MODIFICADO ---
-     * Ahora combina las indicaciones y la receta en un solo string para el backend.
-     */
   onSubmit(): void {
     if (this.consultaForm.invalid || !this.idHistoriaClinicaSeleccionada) {
       Swal.fire('Datos Incompletos', 'Debe seleccionar un paciente y completar el motivo y diagnóstico.', 'error');
@@ -192,7 +165,6 @@ export class RegistrarConsulta implements OnInit {
     this.cargando = true;
     const formValue = this.consultaForm.value;
 
-    // 1. Formatear la receta para el backend (campo 'tratamiento')
     let recetaTexto = '';
     if (formValue.receta.length > 0) {
       recetaTexto = '\n\n--- RECETA MÉDICA ---\n';
@@ -201,16 +173,13 @@ export class RegistrarConsulta implements OnInit {
       });
     }
 
-    // 2. Combinar indicaciones y receta en el campo 'tratamiento'
     const tratamientoCompleto = (formValue.indicaciones || 'Ninguna indicación.') + recetaTexto;
 
-    // 3. Preparar el payload
     const payload = {
       motivo: formValue.motivo,
       diagnostico: formValue.diagnostico,
-      tratamiento: tratamientoCompleto, // Enviamos todo al campo 'tratamiento'
+      tratamiento: tratamientoCompleto, 
       medico: formValue.medico
-      // Los datos de triaje ya no se envían desde aquí
     };
 
     this.consultaService.registrarConsulta(this.idHistoriaClinicaSeleccionada!, payload).subscribe({
@@ -237,18 +206,13 @@ export class RegistrarConsulta implements OnInit {
     });
   }
 
-  /**
-     * ✅ --- MÉTODO generarPdfReceta MODIFICADO ---
-     * Ahora genera una tabla bonita para la receta.
-     */
   generarPdfReceta(): void {
     if (!this.pacienteSeleccionado) return;
 
     const paciente = this.pacienteSeleccionado;
-    const consulta = this.consultaForm.value; // Ahora tiene 'indicaciones' y 'receta'
+    const consulta = this.consultaForm.value; 
     const fechaHoy = this.datePipe.transform(new Date(), 'dd/MM/yyyy');
 
-    // --- Nueva sección de Receta para PDF ---
     const recetaItems = consulta.receta.map((med: any) => {
       return [
         { text: med.medicamento, bold: true, style: 'recetaText' },
@@ -262,7 +226,6 @@ export class RegistrarConsulta implements OnInit {
       [{ text: 'Medicamento', style: 'tableHeader' }, { text: 'Cant.', style: 'tableHeader' }, { text: 'Dosis/Presentación', style: 'tableHeader' }, { text: 'Indicaciones (Posología)', style: 'tableHeader' }],
       ...recetaItems
     ];
-    // --- Fin de nueva sección ---
 
     const docDefinition: any = {
       content: [
@@ -292,26 +255,22 @@ export class RegistrarConsulta implements OnInit {
           margin: [0, 5, 0, 15]
         },
 
-        // Datos de la Consulta
         { text: 'Diagnóstico', style: 'sectionHeader' },
         { text: consulta.diagnostico || 'No especificado', style: 'text' },
 
-        // --- CAMBIO AQUÍ ---
         { text: 'Indicaciones Generales', style: 'sectionHeader' },
         { text: consulta.indicaciones || 'No se indicaron recomendaciones.', style: 'text' },
 
         { text: 'Receta Médica (R/.)', style: 'sectionHeader' },
         consulta.receta.length > 0 ? {
           table: {
-            widths: ['*', 'auto', 'auto', '*'], // Medicamento, Cant., Dosis, Posología
+            widths: ['*', 'auto', 'auto', '*'], 
             body: recetaBody
           },
           layout: 'lightHorizontalLines',
           margin: [0, 5, 0, 15]
         } : { text: 'No se indicaron medicamentos.', style: 'text' },
-        // --- FIN CAMBIO ---
 
-        // ... (Signos vitales y Firma se mantienen igual) ...
         this.ultimoTriaje ? {
           stack: [
             { text: 'Signos Vitales (Referencial)', style: 'sectionHeader', margin: [0, 15, 0, 5] },
@@ -327,7 +286,6 @@ export class RegistrarConsulta implements OnInit {
           ]
         } : {},
 
-        // Firma
         {
           table: {
             widths: ['*'],
@@ -347,10 +305,8 @@ export class RegistrarConsulta implements OnInit {
         subheader: { fontSize: 16, bold: true, margin: [0, 0, 0, 10] },
         sectionHeader: { fontSize: 14, bold: true, margin: [0, 10, 0, 5], color: '#005792' },
         text: { margin: [0, 0, 0, 10], fontSize: 11, alignment: 'justify' },
-        // --- Nuevos estilos para la tabla de receta ---
         tableHeader: { fontSize: 10, bold: true, margin: [0, 2, 0, 2], color: '#00355d' },
         recetaText: { fontSize: 10, margin: [0, 2, 0, 2] },
-        // --- Fin nuevos estilos ---
         firma: { fontSize: 10, bold: false, color: '#333' },
         footer: { alignment: 'center', fontSize: 9, color: '#555', margin: [0, 20, 0, 0] }
       },
@@ -359,13 +315,7 @@ export class RegistrarConsulta implements OnInit {
 
     pdfMake.createPdf(docDefinition).print();
   }
-  // --- FIN generarPdfReceta MODIFICADO ---
 
-  // ✅ --- AÑADIR NUEVOS MÉTODOS PARA LABORATORIO ---
-
-  /**
-   * Carga el historial de órdenes de laboratorio para el paciente seleccionado
-   */
   cargarHistorialLaboratorio(): void {
     if (!this.idHistoriaClinicaSeleccionada) return;
 
@@ -382,9 +332,6 @@ export class RegistrarConsulta implements OnInit {
     });
   }
 
-  /**
-   * Abre un modal para solicitar exámenes de laboratorio
-   */
   async generarOrdenLaboratorio() {
     if (!this.idHistoriaClinicaSeleccionada) return;
 
@@ -420,7 +367,7 @@ export class RegistrarConsulta implements OnInit {
         next: () => {
           this.cargando = false;
           Swal.fire('Orden Generada', 'La orden de laboratorio se envió correctamente.', 'success');
-          this.cargarHistorialLaboratorio(); // Actualizar la lista
+          this.cargarHistorialLaboratorio(); 
         },
         error: (err) => {
           this.cargando = false;
@@ -436,26 +383,18 @@ export class RegistrarConsulta implements OnInit {
     if (estado === 'COMPLETADO') return 'lab-completado';
     return '';
   }
-  // --- FIN NUEVOS MÉTODOS ---
 
-  /**
-     * ✅ --- MÉTODO limpiarFormulario MODIFICADO ---
-     * Ahora también limpia el FormArray de recetas.
-     */
   limpiarFormulario(): void {
     this.consultaForm.reset();
     this.pacienteSeleccionado = null;
     this.idHistoriaClinicaSeleccionada = null;
     this.pacienteBusquedaControl.reset();
     this.consultaForm.patchValue({ medico: { idMedico: 3 } });
-
-    this.prescripciones.clear(); // Limpiar el FormArray
-
+    this.prescripciones.clear(); 
     this.ultimoTriaje = null;
     this.historialTriajes = [];
     this.cargandoTriaje = false;
-
-    this.historialLaboratorio = []; // <-- Limpiar historial lab
-    this.cargandoLaboratorio = false; // <-- Limpiar carga lab
+    this.historialLaboratorio = []; 
+    this.cargandoLaboratorio = false; 
   }
 }
