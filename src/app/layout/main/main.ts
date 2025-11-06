@@ -1,16 +1,15 @@
-import { Component, OnInit } from '@angular/core'; // <-- AÑADIR OnInit
+import { Component, OnInit } from '@angular/core'; 
 import { Router, RouterModule } from '@angular/router';
-import { Auth } from '../../auth/auth'; // <-- IMPORTA TU CLASE 'Auth'
+import { Auth } from '../../auth/auth'; 
 import { CommonModule } from '@angular/common';
 
-// 1. Modificar la interfaz para incluir roles
 interface NavMenu {
   name: string;
   icon: string;
   path?: string;
   isOpen?: boolean;
-  submenus?: { name: string; path: string; roles: string[] }[]; // <-- roles en submenus
-  roles: string[]; // <-- roles en menu principal
+  submenus?: { name: string; path: string; roles: string[] }[]; 
+  roles: string[]; 
 }
 
 @Component({
@@ -22,9 +21,8 @@ interface NavMenu {
   templateUrl: './main.html',
   styleUrl: './main.css'
 })
-export class Main implements OnInit { // <-- IMPLEMENTAR OnInit
+export class Main implements OnInit { 
 
-  // 2. Este es tu menú, pero ahora lo llamamos 'allMenus' y añadimos los roles
   private allMenus: NavMenu[] = [
     { name: 'Dashboard', path: '/dashboard', icon: '🏠', roles: ['ADMIN'] },
     {
@@ -90,19 +88,16 @@ export class Main implements OnInit { // <-- IMPLEMENTAR OnInit
     }
   ];
 
-  // 3. El menú que realmente se va a mostrar
   navMenus: NavMenu[] = [];
 
   constructor(private authService: Auth, private router: Router) { }
 
   ngOnInit(): void {
     this.filtrarMenuPorRol();
-    this.redirectOnLogin(); // <-- AÑADIR ESTA LÍNEA
+    this.redirectOnLogin(); 
   }
 
-  // --- NUEVO MÉTODO ---
   private redirectOnLogin(): void {
-    // Solo redirigir si estamos en la ruta raíz (que redirige a 'dashboard')
     if (this.router.url === '/' || this.router.url === '/dashboard') {
       const role = this.authService.getRole();
 
@@ -126,16 +121,13 @@ export class Main implements OnInit { // <-- IMPLEMENTAR OnInit
           this.router.navigate(['/laboratorio/pendientes']);
           break;
         default:
-          // Si por alguna razón no hay rol, lo saca
           this.logout();
           break;
       }
     }
   }
-  // --- FIN NUEVO MÉTODO ---
 
   filtrarMenuPorRol(): void {
-    // ... (este método se mantiene exactamente igual a como lo tienes)
     const userRole = this.authService.getRole();
     if (!userRole) {
       this.navMenus = [];
@@ -156,7 +148,6 @@ export class Main implements OnInit { // <-- IMPLEMENTAR OnInit
   }
 
   toggleMenu(clickedMenu: NavMenu): void {
-    // ... (este método se mantiene igual)
     if (!clickedMenu.submenus) {
       this.navMenus.forEach(menu => menu.isOpen = false);
       return;

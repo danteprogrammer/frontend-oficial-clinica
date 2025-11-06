@@ -1,14 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CommonModule, DatePipe,TitleCasePipe } from '@angular/common';
+import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { FacturacionService } from '../../shared/facturacion.service';
 import { SeguroService } from '../validar-seguro/validar-seguro';
-
-// ✅ Importaciones correctas para PDFMake en Angular moderno
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 
-// ✅ Solución: crear instancia editable en lugar de modificar import
 const pdfMakeInstance: any = (pdfMake as any);
 pdfMakeInstance.vfs = (pdfFonts as any).vfs;
 
@@ -192,16 +189,13 @@ export class GenerarFactura implements OnInit {
   }
 
   private generarPDF(cita: any) {
-    // 1. Obtener datos del formulario y la cita
     const tipoComprobante = this.pagoForm.value.tipoComprobante.toUpperCase();
     const esSeguro = (this.modoPago === 'seguro' && this.seguroValidado);
-    const pipeFecha = new DatePipe('es-ES'); // Usamos 'es-ES'
+    const pipeFecha = new DatePipe('es-ES');
 
-    // 2. Cálculos (corregidos para que coincidan con la imagen)
-    // Asumimos que precioConsulta es el SUB-TOTAL (sin IGV)
     const subtotal = cita.precioConsulta || 0;
     const igv = subtotal * 0.18;
-    const total = subtotal + igv; // Este es el total real
+    const total = subtotal + igv;
 
     const montoPagado = esSeguro ? 0.00 : total;
 
@@ -209,21 +203,17 @@ export class GenerarFactura implements OnInit {
       ? `Seguro: ${this.pagoForm.value.nombreAseguradora || 'N/A'} (Póliza: ${this.pagoForm.value.numeroPoliza || 'N/A'})`
       : new TitleCasePipe().transform(this.pagoForm.value.metodoPago);
 
-    // 3. Definir una línea horizontal reutilizable (como en la imagen)
     const hLine = {
       canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 0.5, lineColor: '#999999' }],
-      margin: [0, 5, 0, 10] // Margen arriba/abajo
+      margin: [0, 5, 0, 10]
     };
 
-    // 4. Definición del Documento PDF
     const docDefinition: any = {
       content: [
-        // --- ENCABEZADO ---
         { text: 'CLINICA SALUDVIDA', style: 'header' },
         { text: 'COMPROBANTE de PAGO', style: 'subheader' },
         hLine,
 
-        // --- INFORMACIÓN DE LA CLÍNICA Y COMPROBANTE ---
         {
           columns: [
             {
@@ -244,13 +234,11 @@ export class GenerarFactura implements OnInit {
         },
         hLine,
 
-        // --- DATOS DEL PACIENTE ---
         { text: 'Datos del Paciente', style: 'sectionHeader' },
         { text: [{ text: 'DNI: ', bold: true }, cita.dniPaciente || 'N/A'] },
         { text: [{ text: 'Nombre Completo: ', bold: true }, `${cita.nombresPaciente} ${cita.apellidosPaciente}`] },
         hLine,
 
-        // --- DETALLE DE LA ATENCIÓN ---
         { text: 'Detalle de la Atención', style: 'sectionHeader' },
         { text: [{ text: 'Fecha de Cita: ', bold: true }, `${pipeFecha.transform(cita.fecha, 'fullDate')} a las ${cita.hora}`] },
         { text: [{ text: 'Especialidad: ', bold: true }, cita.especialidad] },
@@ -258,7 +246,6 @@ export class GenerarFactura implements OnInit {
         { text: [{ text: 'Consultorio: ', bold: true }, `${cita.consultorioNumero} - ${cita.consultorioDescripcion}`] },
         hLine,
 
-        // --- DETALLE DEL PAGO (TABLA) ---
         { text: 'Detalle del Pago', style: 'sectionHeader' },
         {
           table: {
@@ -273,10 +260,9 @@ export class GenerarFactura implements OnInit {
           margin: [0, 5, 0, 10]
         },
 
-        // --- TOTALES (SUBTOTAL, IGV, TOTAL) ---
         {
           columns: [
-            { width: '*', text: '' }, // Columna vacía para empujar a la derecha
+            { width: '*', text: '' },
             {
               width: 'auto',
               alignment: 'right',
@@ -296,10 +282,9 @@ export class GenerarFactura implements OnInit {
           margin: [0, 10, 0, 10]
         },
 
-        // --- MÉTODO DE PAGO ---
         {
           style: 'paymentMethod',
-          fillColor: '#f0f0f0', // Fondo gris claro como en la imagen
+          fillColor: '#f0f0f0',
           stack: [
             { text: [{ text: 'Método de Pago: ', bold: true }, metodoPago] },
             { text: [{ text: 'Monto Pagado: ', bold: true }, `S/ ${montoPagado.toFixed(2)} ${esSeguro ? '(Cubierto por seguro)' : ''}`] }
@@ -307,19 +292,17 @@ export class GenerarFactura implements OnInit {
         },
         hLine,
 
-        // --- PIE DE PÁGINA ---
         { text: '¡Gracias por su preferencia!', style: 'footer' },
         { text: '(Conservar este comprobante para cualquier reclamo)', style: 'footerSmall' },
         { text: 'Este es un comprobante de pago, no tiene validez fiscal.', style: 'footerSmall' }
       ],
 
-      // --- ESTILOS DEL DOCUMENTO ---
       styles: {
         header: { fontSize: 20, bold: true, alignment: 'center', margin: [0, 0, 0, 5], color: '#005792' },
         subheader: { fontSize: 16, bold: true, alignment: 'center', margin: [0, 0, 0, 5] },
-        sectionHeader: { fontSize: 12, bold: true, margin: [0, 8, 0, 5], color: '#005792' }, // Margen reducido
+        sectionHeader: { fontSize: 12, bold: true, margin: [0, 8, 0, 5], color: '#005792' },
         tableHeader: { color: '#005792' },
-        paymentMethod: { margin: [0, 5, 0, 5], padding: 8, border: [false, false, false, false] }, // Padding añadido
+        paymentMethod: { margin: [0, 5, 0, 5], padding: 8, border: [false, false, false, false] },
         footer: { alignment: 'center', margin: [0, 20, 0, 5], italics: true },
         footerSmall: { alignment: 'center', fontSize: 9, color: '#777777', italics: true }
       },
@@ -328,7 +311,6 @@ export class GenerarFactura implements OnInit {
       }
     };
 
-    // 5. Generar y mostrar el diálogo de impresión
     pdfMake.createPdf(docDefinition).print();
   }
 

@@ -8,12 +8,7 @@ import { catchError } from 'rxjs/operators';
 })
 export class FacturacionService {
   private apiUrl = 'http://localhost:8080/api/facturacion';
-
   constructor(private http: HttpClient) { }
-
-  /**
-   * Obtiene las citas pendientes de pago para un paciente por su DNI
-   */
   getCitasPendientesPorDni(dni: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/citas-pendientes/${dni}`).pipe(
       catchError(this.handleError)
@@ -26,13 +21,9 @@ export class FacturacionService {
     );
   }
 
-  /**
-   * Manejo de errores HTTP
-   */
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Ocurrió un error desconocido.';
     if (error.error instanceof ErrorEvent) {
-      // Error del lado del cliente
       errorMessage = `Error: ${error.error.message}`;
     } else {
       if (error.status === 404) {
