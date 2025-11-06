@@ -39,9 +39,7 @@ export class Main {
       isOpen: false,
       submenus: [
         { name: 'Programar Cita', path: '/cita/registrar' },
-        { name: 'Listado de Citas', path: '/cita/lista' },
-        { name: 'Asignar Turno', path: '/turno/asignar' },
-        { name: 'Próximos Turnos', path: '/turno/proximos' },
+        { name: 'Listado de Citas', path: '/cita/lista' }
       ]
     },
     {
