@@ -121,7 +121,7 @@ export class GenerarFactura implements OnInit {
     this.cargando = true;
     this.intentoValidacion = true;
 
-    this.facturacionService.validarSeguro(this.citaSeleccionada.idPaciente, datosSeguro).subscribe({
+    this.seguroService.validarSeguro(this.citaSeleccionada.idPaciente, datosSeguro).subscribe({
       next: (response) => {
         this.cargando = false;
 
@@ -176,6 +176,9 @@ export class GenerarFactura implements OnInit {
           nombreAseguradora: this.pagoForm.value.nombreAseguradora,
           numeroPoliza: this.pagoForm.value.numeroPoliza
         };
+
+        this.citaSeleccionada!.metodoPago = metodoPago;
+        this.citaSeleccionada!.tipoComprobante = tipoComprobante;
 
         Swal.fire({
           title: '¡Pago Registrado!',

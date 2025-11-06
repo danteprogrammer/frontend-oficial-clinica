@@ -13,11 +13,11 @@ export interface CitaParaFacturacionDto {
   medico: string;
   consultorioNumero: string;
   consultorioDescripcion: string;
-  fecha: string; 
-  hora: string; 
+  fecha: string;
+  hora: string;
   tieneSeguro: boolean;
   precioConsulta: number;
-  estadoPago: string; 
+  estadoPago: string;
   pacienteDireccion: string;
   pacienteTelefono: string;
   metodoPago: string;
