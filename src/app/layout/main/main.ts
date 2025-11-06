@@ -77,6 +77,7 @@ export class Main {
       submenus: [
         { name: 'Gestión de Médicos', path: '/admin/medicos' },
         { name: 'Gestión de Consultorios', path: '/consultorios' },
+        { name: 'Gestión de Tarifario', path: '/admin/tarifario' },
         { name: 'Roles y Permisos', path: '/admin/roles' },
       ]
     }

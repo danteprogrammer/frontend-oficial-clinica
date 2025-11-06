@@ -1,0 +1,208 @@
+/* --- Reutilizamos estilos de gestion-medicos.css --- */
+
+/* Contenedor General */
+.admin-container {
+    max-width: 1000px;
+    /* Más angosto, es un form simple */
+    margin: 1rem auto;
+    padding: 1rem;
+}
+
+h2 {
+    text-align: center;
+    color: var(--primary-dark);
+    margin-bottom: 2rem;
+}
+
+/* Formulario */
+.form-card {
+    background: #fff;
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 2rem;
+}
+
+.form-card h3 {
+    margin-top: 0;
+    color: var(--primary-main);
+}
+
+/* Grilla específica para el formulario de tarifario */
+.form-grid-tarifario {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    /* Especialidad | Precio | Acciones */
+    gap: 1rem 1.5rem;
+    align-items: flex-end;
+}
+
+@media (max-width: 768px) {
+    .form-grid-tarifario {
+        grid-template-columns: 1fr;
+        /* Todo en una columna */
+    }
+
+    .form-actions-tarifario {
+        grid-row: 3;
+        /* Asegura que los botones vayan al final */
+    }
+}
+
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    font-size: 0.95rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-main);
+    box-shadow: 0 0 0 3px var(--primary-light-bg);
+}
+
+/* Validación de Errores */
+.form-group input.is-invalid {
+    border-color: var(--danger);
+}
+
+.invalid-feedback {
+    color: var(--danger);
+    font-size: 0.8rem;
+    margin-top: 4px;
+}
+
+.form-actions-tarifario {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-actions-tarifario button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 43px;
+    /* Para alinear con los inputs */
+}
+
+.form-actions-tarifario .btn-cancelar {
+    background-color: #f1f1f1;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+.form-actions-tarifario .btn-cancelar:hover {
+    background-color: #e9e9e9;
+}
+
+.form-actions-tarifario button[type="submit"] {
+    background-color: var(--primary-main);
+    color: white;
+}
+
+.form-actions-tarifario button[type="submit"]:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
+/* Tabla de Tarifas */
+.table-container {
+    background: #fff;
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+}
+
+.table-container h3 {
+    margin-top: 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    background-color: #f8f9fa;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+tbody tr:hover {
+    background-color: var(--primary-light-bg);
+}
+
+/* Botones de Acción */
+.acciones {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-accion {
+    padding: 8px 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: white;
+}
+
+.btn-accion.btn-editar {
+    background-color: var(--primary-light);
+}
+
+.btn-accion.btn-editar:hover {
+    background-color: var(--primary-main);
+}
+
+.btn-accion.btn-eliminar {
+    background-color: #dc3545;
+}
+
+.btn-accion.btn-eliminar:hover {
+    background-color: #c82333;
+}
+
+/* Estados de Carga/Error */
+.loading-container,
+.no-data-container,
+.error-container {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+.error-container {
+    color: var(--danger);
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+}

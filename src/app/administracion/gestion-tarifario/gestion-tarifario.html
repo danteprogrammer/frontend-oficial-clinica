@@ -1,0 +1,73 @@
+<div class="admin-container">
+    <h2><i class="fas fa-file-invoice-dollar"></i> Gestión de Tarifario</h2>
+
+    <div class="form-card">
+        <h3>{{ modoEdicion ? 'Editar Tarifa' : 'Registrar Nueva Tarifa' }}</h3>
+        <form [formGroup]="tarifaForm" (ngSubmit)="onSubmit()">
+            <div class="form-grid-tarifario">
+
+                <div class="form-group">
+                    <label for="especialidad">Especialidad</label>
+                    <input id="especialidad" type="text" formControlName="especialidad"
+                        [class.is-invalid]="esCampoInvalido('especialidad')" placeholder="Ej: Cardiología">
+                    <div *ngIf="esCampoInvalido('especialidad')" class="invalid-feedback">
+                        {{ getMensajeError('especialidad') }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="precio">Precio (S/.)</label>
+                    <input id="precio" type="number" formControlName="precio"
+                        [class.is-invalid]="esCampoInvalido('precio')" placeholder="Ej: 150.00" min="0" step="0.01">
+                    <div *ngIf="esCampoInvalido('precio')" class="invalid-feedback">
+                        {{ getMensajeError('precio') }}
+                    </div>
+                </div>
+
+                <div class="form-actions-tarifario">
+                    <button type="button" class="btn-cancelar" (click)="resetFormulario()">Cancelar</button>
+                    <button type="submit" [disabled]="cargando">
+                        <span *ngIf="!cargando">{{ modoEdicion ? 'Actualizar Tarifa' : 'Crear Tarifa' }}</span>
+                        <span *ngIf="cargando">Guardando...</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <h3>Lista de Precios por Especialidad</h3>
+        <div *ngIf="cargando" class="loading-container">Cargando tarifas...</div>
+        <div *ngIf="error" class="error-container">{{ error }}</div>
+
+        <div *ngIf="!cargando && !error && tarifas.length === 0" class="no-data-container">
+            No hay tarifas registradas.
+        </div>
+
+        <table *ngIf="!cargando && !error && tarifas.length > 0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Especialidad</th>
+                    <th>Precio (S/.)</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let tarifa of tarifas">
+                    <td>{{ tarifa.id }}</td>
+                    <td>{{ tarifa.especialidad }}</td>
+                    <td>{{ tarifa.precio | number:'1.2-2' }}</td>
+                    <td class="acciones">
+                        <button class="btn-accion btn-editar" (click)="cargarTarifaParaEditar(tarifa)">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-accion btn-eliminar" (click)="eliminarTarifa(tarifa.id!)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
