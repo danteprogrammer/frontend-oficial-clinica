@@ -17,6 +17,7 @@ import { TriajeRegistro } from './atencion/triaje-registro/triaje-registro';
 import { GestionPendientes } from './laboratorio/gestion-pendientes/gestion-pendientes';
 import { GestionMedicos } from './administracion/gestion-medicos/gestion-medicos';
 import { GestionTarifario } from './administracion/gestion-tarifario/gestion-tarifario';
+import { GestionUsuarios } from './administracion/gestion-usuarios/gestion-usuarios';
 
 
 export const routes: Routes = [
@@ -41,6 +42,7 @@ export const routes: Routes = [
             { path: 'laboratorio/pendientes', component: GestionPendientes },
             { path: 'admin/medicos', component: GestionMedicos },
             { path: 'admin/tarifario', component: GestionTarifario },
+            { path: 'admin/usuarios', component: GestionUsuarios },
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
         ]
     },
