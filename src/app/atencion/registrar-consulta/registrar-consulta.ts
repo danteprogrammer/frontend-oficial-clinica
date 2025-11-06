@@ -1,35 +1,16 @@
 import { Component, Injectable, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
-import { CommonModule, DatePipe } from '@angular/common'; 
-import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { debounceTime, switchMap, catchError } from 'rxjs/operators';
-import { Paciente, PaginaPacientes, Paciente as PacienteServiceClase } from '../../pacientes/paciente'; 
-import { TriajeService } from '../../shared/triaje.service'; 
-import { LaboratorioService } from '../../shared/laboratorio.service';
-
-import * as pdfMake from 'pdfmake/build/pdfmake';
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
-
-const pdfMakeInstance: any = (pdfMake as any);
-pdfMakeInstance.vfs = (pdfFonts as any).vfs;
+import { CommonModule, DatePipe } from '@angular/common';
+import { Observable, of, Subject } from 'rxjs';
+import { debounceTime, switchMap, catchError, tap, distinctUntilChanged } from 'rxjs/operators';
+import { Paciente, PaginaPacientes, Paciente as PacienteServiceClase } from '../../pacientes/paciente';
+import { TriajeService } from '../../shared/triaje.service';
+import { LaboratorioService, OrdenLaboratorioResponseDto } from '../../shared/laboratorio.service';
+import { ConsultaService } from '../../shared/consulta.service';
+import { Auth, MedicoInfo } from '../../auth/auth';
+import { PdfService } from '../../shared/pdf.service';
 
 declare var Swal: any;
-
-@Injectable({ providedIn: 'root' })
-export class ConsultaService {
-  private apiUrl = 'http://localhost:8080/api';
-
-  constructor(private http: HttpClient) { }
-
-  registrarConsulta(idHistoriaClinica: number, consulta: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/consultas/historia/${idHistoriaClinica}`, consulta);
-  }
-
-  obtenerHistoriaPorPacienteId(idPaciente: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/historias/paciente/${idPaciente}`);
-  }
-}
 
 @Component({
   selector: 'app-registrar-consulta',
@@ -42,7 +23,7 @@ export class RegistrarConsulta implements OnInit {
   consultaForm!: FormGroup;
   cargando = false;
 
-  pacienteBusquedaControl = new FormControl();
+  pacienteBusquedaControl = new FormControl('');
   pacientesEncontrados: Paciente[] = [];
   pacienteSeleccionado: Paciente | null = null;
   idHistoriaClinicaSeleccionada: number | null = null;
@@ -51,34 +32,43 @@ export class RegistrarConsulta implements OnInit {
   historialTriajes: any[] = [];
   cargandoTriaje: boolean = false;
 
-  historialLaboratorio: any[] = [];
+  historialLaboratorio: OrdenLaboratorioResponseDto[] = [];
   cargandoLaboratorio: boolean = false;
-  idMedicoLogueado: number = 3; 
+
+  idMedicoLogueado: number | null = null;
+  medicoInfo: MedicoInfo | null = null;
+
+  private termBusqueda$ = new Subject<string>();
 
   constructor(
     private fb: FormBuilder,
     private consultaService: ConsultaService,
-    private pacienteService: PacienteServiceClase, 
-    private triajeService: TriajeService, 
-    private laboratorioService: LaboratorioService, 
-    private datePipe: DatePipe 
+    private pacienteService: PacienteServiceClase,
+    private triajeService: TriajeService,
+    private laboratorioService: LaboratorioService,
+    private datePipe: DatePipe,
+    private authService: Auth,
+    private pdfService: PdfService
   ) { }
 
   ngOnInit(): void {
+    this.medicoInfo = this.authService.getMedicoInfo();
+    this.idMedicoLogueado = this.medicoInfo?.id || null;
+
     this.consultaForm = this.fb.group({
       motivo: ['', Validators.required],
       diagnostico: ['', Validators.required],
-      indicaciones: [''], 
-      receta: this.fb.array([]), 
-      medico: [{ idMedico: 3 }]
+      indicaciones: [''],
+      receta: this.fb.array([]),
     });
 
-    this.pacienteBusquedaControl.valueChanges.pipe(
-      debounceTime(300),
-      switchMap(value => {
-        if (value && value.length > 2) {
-          const filtro = /^\d+$/.test(value) ? 'DNI' : 'nombre';
-          return this.pacienteService.buscarPacientesActivos(value, filtro, 0, 5);
+    this.termBusqueda$.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap(term => {
+        if (term && term.length > 2) {
+          const filtro = /^\d+$/.test(term) ? 'DNI' : 'nombre';
+          return this.pacienteService.buscarPacientesActivos(term, filtro, 0, 5);
         } else {
           this.pacientesEncontrados = [];
           return of({ content: [], totalPages: 0, totalElements: 0, number: 0 } as PaginaPacientes);
@@ -91,18 +81,31 @@ export class RegistrarConsulta implements OnInit {
     ).subscribe((pagina: PaginaPacientes) => {
       this.pacientesEncontrados = pagina.content;
     });
+
+    this.pacienteBusquedaControl.valueChanges.pipe(
+      tap(value => {
+        if (!value) this.pacientesEncontrados = [];
+      })
+    ).subscribe(value => {
+      if (value && value.length > 2) {
+        this.termBusqueda$.next(value);
+      }
+    });
+  }
+
+  buscarPaciente(event: Event): void {
   }
 
   seleccionarPaciente(paciente: Paciente): void {
     this.pacienteSeleccionado = paciente;
     this.pacientesEncontrados = [];
-    this.pacienteBusquedaControl.setValue(`${paciente.nombres} ${paciente.apellidos}`, { emitEvent: false });
+    this.pacienteBusquedaControl.setValue(`${paciente.nombres} ${paciente.apellidos} (DNI: ${paciente.dni})`, { emitEvent: false }); // <-- Añadido DNI
 
     this.cargandoTriaje = true;
-    this.cargandoLaboratorio = true; 
+    this.cargandoLaboratorio = true;
     this.ultimoTriaje = null;
     this.historialTriajes = [];
-    this.historialLaboratorio = []; 
+    this.historialLaboratorio = [];
 
     this.consultaService.obtenerHistoriaPorPacienteId(paciente.idPaciente!).subscribe({
       next: (historia) => {
@@ -124,7 +127,7 @@ export class RegistrarConsulta implements OnInit {
       error: (err) => {
         Swal.fire('Error', 'No se pudo obtener la historia clínica del paciente.', 'error');
         this.cargandoTriaje = false;
-        this.cargandoLaboratorio = false; 
+        this.cargandoLaboratorio = false;
       }
     });
   }
@@ -146,8 +149,8 @@ export class RegistrarConsulta implements OnInit {
     const prescripcionForm = this.fb.group({
       medicamento: ['', Validators.required],
       cantidad: ['', Validators.required],
-      dosis: [''], 
-      posologia: ['', Validators.required] 
+      dosis: [''],
+      posologia: ['', Validators.required]
     });
     this.prescripciones.push(prescripcionForm);
   }
@@ -159,6 +162,12 @@ export class RegistrarConsulta implements OnInit {
   onSubmit(): void {
     if (this.consultaForm.invalid || !this.idHistoriaClinicaSeleccionada) {
       Swal.fire('Datos Incompletos', 'Debe seleccionar un paciente y completar el motivo y diagnóstico.', 'error');
+      this.consultaForm.markAllAsTouched();
+      return;
+    }
+
+    if (!this.idMedicoLogueado) {
+      Swal.fire('Error de Autenticación', 'No se pudo identificar al médico. Por favor, inicie sesión de nuevo.', 'error');
       return;
     }
 
@@ -178,8 +187,11 @@ export class RegistrarConsulta implements OnInit {
     const payload = {
       motivo: formValue.motivo,
       diagnostico: formValue.diagnostico,
-      tratamiento: tratamientoCompleto, 
-      medico: formValue.medico
+      tratamiento: tratamientoCompleto,
+      peso: this.ultimoTriaje?.peso,
+      altura: this.ultimoTriaje?.altura,
+      imc: this.ultimoTriaje?.imc,
+      medico: { idMedico: this.idMedicoLogueado }
     };
 
     this.consultaService.registrarConsulta(this.idHistoriaClinicaSeleccionada!, payload).subscribe({
@@ -194,7 +206,7 @@ export class RegistrarConsulta implements OnInit {
           cancelButtonText: 'Finalizar'
         }).then((result: any) => {
           if (result.isConfirmed) {
-            this.generarPdfReceta();
+            this.lanzarPdfReceta();
           }
           this.limpiarFormulario();
         });
@@ -206,114 +218,22 @@ export class RegistrarConsulta implements OnInit {
     });
   }
 
-  generarPdfReceta(): void {
-    if (!this.pacienteSeleccionado) return;
+  private lanzarPdfReceta(): void {
+    if (!this.pacienteSeleccionado) {
+      Swal.fire('Error', 'No hay un paciente seleccionado para generar la receta.', 'error');
+      return;
+    }
 
-    const paciente = this.pacienteSeleccionado;
-    const consulta = this.consultaForm.value; 
-    const fechaHoy = this.datePipe.transform(new Date(), 'dd/MM/yyyy');
-
-    const recetaItems = consulta.receta.map((med: any) => {
-      return [
-        { text: med.medicamento, bold: true, style: 'recetaText' },
-        { text: med.cantidad, style: 'recetaText' },
-        { text: med.dosis, style: 'recetaText' },
-        { text: med.posologia, style: 'recetaText' }
-      ];
-    });
-
-    const recetaBody = [
-      [{ text: 'Medicamento', style: 'tableHeader' }, { text: 'Cant.', style: 'tableHeader' }, { text: 'Dosis/Presentación', style: 'tableHeader' }, { text: 'Indicaciones (Posología)', style: 'tableHeader' }],
-      ...recetaItems
-    ];
-
-    const docDefinition: any = {
-      content: [
-        {
-          columns: [
-            { text: 'Clínica SaludVida', style: 'header' },
-            { text: `Fecha: ${fechaHoy}`, alignment: 'right', style: 'subheader' }
-          ]
-        },
-        { text: 'Receta Médica', style: 'subheader', alignment: 'center' },
-        {
-          canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 0.5, lineColor: '#999' }],
-          margin: [0, 5, 0, 15]
-        },
-
-        // Datos del Paciente
-        { text: 'Datos del Paciente', style: 'sectionHeader' },
-        {
-          table: {
-            widths: ['auto', '*'],
-            body: [
-              [{ text: 'Paciente:', bold: true }, `${paciente.nombres} ${paciente.apellidos}`],
-              [{ text: 'DNI:', bold: true }, paciente.dni],
-            ]
-          },
-          layout: 'noBorders',
-          margin: [0, 5, 0, 15]
-        },
-
-        { text: 'Diagnóstico', style: 'sectionHeader' },
-        { text: consulta.diagnostico || 'No especificado', style: 'text' },
-
-        { text: 'Indicaciones Generales', style: 'sectionHeader' },
-        { text: consulta.indicaciones || 'No se indicaron recomendaciones.', style: 'text' },
-
-        { text: 'Receta Médica (R/.)', style: 'sectionHeader' },
-        consulta.receta.length > 0 ? {
-          table: {
-            widths: ['*', 'auto', 'auto', '*'], 
-            body: recetaBody
-          },
-          layout: 'lightHorizontalLines',
-          margin: [0, 5, 0, 15]
-        } : { text: 'No se indicaron medicamentos.', style: 'text' },
-
-        this.ultimoTriaje ? {
-          stack: [
-            { text: 'Signos Vitales (Referencial)', style: 'sectionHeader', margin: [0, 15, 0, 5] },
-            {
-              columns: [
-                { text: [{ text: 'P.A.: ', bold: true }, this.ultimoTriaje.presionArterial || 'N/A'] },
-                { text: [{ text: 'Peso: ', bold: true }, `${this.ultimoTriaje.peso || 'N/A'} kg`] },
-                { text: [{ text: 'Temp: ', bold: true }, `${this.ultimoTriaje.temperatura || 'N/A'} °C`] },
-                { text: [{ text: 'Sat O₂: ', bold: true }, `${this.ultimoTriaje.saturacionOxigeno || 'N/A'} %`] },
-              ],
-              style: 'text'
-            }
-          ]
-        } : {},
-
-        {
-          table: {
-            widths: ['*'],
-            body: [
-              [{ text: '\n\n\n\n_________________________', alignment: 'center', style: 'firma' }],
-              [{ text: 'Dr. (Nombre del Médico)', alignment: 'center', style: 'firma' }],
-              [{ text: 'CMP: 123456', alignment: 'center', style: 'firma' }]
-            ]
-          },
-          layout: 'noBorders',
-          margin: [0, 50, 0, 10]
-        },
-        { text: 'Av. Principal 123, Lima - Perú | Teléfono: (01) 234-5678', style: 'footer' }
-      ],
-      styles: {
-        header: { fontSize: 20, bold: true, color: '#005792' },
-        subheader: { fontSize: 16, bold: true, margin: [0, 0, 0, 10] },
-        sectionHeader: { fontSize: 14, bold: true, margin: [0, 10, 0, 5], color: '#005792' },
-        text: { margin: [0, 0, 0, 10], fontSize: 11, alignment: 'justify' },
-        tableHeader: { fontSize: 10, bold: true, margin: [0, 2, 0, 2], color: '#00355d' },
-        recetaText: { fontSize: 10, margin: [0, 2, 0, 2] },
-        firma: { fontSize: 10, bold: false, color: '#333' },
-        footer: { alignment: 'center', fontSize: 9, color: '#555', margin: [0, 20, 0, 0] }
-      },
-      defaultStyle: { fontSize: 10 }
+    const consultaFormValue = {
+      ...this.consultaForm.value,
+      motivo: this.consultaForm.value.motivo,
     };
 
-    pdfMake.createPdf(docDefinition).print();
+    this.pdfService.generarPdfReceta(
+      this.pacienteSeleccionado,
+      consultaFormValue,
+      this.medicoInfo
+    );
   }
 
   cargarHistorialLaboratorio(): void {
@@ -337,10 +257,9 @@ export class RegistrarConsulta implements OnInit {
 
     const { value: examenes } = await Swal.fire({
       title: 'Generar Orden de Laboratorio',
-      html: `
-        <p>Escriba los exámenes solicitados, separados por comas.</p>
-        <textarea id="swal-examenes" class="swal2-textarea" placeholder="Ej: Hemograma, Glucosa, Perfil Lipídico"></textarea>
-      `,
+      html:
+        '<p>Escriba los exámenes solicitados, separados por comas.</p>' +
+        '<textarea id="swal-examenes" class="swal2-textarea" placeholder="Ej: Hemograma, Glucosa, Perfil Lipídico"></textarea>',
       focusConfirm: false,
       showCancelButton: true,
       confirmButtonText: 'Generar Orden',
@@ -367,7 +286,7 @@ export class RegistrarConsulta implements OnInit {
         next: () => {
           this.cargando = false;
           Swal.fire('Orden Generada', 'La orden de laboratorio se envió correctamente.', 'success');
-          this.cargarHistorialLaboratorio(); 
+          this.cargarHistorialLaboratorio();
         },
         error: (err) => {
           this.cargando = false;
@@ -389,12 +308,11 @@ export class RegistrarConsulta implements OnInit {
     this.pacienteSeleccionado = null;
     this.idHistoriaClinicaSeleccionada = null;
     this.pacienteBusquedaControl.reset();
-    this.consultaForm.patchValue({ medico: { idMedico: 3 } });
-    this.prescripciones.clear(); 
+    this.prescripciones.clear();
     this.ultimoTriaje = null;
     this.historialTriajes = [];
     this.cargandoTriaje = false;
-    this.historialLaboratorio = []; 
-    this.cargandoLaboratorio = false; 
+    this.historialLaboratorio = [];
+    this.cargandoLaboratorio = false;
   }
 }

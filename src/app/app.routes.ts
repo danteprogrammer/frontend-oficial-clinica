@@ -20,6 +20,7 @@ import { GestionTarifario } from './administracion/gestion-tarifario/gestion-tar
 import { GestionUsuarios } from './administracion/gestion-usuarios/gestion-usuarios';
 import { GestionHorarios } from './administracion/gestion-horarios/gestion-horarios';
 import { HistorialPagos } from './facturacion/historial-pagos/historial-pagos';
+import { HistorialConsultas } from './atencion/historial-consultas/historial-consultas';
 
 
 export const routes: Routes = [
@@ -40,6 +41,7 @@ export const routes: Routes = [
             { path: 'consultorios', component: Consultorio },
             { path: 'atencion/registrar-consulta', component: RegistrarConsulta },
             { path: 'atencion/triaje', component: TriajeRegistro },
+            { path: 'atencion/historial', component: HistorialConsultas },
             { path: 'facturacion/generar-factura', component: GenerarFactura },
             { path: 'facturacion/historial', component: HistorialPagos }, 
             { path: 'laboratorio/pendientes', component: GestionPendientes },
@@ -47,6 +49,7 @@ export const routes: Routes = [
             { path: 'admin/tarifario', component: GestionTarifario },
             { path: 'admin/usuarios', component: GestionUsuarios },
             { path: 'admin/horarios', component: GestionHorarios },
+            
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
         ]
     },

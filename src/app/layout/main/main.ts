@@ -52,6 +52,7 @@ export class Main implements OnInit {
       roles: ['MEDICO', 'TRIAJE'],
       submenus: [
         { name: 'Registrar Consulta', path: '/atencion/registrar-consulta', roles: ['MEDICO'] },
+        { name: 'Historial Clínico', path: '/atencion/historial', roles: ['MEDICO'] },
         { name: 'Registrar Triaje', path: '/atencion/triaje', roles: ['TRIAJE'] }
       ]
     },

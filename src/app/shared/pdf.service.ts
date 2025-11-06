@@ -3,6 +3,8 @@ import { DatePipe, TitleCasePipe } from '@angular/common';
 import { CitaParaFacturacionDto } from './facturacion.service';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { MedicoInfo } from '../auth/auth';
+import { Paciente } from '../pacientes/paciente';
 
 const pdfMakeInstance: any = (pdfMake as any);
 pdfMakeInstance.vfs = (pdfFonts as any).vfs;
@@ -146,6 +148,122 @@ export class PdfService {
         paymentMethod: { margin: [0, 5, 0, 5], padding: 8, border: [false, false, false, false] },
         footer: { alignment: 'center', margin: [0, 20, 0, 5], italics: true },
         footerSmall: { alignment: 'center', fontSize: 9, color: '#777777', italics: true }
+      },
+      defaultStyle: {
+        fontSize: 10
+      }
+    };
+
+    pdfMake.createPdf(docDefinition).print();
+  }
+
+  // --- AÑADIR ESTE MÉTODO COMPLETO (basado en tu registrar-consulta.ts) ---
+  /**
+   * Genera un PDF de Receta Médica
+   * @param paciente El objeto Paciente
+   * @param consultaFormValue El valor del formulario de consulta (para diagnósticos, etc.)
+   * @param medicoInfo La información del médico logueado
+   */
+  public generarPdfReceta(paciente: Paciente, consultaFormValue: any, medicoInfo: MedicoInfo | null): void {
+
+    const fechaHoy = this.datePipe.transform(new Date(), 'dd/MM/yyyy');
+
+    const tituloMedico = medicoInfo?.sexo.toUpperCase() === 'FEMENINO' ? 'Dra.' : 'Dr.';
+    const nombreMedico = medicoInfo ? `${tituloMedico} ${medicoInfo.nombres} ${medicoInfo.apellidos}` : 'Dr. (Nombre del Médico)';
+    const cmpMedico = medicoInfo ? `CMP: ${medicoInfo.cmp}` : 'CMP: (Número de Colegiatura)';
+
+    const recetaItems = consultaFormValue.receta.map((med: any) => {
+      return [
+        { text: med.medicamento, bold: true, style: 'recetaText' },
+        { text: med.cantidad, style: 'recetaText' },
+        { text: med.dosis, style: 'recetaText' },
+        { text: med.posologia, style: 'recetaText' }
+      ];
+    });
+
+    const recetaBody = [
+      [{ text: 'Medicamento', style: 'tableHeader' }, { text: 'Cant.', style: 'tableHeader' }, { text: 'Dosis/Presentación', style: 'tableHeader' }, { text: 'Indicaciones (Posología)', style: 'tableHeader' }],
+      ...recetaItems
+    ];
+
+    const docDefinition: any = {
+      content: [
+        {
+          columns: [
+            {
+              stack: [
+                { text: 'Clínica SaludVida', style: 'headerReceta' },
+                { text: nombreMedico, style: 'subheaderReceta' },
+                { text: cmpMedico, style: 'subheaderReceta' }
+              ]
+            },
+            {
+              text: `Fecha: ${fechaHoy}`,
+              alignment: 'right',
+              style: 'text'
+            }
+          ],
+          margin: [0, 0, 0, 15]
+        },
+        { canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 1, lineColor: '#00355d' }], margin: [0, 0, 0, 15] },
+
+        { text: 'Datos del Paciente', style: 'sectionHeader' },
+        {
+          columns: [
+            { text: `Paciente: ${paciente.nombres} ${paciente.apellidos}`, style: 'text' },
+            { text: `DNI: ${paciente.dni}`, style: 'text' }
+          ],
+          margin: [0, 0, 0, 15]
+        },
+
+        { text: 'Motivo de Consulta', style: 'sectionHeader' },
+        { text: consultaFormValue.motivo || 'No especificado.', style: 'text' },
+
+        { text: 'Diagnóstico (CIE-10)', style: 'sectionHeader' },
+        { text: consultaFormValue.diagnostico || 'No especificado.', style: 'text' },
+
+        { text: 'Indicaciones Generales', style: 'sectionHeader' },
+        { text: consultaFormValue.indicaciones || 'Ninguna indicación.', style: 'text' },
+
+        { text: 'Receta Médica (R/.)', style: 'sectionHeader' },
+        consultaFormValue.receta.length > 0 ? {
+          table: {
+            widths: ['*', 'auto', 'auto', '*'],
+            body: recetaBody
+          },
+          layout: 'lightHorizontalLines',
+          margin: [0, 5, 0, 15]
+        } : { text: 'No se indicaron medicamentos.', style: 'text' },
+
+        {
+          stack: [
+            { text: '_________________________', style: 'firma' },
+            { text: nombreMedico, style: 'firma' },
+            { text: cmpMedico, style: 'firma' }
+          ],
+          alignment: 'center',
+          margin: [0, 70, 0, 0]
+        }
+
+      ],
+      styles: {
+        header: { fontSize: 24, bold: true, color: '#00355d' },
+        subheader: { fontSize: 10, color: '#6c757d' },
+        comprobanteHeader: { fontSize: 13, bold: true, alignment: 'center', color: '#343a40' },
+        comprobanteNumero: { fontSize: 12, alignment: 'center', color: '#343a40' },
+        totalText: { fontSize: 10, alignment: 'right' },
+        totalValor: { fontSize: 10, alignment: 'right' },
+        totalHeader: { fontSize: 12, bold: true, alignment: 'right' },
+        totalValorHeader: { fontSize: 12, bold: true, alignment: 'right' },
+        footer: { fontSize: 10, alignment: 'center', italics: true, color: '#6c757d', margin: [0, 40, 0, 0] },
+
+        headerReceta: { fontSize: 20, bold: true, color: '#00355d' },
+        subheaderReceta: { fontSize: 12, color: '#333' },
+        sectionHeader: { fontSize: 12, bold: true, color: '#00355d', margin: [0, 10, 0, 5] },
+        text: { fontSize: 10, margin: [0, 2] },
+        tableHeader: { fontSize: 10, bold: true, margin: [0, 2, 0, 2], color: '#00355d' },
+        recetaText: { fontSize: 10, margin: [0, 2, 0, 2] },
+        firma: { fontSize: 11, bold: true, color: '#333', margin: [0, 2] }
       },
       defaultStyle: {
         fontSize: 10
