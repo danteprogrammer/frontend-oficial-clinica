@@ -18,6 +18,7 @@ import { GestionPendientes } from './laboratorio/gestion-pendientes/gestion-pend
 import { GestionMedicos } from './administracion/gestion-medicos/gestion-medicos';
 import { GestionTarifario } from './administracion/gestion-tarifario/gestion-tarifario';
 import { GestionUsuarios } from './administracion/gestion-usuarios/gestion-usuarios';
+import { GestionHorarios } from './administracion/gestion-horarios/gestion-horarios';
 
 
 export const routes: Routes = [
@@ -43,6 +44,7 @@ export const routes: Routes = [
             { path: 'admin/medicos', component: GestionMedicos },
             { path: 'admin/tarifario', component: GestionTarifario },
             { path: 'admin/usuarios', component: GestionUsuarios },
+            { path: 'admin/horarios', component: GestionHorarios },
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
         ]
     },

@@ -1,0 +1,89 @@
+<div class="admin-container">
+    <h2><i class="fas fa-calendar-alt"></i> Gestión de Horarios de Médicos</h2>
+
+    <div class="form-card">
+        <h3>Seleccionar Médico</h3>
+        <div *ngIf="cargandoMedicos">Cargando médicos...</div>
+        <div *ngIf="!cargandoMedicos" class="form-group">
+            <label for="medicoSelect">Médico</label>
+            <select id="medicoSelect" (change)="onMedicoChange($event)" class="form-control">
+                <option [value]="null">Seleccione un médico para ver sus horarios...</option>
+                <option *ngFor="let medico of medicos" [value]="medico.idMedico">
+                    {{ medico.sexo === 'Femenino' ? 'Dra.' : 'Dr.' }} {{ medico.nombres }} {{ medico.apellidos }}
+                </option>
+            </select>
+        </div>
+        <div *ngIf="error && !medicoSeleccionadoId" class="error-container">{{ error }}</div>
+    </div>
+
+    <div *ngIf="medicoSeleccionadoId">
+        <div class="form-card">
+            <h3>Añadir Nuevo Horario</h3>
+            <form [formGroup]="horarioForm" (ngSubmit)="onSubmit()">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="diaSemana">Día de la Semana</label>
+                        <select id="diaSemana" formControlName="diaSemana"
+                            [class.is-invalid]="horarioForm.get('diaSemana')?.touched && horarioForm.get('diaSemana')?.invalid">
+                            <option value="" disabled>Seleccione un día...</option>
+                            <option *ngFor="let dia of diasSemana" [value]="dia">{{ dia }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="horaInicio">Hora Inicio</label>
+                        <input id="horaInicio" type="time" formControlName="horaInicio"
+                            [class.is-invalid]="horarioForm.get('horaInicio')?.touched && horarioForm.get('horaInicio')?.invalid">
+                    </div>
+                    <div class="form-group">
+                        <label for="horaFin">Hora Fin</label>
+                        <input id="horaFin" type="time" formControlName="horaFin"
+                            [class.is-invalid]="(horarioForm.get('horaFin')?.touched && horarioForm.get('horaFin')?.invalid) || horarioForm.hasError('horaInvalida')">
+                    </div>
+                </div>
+                <div *ngIf="horarioForm.hasError('horaInvalida')" class="invalid-feedback d-block">
+                    La hora de fin debe ser mayor a la hora de inicio.
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" [disabled]="horarioForm.invalid || cargandoHorarios">
+                        <i class="fas fa-plus"></i> Añadir Horario
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <h3>Horarios Asignados</h3>
+            <div *ngIf="cargandoHorarios" class="loading-container">Cargando horarios...</div>
+            <div *ngIf="error && medicoSeleccionadoId" class="error-container">{{ error }}</div>
+
+            <div *ngIf="!cargandoHorarios && horarios.length === 0" class="no-data-container">
+                Este médico no tiene horarios asignados.
+            </div>
+
+            <table *ngIf="!cargandoHorarios && horarios.length > 0">
+                <thead>
+                    <tr>
+                        <th>Día</th>
+                        <th>Hora Inicio</th>
+                        <th>Hora Fin</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let horario of horarios">
+                        <td>{{ horario.diaSemana }}</td>
+                        <td>{{ horario.horaInicio }}</td>
+                        <td>{{ horario.horaFin }}</td>
+                        <td class="acciones">
+                            <button class="btn-accion btn-eliminar" (click)="eliminar(horario.idHorario)">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
