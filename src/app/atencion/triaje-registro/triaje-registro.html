@@ -27,7 +27,7 @@
     </div>
 
     <div class="triaje-content" *ngIf="pacienteSeleccionado && idHistoriaClinica">
-        
+
         <div class="card card-registro">
             <div class="card-header">
                 <h4>Registrar Signos Vitales</h4>
@@ -49,19 +49,25 @@
 
                         <div class="form-group">
                             <label for="imc">IMC (kg/m²)</label>
-                            <input id="imc" type="text" [value]="imcCalculado | number:'1.1-2'" 
-                                   class="form-control" disabled>
+                            <input id="imc" type="text" [value]="imcCalculado | number:'1.1-2'" class="form-control"
+                                disabled>
                         </div>
 
                         <div class="form-group">
-                            <label for="presionArterial">Presión Arterial (ej: 120/80)</label>
-                            <input id="presionArterial" type="text" formControlName="presionArterial" class="form-control"
-                                [class.is-invalid]="f['presionArterial'].touched && f['presionArterial'].errors">
-                            <div *ngIf="f['presionArterial'].touched && f['presionArterial'].errors" class="invalid-feedback">
-                                <div *ngIf="f['presionArterial'].errors['pattern']">Formato inválido. Use ej: 120/80</div>
-                            </div>
+                            <label for="presionSistolica">P. Sistólica (mmHg)</label>
+                            <input id="presionSistolica" type="number" formControlName="presionSistolica"
+                                class="form-control"
+                                [class.is-invalid]="f['presionSistolica'].touched && f['presionSistolica'].errors"
+                                placeholder="Ej: 120">
                         </div>
 
+                        <div class="form-group">
+                            <label for="presionDiastolica">P. Diastólica (mmHg)</label>
+                            <input id="presionDiastolica" type="number" formControlName="presionDiastolica"
+                                class="form-control"
+                                [class.is-invalid]="f['presionDiastolica'].touched && f['presionDiastolica'].errors"
+                                placeholder="Ej: 80">
+                        </div>
                         <div class="form-group">
                             <label for="temperatura">Temperatura (°C)</label>
                             <input id="temperatura" type="number" formControlName="temperatura" class="form-control"
@@ -70,11 +76,12 @@
 
                         <div class="form-group">
                             <label for="saturacionOxigeno">Saturación O₂ (%)</label>
-                            <input id="saturacionOxigeno" type="number" formControlName="saturacionOxigeno" class="form-control"
+                            <input id="saturacionOxigeno" type="number" formControlName="saturacionOxigeno"
+                                class="form-control"
                                 [class.is-invalid]="f['saturacionOxigeno'].touched && f['saturacionOxigeno'].errors">
                         </div>
                     </div>
-                    
+
                     <div class="form-actions">
                         <button type="button" class="btn btn-secondary" (click)="limpiarFormulario()">Limpiar</button>
                         <button type="submit" class="btn btn-success" [disabled]="triajeForm.invalid || cargando">
@@ -91,7 +98,7 @@
             </div>
             <div class="card-body">
                 <div *ngIf="cargando" class="loading-historial">Cargando historial...</div>
-                
+
                 <div *ngIf="!cargando && historialTriajes.length === 0" class="no-historial">
                     Este paciente no tiene registros de triaje anteriores.
                 </div>

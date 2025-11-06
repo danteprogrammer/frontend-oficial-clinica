@@ -4,7 +4,7 @@
     padding: 20px;
     background: white;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .form-container h2 {
@@ -198,4 +198,31 @@
     .btn-registrar {
         width: 100%;
     }
+}
+
+/* ... (al final del archivo) ... */
+.resultados-busqueda {
+    position: absolute;
+    width: 100%;
+    background-color: white;
+    border: 1px solid #DFE0EB;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+    margin-top: 5px;
+    /* <-- AÑADIR ESTA LÍNEA */
+}
+
+.resultado-item {
+    padding: 12px 15px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.resultado-item:hover {
+    background-color: #f7f8fc;
 }

@@ -131,6 +131,11 @@
                         placeholder="Ej: Paracetamol" required>
                 </div>
                 <div class="form-group">
+                    <label for="cantidad-{{i}}">Cantidad</label>
+                    <input id="cantidad-{{i}}" type="text" formControlName="cantidad" 
+                        placeholder="Ej: 1 caja" required>
+                </div>
+                <div class="form-group">
                     <label for="dosis-{{i}}">Dosis/Presentación</label>
                     <input id="dosis-{{i}}" type="text" formControlName="dosis" placeholder="Ej: 500 mg">
                 </div>

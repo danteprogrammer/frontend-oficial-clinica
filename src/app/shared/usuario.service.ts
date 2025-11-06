@@ -61,6 +61,13 @@ export class UsuarioService {
     );
   }
 
+  // --- AÑADIR ESTE NUEVO MÉTODO ---
+  inactivarUsuario(id: number): Observable<UsuarioResponse> {
+    return this.http.put<UsuarioResponse>(`${this.apiUrl}/${id}/inactivar`, {}).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Ocurrió un error desconocido.';
     if (error.error?.message) {

@@ -105,7 +105,11 @@
                     <td>{{ user.medicoAsociado }}</td>
                     <td class="acciones">
                         <button class="btn-accion btn-editar" (click)="cargarUsuarioParaEditar(user)">
-                            <i class="fas fa-edit"></i>
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn-accion btn-eliminar" (click)="inactivarUsuario(user)"
+                            [disabled]="user.estado === 'INACTIVO' || user.rolNombre === 'ADMIN'">
+                            <i class="fas fa-ban"></i> Inactivar
                         </button>
                     </td>
                 </tr>

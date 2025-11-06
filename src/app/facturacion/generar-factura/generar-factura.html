@@ -1,7 +1,6 @@
 <div class="facturacion-container no-print">
   <h2><i class="fas fa-file-invoice-dollar"></i> Generar Factura / Boleta</h2>
 
-  <!-- 1. Buscar Paciente -->
   <div class="card">
     <div class="card-header">
       <h4>1. Buscar Paciente por DNI</h4>
@@ -17,28 +16,38 @@
     </div>
   </div>
 
-  <!-- 2. Seleccionar Cita -->
   <div class="card mt-4" *ngIf="citasPendientes.length > 0 && !citaSeleccionada">
     <div class="card-header">
       <h4>2. Seleccionar Cita a Pagar</h4>
     </div>
-    <div class="card-body">
-      <div class="list-group">
-        <button *ngFor="let cita of citasPendientes"
-                (click)="seleccionarCita(cita)"
-                class="list-group-item list-group-item-action">
-          <div class="cita-info">
-            <div><strong>{{ cita.especialidad }}</strong></div>
-            <div>{{ cita.medico }}</div>
-            <div>{{ cita.fecha | date:'dd/MM/yyyy' }} a las {{ cita.hora }}</div>
-          </div>
-          <span class="badge bg-primary rounded-pill">S/ {{ cita.precioConsulta }}</span>
-        </button>
-      </div>
+    <div class="card-body table-container-facturacion">
+      <table class="table-facturacion">
+        <thead>
+          <tr>
+            <th>Especialidad</th>
+            <th>Médico</th>
+            <th>Fecha y Hora</th>
+            <th>Precio</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cita of citasPendientes">
+            <td>{{ cita.especialidad }}</td>
+            <td>{{ cita.medico }}</td>
+            <td>{{ cita.fecha | date:'dd/MM/yyyy' }} a las {{ cita.hora }}</td>
+            <td>S/ {{ cita.precioConsulta }}</td>
+            <td>
+              <button class="btn btn-sm btn-primary" (click)="seleccionarCita(cita)">
+                Seleccionar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <!-- 3. Procesar Pago -->
   <div class="card mt-4" *ngIf="citaSeleccionada">
     <div class="card-header">
       <h4>3. Procesar Pago</h4>
@@ -46,10 +55,13 @@
     <div class="card-body">
       <h5>Detalles de la Cita</h5>
       <div class="cita-detalles">
-        <p><strong>Paciente:</strong> {{ citaSeleccionada.nombresPaciente }} {{ citaSeleccionada.apellidosPaciente }} (DNI: {{ citaSeleccionada.dniPaciente }})</p>
-        <p><strong>Fecha y Hora:</strong> {{ citaSeleccionada.fecha | date:'fullDate' }} a las {{ citaSeleccionada.hora }}</p>
+        <p><strong>Paciente:</strong> {{ citaSeleccionada.nombresPaciente }} {{ citaSeleccionada.apellidosPaciente }}
+          (DNI: {{ citaSeleccionada.dniPaciente }})</p>
+        <p><strong>Fecha y Hora:</strong> {{ citaSeleccionada.fecha | date:'fullDate' }} a las {{ citaSeleccionada.hora
+          }}</p>
         <p><strong>Especialidad:</strong> {{ citaSeleccionada.especialidad }}</p>
-        <p><strong>Consultorio:</strong> {{ citaSeleccionada.consultorioNumero }} - {{ citaSeleccionada.consultorioDescripcion }}</p>
+        <p><strong>Consultorio:</strong> {{ citaSeleccionada.consultorioNumero }} - {{
+          citaSeleccionada.consultorioDescripcion }}</p>
         <p><strong>Médico:</strong> {{ citaSeleccionada.medico }}</p>
       </div>
 
@@ -70,10 +82,10 @@
             </button>
           </div>
 
-          <!-- Datos del Seguro -->
+
           <div *ngIf="modoPago === 'seguro'">
             <h5><i class="fas fa-id-card"></i> Datos del Seguro</h5>
-            <div class="form-grid">
+            <div class="form-grid-seguro">
               <div class="form-group">
                 <label>Aseguradora</label>
                 <input type="text" formControlName="nombreAseguradora" class="form-control">
@@ -82,7 +94,7 @@
                 <label>N° de Póliza</label>
                 <input type="text" formControlName="numeroPoliza" class="form-control">
               </div>
-              <div class="form-group">
+              <div class="form-group full-width-seguro">
                 <label>Cobertura / Plan</label>
                 <input type="text" formControlName="cobertura" class="form-control">
               </div>
@@ -99,7 +111,6 @@
             </div>
           </div>
 
-          <!-- Pago Directo -->
           <div *ngIf="modoPago === 'directo'">
             <h5><i class="fas fa-cash-register"></i> Pago Directo</h5>
             <div class="form-group">
@@ -115,10 +126,10 @@
 
         <hr>
 
-        <!-- Total -->
         <div class="total-section">
-          <h4>Total a Pagar: 
-            <span>S/ {{ (modoPago === 'seguro' && seguroValidado) ? '0.00' : citaSeleccionada.precioConsulta }}</span>
+          <h4>Total a Pagar:
+            <span>S/ {{ (modoPago === 'seguro' && seguroValidado) ? '0.00' : citaSeleccionada.precioConsulta |
+              number:'1.2-2' }}</span>
           </h4>
           <small *ngIf="modoPago === 'seguro' && seguroValidado">(Cubierto por seguro)</small>
         </div>
@@ -132,14 +143,13 @@
         </div>
       </form>
 
-      <!-- Botones -->
       <div class="form-actions">
         <button type="button" (click)="citaSeleccionada = null; modoPago = 'directo'" class="btn btn-secondary">
           Cancelar
         </button>
         <button type="button" (click)="generarComprobante()" class="btn btn-success"
-          [disabled]="modoPago === 'seguro' && !seguroValidado">
-          <i class="fas fa-print"></i> Generar Comprobante
+          [disabled]="(modoPago === 'seguro' && !seguroValidado) || cargando"> <i class="fas fa-print"></i>
+          {{ cargando ? 'Registrando Pago...' : 'Generar Comprobante' }}
         </button>
       </div>
     </div>

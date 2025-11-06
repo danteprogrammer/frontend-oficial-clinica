@@ -258,3 +258,58 @@
     width: 100%;
   }
 }
+
+/* --- NUEVOS ESTILOS PARA TABLA DE CITAS PENDIENTES --- */
+.table-container-facturacion {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table-facturacion {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.table-facturacion th,
+.table-facturacion td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table-facturacion th {
+  background-color: #f8f9fa;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.table-facturacion tbody tr:hover {
+  background-color: var(--primary-lightest);
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+}
+
+/* --- NUEVOS ESTILOS PARA FORMULARIO DE SEGURO --- */
+.form-grid-seguro {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  /* Espaciado entre campos */
+  margin-bottom: 1.5rem;
+}
+
+.form-grid-seguro .full-width-seguro {
+  grid-column: 1 / -1;
+}
+
+/* Responsive para el grid de seguro */
+@media (max-width: 576px) {
+  .form-grid-seguro {
+    grid-template-columns: 1fr;
+  }
+}

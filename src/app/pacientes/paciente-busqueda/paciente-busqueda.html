@@ -2,20 +2,20 @@
     <div class="header">
         <h2>Pacientes Registrados</h2>
         <div class="actions">
-            <button class="btn-accion" routerLink="/pacientes/nuevo">Registrar Paciente</button>
-            <button class="btn-secundario" routerLink="/pacientes/inactivos">Lista de Pacientes Inactivos</button>
+            <button class="btn btn-accion" routerLink="/pacientes/nuevo">Registrar Paciente</button>
+            <button class="btn btn-secundario" routerLink="/pacientes/inactivos">Lista de Pacientes Inactivos</button>
         </div>
     </div>
 
-    <form [formGroup]="busquedaForm" (ngSubmit)="buscarPacientes()">
+    <form [formGroup]="busquedaForm" (ngSubmit)="buscarPacientes()" class="filtros-form">
         <div class="filtros">
             <select formControlName="filtro">
                 <option value="nombre">Buscar por Nombre/Apellido</option>
                 <option value="DNI">Buscar por DNI</option>
             </select>
             <input type="text" formControlName="termino" placeholder="Ingrese término de búsqueda...">
-            <button type="submit">Buscar</button>
-            <button type="button" (click)="limpiarBusqueda()">Limpiar</button>
+            <button type="submit" class="btn btn-success">Buscar</button>
+            <button type="button" (click)="limpiarBusqueda()" class="btn btn-secondary">Limpiar</button>
         </div>
     </form>
 

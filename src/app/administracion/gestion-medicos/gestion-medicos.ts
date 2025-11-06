@@ -108,23 +108,25 @@ export class GestionMedicos implements OnInit {
     window.scrollTo(0, 0); // Subir al formulario
   }
 
-  eliminarMedico(id: number): void {
+  // --- MÉTODO MODIFICADO (ahora es inactivarMedico) ---
+  inactivarMedico(id: number): void {
     Swal.fire({
       title: '¿Está seguro?',
-      text: "No podrá revertir esta acción.",
+      text: "El médico será marcado como 'Inactivo' y no podrá ser asignado a nuevas citas.",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
+      confirmButtonColor: '#d33', // Color rojo para inactivar
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, inactivar',
       cancelButtonText: 'Cancelar'
     }).then((result: any) => {
       if (result.isConfirmed) {
         this.cargando = true;
-        this.medicoService.eliminarMedico(id).subscribe({
-          next: (response) => {
-            Swal.fire('¡Eliminado!', response.message, 'success');
-            this.cargarMedicos();
+        // --- Llama al nuevo servicio ---
+        this.medicoService.inactivarMedico(id).subscribe({
+          next: () => {
+            Swal.fire('¡Inactivado!', 'El médico ha sido inactivado.', 'success');
+            this.cargarMedicos(); // Recarga la lista
           },
           error: (err) => {
             Swal.fire('Error', err.message, 'error');

@@ -42,8 +42,10 @@ export class TriajeRegistro implements OnInit {
   ngOnInit(): void {
     this.triajeForm = this.fb.group({
       peso: [null, [Validators.required, Validators.min(1)]],
-      altura: [null, [Validators.required, Validators.min(50)]], // Altura en cm
-      presionArterial: ['', [Validators.required, Validators.pattern('^[0-9]{2,3}/[0-9]{2,3}$')]],
+      altura: [null, [Validators.required, Validators.min(50)]],
+      // presionArterial: ['', [Validators.required, Validators.pattern('^[0-9]{2,3}/[0-9]{2,3}$')]], // <-- ELIMINADO
+      presionSistolica: [null, [Validators.required, Validators.min(50), Validators.max(300)]], // <-- AÑADIDO
+      presionDiastolica: [null, [Validators.required, Validators.min(30), Validators.max(200)]], // <-- AÑADIDO
       temperatura: [null, [Validators.required, Validators.min(30), Validators.max(45)]],
       saturacionOxigeno: [null, [Validators.required, Validators.min(70), Validators.max(100)]]
     });
@@ -58,7 +60,7 @@ export class TriajeRegistro implements OnInit {
           return this.pacienteService.buscarPacientesActivos(value, filtro, 0, 5);
         }
         this.pacientesEncontrados = [];
-        return of({ content: [],totalPages:0,totalElements:0,number:0 } as PaginaPacientes);
+        return of({ content: [], totalPages: 0, totalElements: 0, number: 0 } as PaginaPacientes);
       }),
       catchError(err => {
         console.error('Error buscando pacientes', err);
@@ -123,6 +125,7 @@ export class TriajeRegistro implements OnInit {
     }
   }
 
+  // --- onSubmit MODIFICADO ---
   onSubmit(): void {
     if (this.triajeForm.invalid || !this.idHistoriaClinica) {
       Swal.fire('Datos Incompletos', 'Debe seleccionar un paciente y completar todos los campos de signos vitales.', 'error');
@@ -131,7 +134,23 @@ export class TriajeRegistro implements OnInit {
     }
 
     this.cargando = true;
-    this.triajeService.registrarTriaje(this.idHistoriaClinica, this.triajeForm.value).subscribe({
+
+    // --- LÓGICA PARA UNIR PRESIÓN ARTERIAL ---
+    const formValue = this.triajeForm.value;
+    const presionArterialCombinada = `${formValue.presionSistolica}/${formValue.presionDiastolica}`;
+
+    // Creamos el DTO para el backend
+    const datosTriaje = {
+      peso: formValue.peso,
+      altura: formValue.altura,
+      presionArterial: presionArterialCombinada, // <-- Valor combinado
+      temperatura: formValue.temperatura,
+      saturacionOxigeno: formValue.saturacionOxigeno
+      // El IMC se calcula en el backend
+    };
+    // --- FIN LÓGICA PRESIÓN ARTERIAL ---
+
+    this.triajeService.registrarTriaje(this.idHistoriaClinica, datosTriaje).subscribe({ // <-- Usamos datosTriaje
       next: () => {
         this.cargando = false;
         Swal.fire('¡Éxito!', 'Triaje registrado correctamente.', 'success');
@@ -144,6 +163,7 @@ export class TriajeRegistro implements OnInit {
       }
     });
   }
+  // --- FIN onSubmit MODIFICADO ---
 
   limpiarFormulario(): void {
     this.triajeForm.reset();

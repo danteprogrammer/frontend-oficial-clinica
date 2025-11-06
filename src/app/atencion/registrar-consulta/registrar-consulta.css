@@ -66,6 +66,8 @@
     max-height: 200px;
     overflow-y: auto;
     z-index: 100;
+    margin-top: 5px;
+    /* <-- AÑADIR ESTA LÍNEA */
 }
 
 .resultado-item {
@@ -264,11 +266,11 @@ button[type="submit"]:hover:not(:disabled) {
 
 .receta-item {
     display: grid;
-    /* 3 campos de texto + 1 botón */
-    grid-template-columns: 2.5fr 1.5fr 3fr auto;
+    /* 4 campos de texto + 1 botón */
+    grid-template-columns: 2fr 1fr 1.5fr 3fr auto;
+    /* <-- MODIFICADO */
     gap: 15px;
     align-items: flex-end;
-    /* Alinea el botón con la base de los inputs */
     padding: 15px;
     border: 1px solid #e1ebff;
     border-radius: 8px;
@@ -329,16 +331,18 @@ button[type="submit"]:hover:not(:disabled) {
 /* Responsive para la receta */
 @media (max-width: 900px) {
     .receta-item {
-        /* 2 columnas: (Medicamento + Dosis) y (Posología + Botón) */
+        /* 2 columnas: (Medicamento + Cantidad) y (Dosis + Posología) */
         grid-template-columns: 1fr 1fr;
+        /* <-- MODIFICADO */
     }
 
-    /* Hacemos que la posología ocupe todo el ancho de la segunda fila */
-    .receta-item .form-group:nth-child(3) {
+    /* Hacemos que la posología ocupe todo el ancho de la tercera fila */
+    .receta-item .form-group:nth-child(4) {
+        /* <-- MODIFICADO a 4 */
         grid-column: 1 / -1;
     }
 
-    /* Hacemos que el botón ocupe todo el ancho de la tercera fila */
+    /* Hacemos que el botón ocupe todo el ancho de la cuarta fila */
     .btn-quitar-med {
         grid-column: 1 / -1;
         margin-top: 10px;

@@ -110,6 +110,16 @@ export class MedicoService {
     );
   }
 
+  // --- AÑADIR ESTE NUEVO MÉTODO ---
+  /**
+   * Inactiva un médico
+   */
+  inactivarMedico(id: number): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}/inactivar`, {}).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   /**
    * Manejo de errores HTTP
    */

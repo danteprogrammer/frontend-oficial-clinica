@@ -164,6 +164,7 @@ export class RegistrarConsulta implements OnInit {
   agregarMedicamento() {
     const prescripcionForm = this.fb.group({
       medicamento: ['', Validators.required],
+      cantidad: ['', Validators.required],
       dosis: [''], // Ej: "500 mg", "10ml/5mg"
       posologia: ['', Validators.required] // Ej: "1 cada 8h por 7 días"
     });
@@ -196,7 +197,7 @@ export class RegistrarConsulta implements OnInit {
     if (formValue.receta.length > 0) {
       recetaTexto = '\n\n--- RECETA MÉDICA ---\n';
       formValue.receta.forEach((med: any) => {
-        recetaTexto += `- ${med.medicamento} (${med.dosis || 'N/A'}): ${med.posologia}\n`;
+        recetaTexto += `- ${med.medicamento} (Cant: ${med.cantidad || 'N/A'}) (${med.dosis || 'N/A'}): ${med.posologia}\n`;
       });
     }
 
@@ -251,13 +252,14 @@ export class RegistrarConsulta implements OnInit {
     const recetaItems = consulta.receta.map((med: any) => {
       return [
         { text: med.medicamento, bold: true, style: 'recetaText' },
+        { text: med.cantidad, style: 'recetaText' },
         { text: med.dosis, style: 'recetaText' },
         { text: med.posologia, style: 'recetaText' }
       ];
     });
 
     const recetaBody = [
-      [{ text: 'Medicamento', style: 'tableHeader' }, { text: 'Dosis/Presentación', style: 'tableHeader' }, { text: 'Indicaciones (Posología)', style: 'tableHeader' }],
+      [{ text: 'Medicamento', style: 'tableHeader' }, { text: 'Cant.', style: 'tableHeader' }, { text: 'Dosis/Presentación', style: 'tableHeader' }, { text: 'Indicaciones (Posología)', style: 'tableHeader' }],
       ...recetaItems
     ];
     // --- Fin de nueva sección ---
@@ -301,7 +303,7 @@ export class RegistrarConsulta implements OnInit {
         { text: 'Receta Médica (R/.)', style: 'sectionHeader' },
         consulta.receta.length > 0 ? {
           table: {
-            widths: ['*', 'auto', '*'], // Medicamento, Dosis, Posología
+            widths: ['*', 'auto', 'auto', '*'], // Medicamento, Cant., Dosis, Posología
             body: recetaBody
           },
           layout: 'lightHorizontalLines',

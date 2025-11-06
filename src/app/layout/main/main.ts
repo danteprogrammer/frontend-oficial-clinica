@@ -95,47 +95,77 @@ export class Main implements OnInit { // <-- IMPLEMENTAR OnInit
 
   constructor(private authService: Auth, private router: Router) { }
 
-  // 4. Nuevo método OnInit
   ngOnInit(): void {
     this.filtrarMenuPorRol();
+    this.redirectOnLogin(); // <-- AÑADIR ESTA LÍNEA
   }
 
-  // 5. Nueva lógica de filtrado
+  // --- NUEVO MÉTODO ---
+  private redirectOnLogin(): void {
+    // Solo redirigir si estamos en la ruta raíz (que redirige a 'dashboard')
+    if (this.router.url === '/' || this.router.url === '/dashboard') {
+      const role = this.authService.getRole();
+
+      switch (role) {
+        case 'ADMIN':
+          this.router.navigate(['/dashboard']);
+          break;
+        case 'RECEPCIONISTA':
+          this.router.navigate(['/pacientes/registrados']);
+          break;
+        case 'MEDICO':
+          this.router.navigate(['/atencion/registrar-consulta']);
+          break;
+        case 'CAJA':
+          this.router.navigate(['/facturacion/generar-factura']);
+          break;
+        case 'TRIAJE':
+          this.router.navigate(['/atencion/triaje']);
+          break;
+        case 'LABORATORIO':
+          this.router.navigate(['/laboratorio/pendientes']);
+          break;
+        default:
+          // Si por alguna razón no hay rol, lo saca
+          this.logout();
+          break;
+      }
+    }
+  }
+  // --- FIN NUEVO MÉTODO ---
+
   filtrarMenuPorRol(): void {
+    // ... (este método se mantiene exactamente igual a como lo tienes)
     const userRole = this.authService.getRole();
     if (!userRole) {
       this.navMenus = [];
       return;
     }
 
-    // 1. Filtra los menús principales
     this.navMenus = this.allMenus
       .filter(menu => menu.roles.includes(userRole))
       .map(menu => {
-        // 2. Si el menú tiene submenús, fíltralos también
         if (menu.submenus) {
           const submenusVisibles = menu.submenus.filter(submenu =>
             submenu.roles.includes(userRole)
           );
-          // Devuelve una copia del menú con los submenús filtrados
           return { ...menu, submenus: submenusVisibles };
         }
-        return menu; // Devuelve el menú si no tiene submenús
+        return menu;
       });
   }
 
   toggleMenu(clickedMenu: NavMenu): void {
+    // ... (este método se mantiene igual)
     if (!clickedMenu.submenus) {
       this.navMenus.forEach(menu => menu.isOpen = false);
       return;
     }
-
     this.navMenus.forEach(menu => {
       if (menu !== clickedMenu) {
         menu.isOpen = false;
       }
     });
-
     clickedMenu.isOpen = !clickedMenu.isOpen;
   }
 

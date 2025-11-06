@@ -1,12 +1,25 @@
+/* Usaremos los estilos de cita-lista.css, así que podemos reducir este archivo */
+/* O mejor, para mantenerlo modular, copiemos los estilos relevantes */
 .busqueda-container {
-
+    padding: 20px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
 }
 
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.header h2 {
+    color: #333;
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 600;
 }
 
 .actions {
@@ -14,77 +27,222 @@
     gap: 10px;
 }
 
-.btn-accion,
-.btn-secundario {
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-}
-
+/* Estilos de botones del header (reutilizados de styles.css pero mejor ser explícitos) */
 .btn-accion {
-    background-color: #005792;
+    background-color: var(--primary-main);
     color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    /* Para el link */
+    display: inline-block;
+    /* Para el link */
+}
+
+.btn-accion:hover {
+    background-color: #0056b3;
 }
 
 .btn-secundario {
-    background-color: #e9ecef;
-    color: #495057;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    /* Para el link */
+    display: inline-block;
+    /* Para el link */
+}
+
+.btn-secundario:hover {
+    background-color: #5a6268;
+}
+
+/* Formulario de filtros */
+.filtros-form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }
 
 .filtros {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .filtros select,
-.filtros input {
-    padding: 10px;
-    border: 1px solid #ccc;
+.filtros input[type="text"] {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
     border-radius: 4px;
+    font-size: 14px;
 }
 
-.filtros input {
+.filtros select {
+    min-width: 180px;
+}
+
+.filtros input[type="text"] {
     flex-grow: 1;
+    /* Ocupa el espacio disponible */
+    min-width: 250px;
 }
 
+/* Botones dentro del filtro */
+.filtros button {
+    border: none;
+    padding: 9px 16px;
+    /* 9px para alinear con inputs */
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
 
+.filtros button[type="submit"] {
+    background-color: #28a745;
+    color: white;
+}
+
+.filtros button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+.filtros button[type="button"] {
+    background-color: #6c757d;
+    color: white;
+}
+
+.filtros button[type="button"]:hover {
+    background-color: #5a6268;
+}
+
+/* Contenedor de resultados y tabla */
+.resultados-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    /* Para que la tabla respete los bordes */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: 600;
+    padding: 15px 12px;
+    text-align: left;
+    border-bottom: 2px solid #dee2e6;
+}
+
+td {
+    padding: 15px 12px;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
+    /* Centra verticalmente */
+}
+
+tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.no-resultados {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+}
+
+/* Botones de acción en la tabla */
 .acciones-botones {
     display: flex;
-    gap: 8px;
+    gap: 5px;
+    flex-wrap: wrap;
 }
 
 .btn-accion-tabla {
-    padding: 5px 10px;
-    border-radius: 5px;
+    padding: 4px 8px;
     border: none;
-    color: white;
+    border-radius: 3px;
     cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    /* Para el <a> */
+    display: inline-block;
 }
 
 .btn-modificar {
-    background-color: #007bff;
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-modificar:hover {
+    background-color: #e0a800;
 }
 
 .btn-inactivar {
     background-color: #dc3545;
+    color: white;
 }
 
+.btn-inactivar:hover {
+    background-color: #c82333;
+}
+
+/* Paginación */
 .paginacion {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 15px;
-    margin-top: 20px;
+    gap: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
 }
 
 .paginacion button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
 
+.paginacion button:hover:not(:disabled) {
+    background-color: #0056b3;
 }
 
 .paginacion button:disabled {
-    background-color: #ccc;
+    background-color: #6c757d;
     cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.paginacion span {
+    font-weight: 500;
+    color: #333;
 }

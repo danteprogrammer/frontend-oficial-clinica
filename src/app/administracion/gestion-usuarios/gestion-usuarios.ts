@@ -146,6 +146,40 @@ export class GestionUsuarios implements OnInit {
     window.scrollTo(0, 0); // Subir al formulario
   }
 
+  // --- AÑADIR ESTE NUEVO MÉTODO ---
+  inactivarUsuario(usuario: UsuarioResponse): void {
+    if (usuario.rolNombre === 'ADMIN') {
+      Swal.fire('Acción no permitida', 'No se puede inactivar al usuario Administrador.', 'error');
+      return;
+    }
+
+    Swal.fire({
+      title: '¿Está seguro?',
+      text: `El usuario '${usuario.nombreUsuario}' será marcado como 'Inactivo' y no podrá iniciar sesión.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, inactivar',
+      cancelButtonText: 'Cancelar'
+    }).then((result: any) => {
+      if (result.isConfirmed) {
+        this.cargando = true;
+        this.usuarioService.inactivarUsuario(usuario.idUsuario).subscribe({
+          next: () => {
+            Swal.fire('¡Inactivado!', 'El usuario ha sido inactivado.', 'success');
+            this.cargarDatosIniciales(); // Recarga la lista
+          },
+          error: (err) => {
+            Swal.fire('Error', err.message, 'error');
+            this.cargando = false;
+          }
+        });
+      }
+    });
+  }
+
+
   resetFormulario(): void {
     this.usuarioForm.reset({
       estado: 'ACTIVO',

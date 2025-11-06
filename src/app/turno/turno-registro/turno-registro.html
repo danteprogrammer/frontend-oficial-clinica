@@ -50,7 +50,7 @@
                     <select id="medicoId" formControlName="medicoId" (change)="onMedicoChange()">
                         <option value="" disabled>Seleccione...</option>
                         <option *ngFor="let med of medicos" [value]="med.idMedico">
-                            Dr. {{ med.nombres }} {{ med.apellidos }}
+                            {{ med.sexo === 'Femenino' ? 'Dra.' : 'Dr.' }} {{ med.nombres }} {{ med.apellidos }}
                         </option>
                     </select>
                 </div>
