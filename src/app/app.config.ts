@@ -6,7 +6,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { tokenInterceptor } from './shared/token-interceptor';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
-import { registerLocaleData } from '@angular/common';
+import { registerLocaleData, DatePipe, TitleCasePipe } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 
 registerLocaleData(localeEs);
@@ -21,6 +21,8 @@ export const appConfig: ApplicationConfig = {
     ),
     provideCharts(withDefaultRegisterables()),
     { provide: LOCALE_ID, useValue: 'es' },
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    DatePipe,
+    TitleCasePipe
   ]
 };
