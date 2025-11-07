@@ -1,0 +1,62 @@
+<div class="historial-container">
+    <h2><i class="fas fa-history"></i> Historial de Resultados de Laboratorio</h2>
+    <p class="subtitle">Lista de todas las órdenes completadas.</p>
+
+    <div class="card-filtros">
+        <form [formGroup]="filtroForm" class="filtros-form">
+            <div class="form-group">
+                <label for="termino">Buscar por Paciente (Nombre o DNI)</label>
+                <input id="termino" type="text" formControlName="termino" placeholder="Escriba para buscar...">
+            </div>
+            <div class="form-group">
+                <label for="fecha">Filtrar por Fecha de Resultado</label>
+                <input id="fecha" type="date" formControlName="fecha">
+            </div>
+            <button type="button" (click)="limpiarFiltros()" class="btn btn-secondary">Limpiar Filtros</button>
+        </form>
+    </div>
+
+    <div *ngIf="cargando" class="loading-container">
+        <p>Cargando historial...</p>
+    </div>
+
+    <div *ngIf="error" class="error-container">
+        <p>{{ error }}</p>
+    </div>
+
+    <div *ngIf="!cargando && !error && ordenesFiltradas.length === 0" class="no-data-container">
+        <p *ngIf="ordenesCompletadas.length === 0">No se encontraron resultados completados.</p>
+        <p *ngIf="ordenesCompletadas.length > 0">No hay órdenes que coincidan con los filtros aplicados.</p>
+    </div>
+
+    <div *ngIf="!cargando && !error && ordenesFiltradas.length > 0" class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>N° Orden</th>
+                    <th>Paciente</th>
+                    <th>DNI</th>
+                    <th>Solicitó (Médico)</th>
+                    <th>Fecha Orden</th>
+                    <th>Fecha Resultado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let orden of ordenesFiltradas">
+                    <td>{{ orden.idOrden }}</td>
+                    <td>{{ orden.historiaClinica.paciente.nombres }} {{ orden.historiaClinica.paciente.apellidos }}</td>
+                    <td>{{ orden.historiaClinica.paciente.dni }}</td>
+                    <td>Dr(a). {{ orden.medico.nombres }} {{ orden.medico.apellidos }}</td>
+                    <td>{{ orden.fechaOrden | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ orden.fechaResultados | date:'dd/MM/yyyy' }}</td>
+                    <td class="acciones">
+                        <button class="btn-accion btn-ver" (click)="verResultados(orden)">
+                            <i class="fas fa-eye"></i> Ver Resultados
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

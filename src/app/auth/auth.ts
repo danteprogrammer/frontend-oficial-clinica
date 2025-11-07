@@ -1,11 +1,10 @@
-import { Injectable, signal } from '@angular/core'; // <-- AÑADIDO signal
+import { Injectable, signal } from '@angular/core'; 
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router'; // <-- AÑADIDO Router
-import { Observable, throwError, of } from 'rxjs'; // <-- AÑADIDO throwError, of
-import { tap, catchError } from 'rxjs/operators'; // <-- AÑADIDO catchError
-import { jwtDecode } from 'jwt-decode'; // <-- AÑADIDO (recuerda instalarlo)
+import { Router } from '@angular/router'; 
+import { Observable, throwError, of } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
+import { jwtDecode } from 'jwt-decode'; 
 
-// --- NUEVA INTERFAZ (OPCIONAL PERO RECOMENDADA) ---
 export interface MedicoInfo {
   id: number;
   nombres: string;
@@ -22,7 +21,7 @@ export class Auth {
 
   private decodedToken: any | null = null;
   private userRole = signal<string | null>(null);
-  private medicoInfo = signal<MedicoInfo | null>(null); // <-- NUEVO SIGNAL
+  private medicoInfo = signal<MedicoInfo | null>(null); 
 
   constructor(private http: HttpClient, private router: Router) {
     this.loadToken();
@@ -35,7 +34,6 @@ export class Auth {
         try {
           this.decodedToken = jwtDecode(token);
 
-          // --- LÓGICA DE ROL Y DATOS DE MÉDICO ---
           const role = this.decodedToken.authorities?.[0]?.authority;
           if (role) {
             this.userRole.set(role);
@@ -45,7 +43,6 @@ export class Auth {
           if (medico) {
             this.medicoInfo.set(medico);
           }
-          // --- FIN LÓGICA ---
 
         } catch (Error) {
           console.error('Error al decodificar el token:', Error);
@@ -61,7 +58,6 @@ export class Auth {
         tap(response => {
           this.saveToken(response.token);
 
-          // --- LÓGICA DE ROL Y DATOS DE MÉDICO ---
           try {
             this.decodedToken = jwtDecode(response.token);
             const role = this.decodedToken.authorities?.[0]?.authority;
@@ -78,11 +74,10 @@ export class Auth {
             this.userRole.set(null);
             this.medicoInfo.set(null);
           }
-          // --- FIN LÓGICA ---
         }),
         catchError((err: HttpErrorResponse) => {
           this.userRole.set(null);
-          this.medicoInfo.set(null); // <-- LIMPIAR
+          this.medicoInfo.set(null); 
           return throwError(() => err);
         })
       );
@@ -100,8 +95,8 @@ export class Auth {
     localStorage.removeItem('authToken');
     this.decodedToken = null;
     this.userRole.set(null);
-    this.medicoInfo.set(null); // <-- LIMPIAR
-    // this.router.navigate(['/login']); // Main.ts se encargará de esto
+    this.medicoInfo.set(null);
+
   }
 
   isLoggedIn(): boolean {
@@ -112,14 +107,9 @@ export class Auth {
     return this.userRole();
   }
 
-  // --- NUEVO MÉTODO ---
-  /**
-   * Devuelve la información del médico logueado, si existe.
-   */
   getMedicoInfo(): MedicoInfo | null {
     return this.medicoInfo();
   }
-  // --- FIN NUEVO MÉTODO ---
 
   hasAnyRole(roles: string[]): boolean {
     const currentRole = this.getRole();

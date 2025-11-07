@@ -3,9 +3,9 @@ import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } 
 import { CommonModule, DatePipe } from '@angular/common';
 import { Observable, of } from 'rxjs';
 import { debounceTime, switchMap, catchError } from 'rxjs/operators';
-import { Paciente, PaginaPacientes, Paciente as PacienteServiceClase } from '../../pacientes/paciente'; // Renombramos PacienteService
-import { ConsultaService } from '../registrar-consulta/registrar-consulta'; // Reutilizamos este servicio
-import { TriajeService } from '../../shared/triaje.service'; // Importamos el nuevo servicio
+import { Paciente, PaginaPacientes, Paciente as PacienteServiceClase } from '../../pacientes/paciente';
+import { ConsultaService } from '../../shared/consulta.service';
+import { TriajeService } from '../../shared/triaje.service'; 
 
 declare var Swal: any;
 
@@ -18,44 +18,38 @@ declare var Swal: any;
 })
 export class TriajeRegistro implements OnInit {
 
-  // Búsqueda
   pacienteBusquedaControl = new FormControl();
   pacientesEncontrados: Paciente[] = [];
   pacienteSeleccionado: Paciente | null = null;
   idHistoriaClinica: number | null = null;
 
-  // Formulario
   triajeForm!: FormGroup;
   imcCalculado: number | null = null;
 
-  // Historial
   historialTriajes: any[] = [];
   cargando = false;
 
   constructor(
     private fb: FormBuilder,
-    private pacienteService: PacienteServiceClase, // Usamos el nombre renombrado
-    private consultaService: ConsultaService,   // Para obtener la historia
-    private triajeService: TriajeService      // El nuevo servicio
+    private pacienteService: PacienteServiceClase, 
+    private consultaService: ConsultaService,  
+    private triajeService: TriajeService 
   ) { }
 
   ngOnInit(): void {
     this.triajeForm = this.fb.group({
       peso: [null, [Validators.required, Validators.min(1)]],
       altura: [null, [Validators.required, Validators.min(50)]],
-      // presionArterial: ['', [Validators.required, Validators.pattern('^[0-9]{2,3}/[0-9]{2,3}$')]], // <-- ELIMINADO
-      presionSistolica: [null, [Validators.required, Validators.min(50), Validators.max(300)]], // <-- AÑADIDO
-      presionDiastolica: [null, [Validators.required, Validators.min(30), Validators.max(200)]], // <-- AÑADIDO
+      presionSistolica: [null, [Validators.required, Validators.min(50), Validators.max(300)]], 
+      presionDiastolica: [null, [Validators.required, Validators.min(30), Validators.max(200)]], 
       temperatura: [null, [Validators.required, Validators.min(30), Validators.max(45)]],
       saturacionOxigeno: [null, [Validators.required, Validators.min(70), Validators.max(100)]]
     });
 
-    // Búsqueda de paciente
     this.pacienteBusquedaControl.valueChanges.pipe(
       debounceTime(300),
       switchMap(value => {
         if (value && value.length > 2) {
-          // Buscamos por DNI o nombre
           const filtro = /^\d+$/.test(value) ? 'DNI' : 'nombre';
           return this.pacienteService.buscarPacientesActivos(value, filtro, 0, 5);
         }
@@ -70,7 +64,6 @@ export class TriajeRegistro implements OnInit {
       this.pacientesEncontrados = pagina.content;
     });
 
-    // Cálculo automático de IMC
     this.triajeForm.get('peso')?.valueChanges.subscribe(() => this.calcularIMC());
     this.triajeForm.get('altura')?.valueChanges.subscribe(() => this.calcularIMC());
   }
@@ -83,11 +76,9 @@ export class TriajeRegistro implements OnInit {
     this.historialTriajes = [];
     this.idHistoriaClinica = null;
 
-    // 1. Obtener la Historia Clínica
     this.consultaService.obtenerHistoriaPorPacienteId(paciente.idPaciente!).subscribe({
       next: (historia) => {
         this.idHistoriaClinica = historia.idHistoriaClinica;
-        // 2. Obtener el historial de triajes
         this.cargarHistorial();
       },
       error: (err) => {
@@ -125,7 +116,6 @@ export class TriajeRegistro implements OnInit {
     }
   }
 
-  // --- onSubmit MODIFICADO ---
   onSubmit(): void {
     if (this.triajeForm.invalid || !this.idHistoriaClinica) {
       Swal.fire('Datos Incompletos', 'Debe seleccionar un paciente y completar todos los campos de signos vitales.', 'error');
@@ -135,27 +125,23 @@ export class TriajeRegistro implements OnInit {
 
     this.cargando = true;
 
-    // --- LÓGICA PARA UNIR PRESIÓN ARTERIAL ---
     const formValue = this.triajeForm.value;
     const presionArterialCombinada = `${formValue.presionSistolica}/${formValue.presionDiastolica}`;
 
-    // Creamos el DTO para el backend
     const datosTriaje = {
       peso: formValue.peso,
       altura: formValue.altura,
-      presionArterial: presionArterialCombinada, // <-- Valor combinado
+      presionArterial: presionArterialCombinada, 
       temperatura: formValue.temperatura,
       saturacionOxigeno: formValue.saturacionOxigeno
-      // El IMC se calcula en el backend
     };
-    // --- FIN LÓGICA PRESIÓN ARTERIAL ---
 
-    this.triajeService.registrarTriaje(this.idHistoriaClinica, datosTriaje).subscribe({ // <-- Usamos datosTriaje
+    this.triajeService.registrarTriaje(this.idHistoriaClinica, datosTriaje).subscribe({
       next: () => {
         this.cargando = false;
         Swal.fire('¡Éxito!', 'Triaje registrado correctamente.', 'success');
         this.limpiarFormulario();
-        this.cargarHistorial(); // Recargar el historial
+        this.cargarHistorial(); 
       },
       error: (err) => {
         this.cargando = false;
@@ -163,7 +149,6 @@ export class TriajeRegistro implements OnInit {
       }
     });
   }
-  // --- FIN onSubmit MODIFICADO ---
 
   limpiarFormulario(): void {
     this.triajeForm.reset();

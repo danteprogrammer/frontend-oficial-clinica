@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MedicoService } from '../../shared/medico.service';
-import { Medico } from '../../shared/medico.service'; // Asegúrate de tener la interfaz Medico
+import { Medico } from '../../shared/medico.service'; 
 
 declare var Swal: any;
 
@@ -57,7 +57,7 @@ export class GestionMedicos implements OnInit {
 
   onSubmit(): void {
     if (this.medicoForm.invalid) {
-      this.medicoForm.markAllAsTouched(); // Marcar todos los campos para mostrar errores
+      this.medicoForm.markAllAsTouched(); 
       return;
     }
 
@@ -65,7 +65,6 @@ export class GestionMedicos implements OnInit {
     const medicoData = this.medicoForm.value;
 
     if (this.modoEdicion && this.idMedicoEditar) {
-      // --- MODO ACTUALIZAR ---
       this.medicoService.actualizarMedico(this.idMedicoEditar, medicoData).subscribe({
         next: (response) => {
           Swal.fire('¡Actualizado!', response.message, 'success');
@@ -77,7 +76,6 @@ export class GestionMedicos implements OnInit {
         }
       });
     } else {
-      // --- MODO CREAR ---
       this.medicoService.crearMedico(medicoData).subscribe({
         next: (response) => {
           Swal.fire('¡Creado!', response.message, 'success');
@@ -105,28 +103,26 @@ export class GestionMedicos implements OnInit {
       licenciaMedica: medico.licenciaMedica,
       estado: medico.estado
     });
-    window.scrollTo(0, 0); // Subir al formulario
+    window.scrollTo(0, 0);
   }
 
-  // --- MÉTODO MODIFICADO (ahora es inactivarMedico) ---
   inactivarMedico(id: number): void {
     Swal.fire({
       title: '¿Está seguro?',
       text: "El médico será marcado como 'Inactivo' y no podrá ser asignado a nuevas citas.",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33', // Color rojo para inactivar
+      confirmButtonColor: '#d33', 
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Sí, inactivar',
       cancelButtonText: 'Cancelar'
     }).then((result: any) => {
       if (result.isConfirmed) {
         this.cargando = true;
-        // --- Llama al nuevo servicio ---
         this.medicoService.inactivarMedico(id).subscribe({
           next: () => {
             Swal.fire('¡Inactivado!', 'El médico ha sido inactivado.', 'success');
-            this.cargarMedicos(); // Recarga la lista
+            this.cargarMedicos(); 
           },
           error: (err) => {
             Swal.fire('Error', err.message, 'error');
@@ -148,7 +144,6 @@ export class GestionMedicos implements OnInit {
     this.cargarMedicos();
   }
 
-  // --- Funciones de ayuda para mostrar errores de validación ---
   get f() { return this.medicoForm.controls; }
 
   esCampoInvalido(campo: string): boolean {

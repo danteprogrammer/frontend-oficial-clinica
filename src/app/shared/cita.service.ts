@@ -11,21 +11,13 @@ export class CitaService {
 
   constructor(private http: HttpClient) { }
 
-  /**
- * Obtiene todas las citas (público, sin token)
- */
   getCitasPublicas(): Observable<any[]> {
-    // No incluimos headers ni token
     return this.http.get<any[]>(this.apiUrl).pipe(
       retry(2),
       catchError(this.handleError)
     );
   }
 
-
-  /**
-   * Obtiene todas las citas
-   */
   getCitas(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl).pipe(
       retry(2),
@@ -33,98 +25,66 @@ export class CitaService {
     );
   }
 
-  /**
-   * Obtiene una cita por ID
-   */
   getCita(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  /**
-   * Registra una nueva cita
-   */
+
   registrarCita(cita: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, cita).pipe(
       catchError(this.handleError)
     );
   }
 
-
-  /**
-   * Actualiza el estado de una cita
-   */
   actualizarEstado(id: number, estado: string): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/${id}/estado?estado=${estado}`, {});
   }
 
-  /**
-   * Cancela una cita
-   */
   cancelarCita(id: number): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/${id}/cancelar`, {}).pipe(
       catchError(this.handleError)
     );
   }
 
-  /**
-   * Completa una cita
-   */
   completarCita(id: number): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/${id}/completar`, {}).pipe(
       catchError(this.handleError)
     );
   }
 
-  /**
-   * Elimina una cita
-   */
+
   eliminarCita(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  /**
-   * Obtiene citas por fecha
-   */
   getCitasPorFecha(fecha: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/fecha/${fecha}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  /**
-   * Obtiene citas por paciente
-   */
   getCitasPorPaciente(pacienteId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/paciente/${pacienteId}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  /**
-   * Obtiene citas por consultorio
-   */
   getCitasPorConsultorio(consultorioId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/consultorio/${consultorioId}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  /**
-     * Actualiza una cita existente
-     */
   actualizarCita(id: number, cita: any): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/${id}`, cita).pipe(
       catchError(this.handleError)
     );
   }
 
-  /**
-   * Manejo de errores HTTP
-   */
   private handleError(error: HttpErrorResponse) {
     let errorMessage = '';
 

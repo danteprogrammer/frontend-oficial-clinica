@@ -11,7 +11,6 @@ import { ConsultorioService } from '../shared/consultorio.service';
 })
 export class Consultorio implements OnInit {
 
-  // Datos que se cargarán desde la API
   consultorios: any[] = [];
 
   loading: boolean = false;
@@ -40,7 +39,6 @@ export class Consultorio implements OnInit {
         this.handleError(error);
         this.loading = false;
 
-        // Si hay error 403, intentar con retry automático después de 2 segundos
         if (error.message && error.message.includes('403')) {
           setTimeout(() => {
             console.log('Reintentando cargar consultorios...');
@@ -61,15 +59,12 @@ export class Consultorio implements OnInit {
     }
   }
 
-  // Método para recargar los datos
   recargarDatos(): void {
     this.cargarConsultorios();
   }
 
-  // Propiedad para el filtro de estado
   filtroEstado: string = 'Todos';
 
-  // Getter para consultorios filtrados
   get consultoriosFiltrados(): any[] {
     if (this.filtroEstado === 'Todos') {
       return this.consultorios;
@@ -77,7 +72,6 @@ export class Consultorio implements OnInit {
     return this.consultorios.filter(c => c.estado === this.filtroEstado);
   }
 
-  // Método para contar consultorios por estado
   getCountByEstado(estado: string): number {
     return this.consultorios.filter(c => c.estado === estado).length;
   }

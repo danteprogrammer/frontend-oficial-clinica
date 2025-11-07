@@ -62,7 +62,8 @@ export class Main implements OnInit {
       isOpen: false,
       roles: ['LABORATORIO'],
       submenus: [
-        { name: 'Órdenes Pendientes', path: '/laboratorio/pendientes', roles: ['LABORATORIO'] }
+        { name: 'Órdenes Pendientes', path: '/laboratorio/pendientes', roles: ['LABORATORIO'] },
+        { name: 'Historial de Resultados', path: '/laboratorio/historial', roles: ['LABORATORIO'] }
       ]
     },
     {

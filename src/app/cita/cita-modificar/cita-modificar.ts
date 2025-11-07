@@ -59,7 +59,6 @@ export class CitaModificar implements OnInit {
           estado: cita.estado
         });
 
-        // Cargar los médicos de la misma especialidad y el horario
         this.cargarMedicosPorEspecialidad(cita.medico.especialidad);
         this.cargarHorarioMedico(cita.medico.idMedico);
 
@@ -84,7 +83,7 @@ export class CitaModificar implements OnInit {
       next: (data) => {
         this.horarioMedico = data;
         this.diasDisponibles = Object.keys(data).sort();
-        this.onFechaChange(); // para popular las horas iniciales
+        this.onFechaChange(); 
       },
       error: (err) => this.mensajeError = "No se pudo cargar el horario del médico."
     });
@@ -121,9 +120,8 @@ export class CitaModificar implements OnInit {
     this.cargando = true;
     const formData = this.modificarForm.value;
 
-    // Solo necesitamos enviar los campos que pueden cambiar
     const datosActualizados = {
-      ...this.citaOriginal, // Empezamos con los datos originales
+      ...this.citaOriginal,
       medico: { idMedico: formData.medicoId },
       fecha: formData.fecha,
       hora: formData.hora,

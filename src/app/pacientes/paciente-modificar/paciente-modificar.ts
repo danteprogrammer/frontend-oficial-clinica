@@ -23,7 +23,6 @@ export class PacienteModificar implements OnInit {
     private route: ActivatedRoute
   ) {
     this.modificarForm = this.fb.group({
-      // Datos Personales
       nombres: ['', Validators.required],
       apellidos: ['', Validators.required],
       sexo: ['', Validators.required],
@@ -31,11 +30,9 @@ export class PacienteModificar implements OnInit {
       direccion: [''],
       telefono: ['', [Validators.pattern('^[0-9]{9}$')]],
       email: ['', [Validators.email]],
-      // Historia Clínica
       alergias: [''],
       antecedentes: [''],
       enfermedadesCronicas: [''],
-      // --- NUEVOS CAMPOS DE SEGURO ---
       nombreAseguradora: [''],
       numeroPoliza: [''],
       cobertura: ['']

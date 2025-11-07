@@ -3,7 +3,6 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-// Definimos la interfaz para la respuesta del Dashboard
 export interface DashboardStats {
   ingresosHoy: number;
   pacientesAtendidosHoy: number;

@@ -21,6 +21,7 @@ import { GestionUsuarios } from './administracion/gestion-usuarios/gestion-usuar
 import { GestionHorarios } from './administracion/gestion-horarios/gestion-horarios';
 import { HistorialPagos } from './facturacion/historial-pagos/historial-pagos';
 import { HistorialConsultas } from './atencion/historial-consultas/historial-consultas';
+import { HistorialResultados } from './laboratorio/historial-resultados/historial-resultados';
 
 
 export const routes: Routes = [
@@ -45,6 +46,7 @@ export const routes: Routes = [
             { path: 'facturacion/generar-factura', component: GenerarFactura },
             { path: 'facturacion/historial', component: HistorialPagos }, 
             { path: 'laboratorio/pendientes', component: GestionPendientes },
+            { path: 'laboratorio/historial', component: HistorialResultados },
             { path: 'admin/medicos', component: GestionMedicos },
             { path: 'admin/tarifario', component: GestionTarifario },
             { path: 'admin/usuarios', component: GestionUsuarios },

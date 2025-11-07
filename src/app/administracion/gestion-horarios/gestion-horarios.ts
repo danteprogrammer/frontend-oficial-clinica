@@ -39,7 +39,7 @@ export class GestionHorarios implements OnInit {
   ngOnInit(): void {
     this.medicoService.getMedicos().subscribe({
       next: (data) => {
-        this.medicos = data.filter(m => m.estado === 'Activo'); // Solo médicos activos
+        this.medicos = data.filter(m => m.estado === 'Activo'); 
         this.cargandoMedicos = false;
       },
       error: (err) => {
@@ -128,7 +128,6 @@ export class GestionHorarios implements OnInit {
     });
   }
 
-  // Validador personalizado
   validarHoras(group: FormGroup) {
     const inicio = group.get('horaInicio')?.value;
     const fin = group.get('horaFin')?.value;

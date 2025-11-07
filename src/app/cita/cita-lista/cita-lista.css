@@ -315,7 +315,6 @@ tbody tr:hover {
     color: #333;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .header {
         flex-direction: column;

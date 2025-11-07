@@ -23,7 +23,6 @@ registroForm!: FormGroup;
   mensajeError: string | null = null;
   cargando: boolean = false;
 
-  // Nuevas propiedades para el flujo dinámico
   pacienteBusquedaControl = new FormControl();
   pacientesEncontrados: any[] = [];
   pacienteSeleccionado: any = null;
@@ -155,13 +154,10 @@ registroForm!: FormGroup;
     const datosParaBackend = {
       paciente: { idPaciente: formData.pacienteId },
       medico: { idMedico: formData.medicoId },
-      // El consultorio ahora se podría asignar en el backend o dejarlo para un paso posterior (triaje)
-      // Por ahora lo omitimos para simplificar el formulario como se pidió.
-      // consultorio: { idConsultorio: 1 }, // ID de consultorio de ejemplo
       tieneSeguro: formData.tieneSeguro,
       fecha: formData.fecha,
       hora: formData.hora,
-      motivo: 'Consulta en ' + formData.especialidad, // Motivo autogenerado
+      motivo: 'Consulta en ' + formData.especialidad, 
       estado: 'Pendiente'
     };
 

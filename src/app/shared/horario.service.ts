@@ -2,18 +2,15 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Medico } from './medico.service'; // Reutilizamos la interfaz de Medico
+import { Medico } from './medico.service'; 
 
-// Interfaz para el objeto Horario que recibimos
 export interface Horario {
   idHorario: number;
   diaSemana: string;
   horaInicio: string;
   horaFin: string;
-  // No necesitamos 'medico' aquí para evitar bucles
 }
 
-// Interfaz para la solicitud de creación
 export interface HorarioRequest {
   idMedico: number;
   diaSemana: string;

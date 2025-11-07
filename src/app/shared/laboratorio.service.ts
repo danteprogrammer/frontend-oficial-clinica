@@ -9,11 +9,23 @@ export interface OrdenLaboratorioResponseDto {
   pacienteDni: string;
   medicoNombreCompleto: string;
   fechaOrden: string;
-  estado: string; 
+  estado: string;
   examenesSolicitados: string;
   resultados: string | null;
-  fechaResultados: string | null; 
+  fechaResultados: string | null;
   idHistoriaClinica: number;
+  historiaClinica: {
+    idHistoriaClinica: number;
+    paciente: {
+      nombres: string;
+      apellidos: string;
+      dni: string;
+    }
+  };
+  medico: {
+    nombres: string;
+    apellidos: string;
+  }
 }
 
 @Injectable({
@@ -39,6 +51,12 @@ export class LaboratorioService {
 
   getOrdenesPendientes(): Observable<OrdenLaboratorioResponseDto[]> {
     return this.http.get<OrdenLaboratorioResponseDto[]>(`${this.apiUrl}/pendientes`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  getOrdenesCompletadas(): Observable<OrdenLaboratorioResponseDto[]> {
+    return this.http.get<OrdenLaboratorioResponseDto[]>(`${this.apiUrl}/completadas`).pipe(
       catchError(this.handleError)
     );
   }

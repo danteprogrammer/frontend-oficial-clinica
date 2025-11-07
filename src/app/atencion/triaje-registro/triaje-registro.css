@@ -11,7 +11,6 @@ h2 {
     margin-bottom: 25px;
 }
 
-/* --- Tarjetas --- */
 .card {
     background-color: var(--background-white);
     border: 1px solid var(--border-color);
@@ -36,7 +35,6 @@ h2 {
     padding: 1.5rem;
 }
 
-/* --- Buscador --- */
 .card-busqueda {
     max-width: 800px;
     margin-left: auto;
@@ -55,9 +53,6 @@ h2 {
     overflow-y: auto;
     z-index: 100;
     margin-top: 5px;
-    /* <-- AÑADIR ESTA LÍNEA */
-    /* margin-top: -8px; */
-    /* <-- ELIMINAR/REEMPLAZAR ESTA LÍNEA */
 }
 
 .resultado-item {
@@ -95,15 +90,12 @@ h2 {
     text-decoration: underline;
 }
 
-/* --- Contenido Principal (Form + Historial) --- */
 .triaje-content {
     display: grid;
     grid-template-columns: 1fr 1.5fr;
-    /* Formulario más pequeño, historial más grande */
     gap: 20px;
 }
 
-/* --- Formulario --- */
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -153,7 +145,6 @@ h2 {
     border-top: 1px solid var(--border-color);
 }
 
-/* --- Historial --- */
 .loading-historial,
 .no-historial {
     text-align: center;
@@ -165,7 +156,6 @@ h2 {
     width: 100%;
     overflow-x: auto;
     max-height: 400px;
-    /* Scroll para historiales largos */
 }
 
 table {
@@ -194,7 +184,6 @@ tbody tr:hover {
     background-color: var(--primary-lightest);
 }
 
-/* --- Responsive --- */
 @media (max-width: 992px) {
     .triaje-content {
         grid-template-columns: 1fr;

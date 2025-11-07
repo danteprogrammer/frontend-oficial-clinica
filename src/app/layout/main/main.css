@@ -101,12 +101,10 @@
 
 .submenu.open {
     max-height: 500px;
-    /* Anima la altura para mostrar el contenido */
 }
 
 .submenu li a {
     padding: 14px 25px 14px 70px;
-    /* Mayor indentación para los sub-items */
     font-weight: 600;
     color: var(--primary-dark);
 }

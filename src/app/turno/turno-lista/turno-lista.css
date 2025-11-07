@@ -205,7 +205,6 @@
     background-color: #c82333;
 }
 
-/* Estilos para los paneles separados */
 .panel-section {
     margin-bottom: 30px;
     background: #f8f9fa;
@@ -244,7 +243,6 @@
     font-weight: 500;
 }
 
-/* Estilos para pacientes sin turno */
 .pacientes-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

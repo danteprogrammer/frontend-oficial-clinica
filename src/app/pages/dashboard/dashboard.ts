@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Importar CommonModule
-import { BaseChartDirective } from 'ng2-charts'; // <-- 1. Importar
-import { ChartConfiguration, ChartData, ChartType } from 'chart.js'; // <-- 1. Importar
-import { DashboardService, DashboardStats } from '../../shared/dashboard.service'; // <-- 1. Importar
+import { CommonModule } from '@angular/common'; 
+import { BaseChartDirective } from 'ng2-charts'; 
+import { ChartConfiguration, ChartData, ChartType } from 'chart.js'; 
+import { DashboardService, DashboardStats } from '../../shared/dashboard.service'; 
 
 @Component({
   selector: 'app-dashboard',
@@ -10,17 +10,16 @@ import { DashboardService, DashboardStats } from '../../shared/dashboard.service
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class Dashboard implements OnInit { // <-- 2. Implementar OnInit
+export class Dashboard implements OnInit { 
 
   cargando = true;
   error: string | null = null;
-  stats: DashboardStats = { // <-- 3. Inicializar stats
+  stats: DashboardStats = { 
     ingresosHoy: 0,
     pacientesAtendidosHoy: 0,
     consultasPorEspecialidadHoy: []
   };
 
-  // --- 4. Configuración del Gráfico de Pastel ---
   public pieChartOptions: ChartConfiguration['options'] = {
     responsive: true,
     maintainAspectRatio: false,
@@ -47,9 +46,7 @@ export class Dashboard implements OnInit { // <-- 2. Implementar OnInit
     }]
   };
   public pieChartType: ChartType = 'pie';
-  // --- Fin Configuración Gráfico ---
 
-  // 5. Inyectar el servicio
   constructor(private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
@@ -79,13 +76,12 @@ export class Dashboard implements OnInit { // <-- 2. Implementar OnInit
     this.pieChartData = {
       labels: labels,
       datasets: [{
-        ...this.pieChartData.datasets[0], // Mantener colores
+        ...this.pieChartData.datasets[0], 
         data: cantidades
       }]
     };
   }
 
-  // Función para formatear moneda
   formatCurrency(value: number): string {
     return new Intl.NumberFormat('es-PE', {
       style: 'currency',

@@ -1,8 +1,3 @@
-/* ==========================================================================
-   1. Estilos Globales y Variables de Diseño
-   ========================================================================== */
-
-/* Paleta de colores oficial basada en #005792 */
 :root {
     --primary-darkest: #00172d;
     --primary-dark: #00355d;
@@ -53,11 +48,6 @@ h6 {
     margin-top: 0;
 }
 
-/* ==========================================================================
-   2. Clases de Componentes Reutilizables
-   ========================================================================== */
-
-/* --- Tarjetas --- */
 .card {
     background-color: var(--background-white);
     padding: 25px 30px;
@@ -80,7 +70,6 @@ h6 {
     font-size: 1.5rem;
 }
 
-/* --- Botones --- */
 .btn {
     padding: 10px 20px;
     border-radius: 8px;
@@ -126,7 +115,6 @@ h6 {
     color: white;
 }
 
-/* --- Formularios --- */
 .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -176,7 +164,6 @@ h6 {
     margin-top: 30px;
 }
 
-/* --- Tablas --- */
 .table-container {
     width: 100%;
     overflow-x: auto;
@@ -207,7 +194,6 @@ tbody tr:hover {
     background-color: var(--primary-lightest);
 }
 
-/* --- Alertas --- */
 .alert {
     padding: 15px;
     margin-bottom: 20px;

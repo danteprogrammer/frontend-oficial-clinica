@@ -14,8 +14,7 @@ export class SeguroService {
 
   constructor(private http: HttpClient) { }
 
-  validarSeguro(idPaciente: number, datosSeguro?: any): Observable<any> { // Aceptar datos opcionales
-    // Cambia a post y envía los datos
+  validarSeguro(idPaciente: number, datosSeguro?: any): Observable<any> { 
     return this.http.post(`${this.apiUrl}/validar/paciente/${idPaciente}`, datosSeguro || {});
   }
 }
@@ -45,12 +44,10 @@ export class ValidarSeguro implements OnInit {
           return this.pacienteService.buscarPacientesActivos(value, 'nombre', 0, 5);
         }
         this.pacientesEncontrados = [];
-        // **CORRECCIÓN 1: Devolver un objeto PaginaPacientes completo y vacío**
         return of({ content: [], totalPages: 0, totalElements: 0, number: 0 } as PaginaPacientes);
       }),
       catchError(err => {
         console.error('Error buscando pacientes', err);
-        // **CORRECCIÓN 2: Devolver un objeto PaginaPacientes completo y vacío también en caso de error**
         return of({ content: [], totalPages: 0, totalElements: 0, number: 0 } as PaginaPacientes);
       })
     ).subscribe((pagina: PaginaPacientes) => {

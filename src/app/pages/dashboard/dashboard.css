@@ -10,7 +10,6 @@ h2 {
     margin-bottom: 2rem;
 }
 
-/* --- Contenedores de Estado --- */
 .loading-container,
 .error-container {
     text-align: center;
@@ -30,7 +29,6 @@ h2 {
     margin-right: 8px;
 }
 
-/* --- Rejilla de Tarjetas KPI --- */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -80,7 +78,6 @@ h2 {
     color: var(--text-primary);
 }
 
-/* Colores de Tarjetas */
 .stat-card.stat-ingresos {
     border-color: #28a745;
 }
@@ -105,8 +102,6 @@ h2 {
     background-color: #f8b400;
 }
 
-
-/* --- Contenedor del Gráfico --- */
 .chart-container {
     background-color: #fff;
     padding: 25px;
@@ -124,7 +119,6 @@ h2 {
 .chart-wrapper {
     position: relative;
     height: 350px;
-    /* Altura fija para el gráfico */
 }
 
 .no-data-grafico {

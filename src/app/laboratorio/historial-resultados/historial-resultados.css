@@ -20,6 +20,51 @@ h2 {
     margin-bottom: 30px;
 }
 
+.card-filtros {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.filtros-form {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.form-group input {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    font-size: 0.95rem;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    height: 43px;
+}
+
 .loading-container,
 .no-data-container,
 .error-container {
@@ -94,19 +139,12 @@ tbody tr:hover {
     background-color: #0056b3;
 }
 
-.badge {
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #fff;
-    text-transform: uppercase;
-}
+@media (max-width: 768px) {
+    .filtros-form {
+        grid-template-columns: 1fr;
+    }
 
-.badge-factura {
-    background-color: #17a2b8;
-}
-
-.badge-boleta {
-    background-color: #28a745;
+    .btn-secondary {
+        height: auto;
+    }
 }

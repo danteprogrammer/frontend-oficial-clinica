@@ -16,7 +16,7 @@ declare var Swal: any;
 export class GestionUsuarios implements OnInit {
   usuarios: UsuarioResponse[] = [];
   roles: Rol[] = [];
-  medicos: Medico[] = []; // Lista de perfiles de médicos
+  medicos: Medico[] = []; 
 
   cargando = true;
   error: string | null = null;
@@ -24,35 +24,33 @@ export class GestionUsuarios implements OnInit {
   modoEdicion = false;
   idUsuarioEditar: number | null = null;
 
-  esRolMedico = false; // Para mostrar/ocultar el selector de médico
+  esRolMedico = false; 
 
   constructor(
     private usuarioService: UsuarioService,
-    private medicoService: MedicoService, // Para obtener la lista de médicos
+    private medicoService: MedicoService, 
     private fb: FormBuilder
   ) {
     this.usuarioForm = this.fb.group({
       nombres: ['', Validators.required],
       apellidos: ['', Validators.required],
       nombreUsuario: ['', Validators.required],
-      clave: [''], // No es requerido al editar
+      clave: [''], 
       idRol: [null, Validators.required],
       estado: ['ACTIVO', Validators.required],
-      idMedico: [null] // Opcional, solo para médicos
+      idMedico: [null] 
     });
   }
 
   ngOnInit(): void {
     this.cargarDatosIniciales();
 
-    // Escuchar cambios en el campo 'idRol'
     this.f['idRol'].valueChanges.subscribe(idRolSeleccionado => {
-      // Usar '==' para comparación flexible (string vs number)
       const rol = this.roles.find(r => r.idRol == idRolSeleccionado);
       this.esRolMedico = (rol?.nombre === 'MEDICO');
 
       if (!this.esRolMedico) {
-        this.f['idMedico'].setValue(null); // Limpiar si no es médico
+        this.f['idMedico'].setValue(null); 
       }
     });
   }
@@ -61,11 +59,10 @@ export class GestionUsuarios implements OnInit {
     this.cargando = true;
     this.error = null;
 
-    // Cargar todo en paralelo
     Promise.all([
       this.usuarioService.listarUsuarios().toPromise(),
       this.usuarioService.listarRoles().toPromise(),
-      this.medicoService.getMedicos().toPromise() // Reutilizamos el servicio de médicos
+      this.medicoService.getMedicos().toPromise() 
     ]).then(([usuarios, roles, medicos]) => {
       this.usuarios = usuarios || [];
       this.roles = roles || [];
@@ -87,12 +84,10 @@ export class GestionUsuarios implements OnInit {
     const formValue = this.usuarioForm.value;
     const request: UsuarioRequest = {
       ...formValue,
-      idMedico: this.esRolMedico ? formValue.idMedico : null, // Asegurar null si no es médico
+      idMedico: this.esRolMedico ? formValue.idMedico : null,
     };
 
     if (this.modoEdicion && this.idUsuarioEditar) {
-      // --- MODO ACTUALIZAR ---
-      // No enviar clave si está vacía
       if (!request.clave || request.clave.trim() === '') {
         request.clave = null;
       }
@@ -107,7 +102,6 @@ export class GestionUsuarios implements OnInit {
         }
       });
     } else {
-      // --- MODO CREAR ---
       if (!request.clave || request.clave.trim() === '') {
         Swal.fire('Error', 'La contraseña es obligatoria al crear un usuario.', 'error');
         this.cargando = false;
@@ -130,7 +124,6 @@ export class GestionUsuarios implements OnInit {
     this.modoEdicion = true;
     this.idUsuarioEditar = usuario.idUsuario;
 
-    // Disparar el valueChange para 'esRolMedico'
     const rol = this.roles.find(r => r.idRol == usuario.idRol);
     this.esRolMedico = (rol?.nombre === 'MEDICO');
 
@@ -138,15 +131,14 @@ export class GestionUsuarios implements OnInit {
       nombres: usuario.nombres,
       apellidos: usuario.apellidos,
       nombreUsuario: usuario.nombreUsuario,
-      clave: '', // La clave no se carga, solo se puede cambiar
+      clave: '', 
       idRol: usuario.idRol,
       estado: usuario.estado,
       idMedico: this.esRolMedico ? (usuario.idMedicoAsociado || null) : null
     });
-    window.scrollTo(0, 0); // Subir al formulario
+    window.scrollTo(0, 0);
   }
 
-  // --- AÑADIR ESTE NUEVO MÉTODO ---
   inactivarUsuario(usuario: UsuarioResponse): void {
     if (usuario.rolNombre === 'ADMIN') {
       Swal.fire('Acción no permitida', 'No se puede inactivar al usuario Administrador.', 'error');
@@ -168,7 +160,7 @@ export class GestionUsuarios implements OnInit {
         this.usuarioService.inactivarUsuario(usuario.idUsuario).subscribe({
           next: () => {
             Swal.fire('¡Inactivado!', 'El usuario ha sido inactivado.', 'success');
-            this.cargarDatosIniciales(); // Recarga la lista
+            this.cargarDatosIniciales(); 
           },
           error: (err) => {
             Swal.fire('Error', err.message, 'error');
@@ -188,12 +180,11 @@ export class GestionUsuarios implements OnInit {
     });
     this.modoEdicion = false;
     this.idUsuarioEditar = null;
-    this.cargando = true; // Se pone en true porque cargarDatosIniciales lo hará
+    this.cargando = true;
     this.esRolMedico = false;
     this.cargarDatosIniciales();
   }
 
-  // --- Funciones de ayuda para validación ---
   get f() { return this.usuarioForm.controls; }
 
   esCampoInvalido(campo: string): boolean {

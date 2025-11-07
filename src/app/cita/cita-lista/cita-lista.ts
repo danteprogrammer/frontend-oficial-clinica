@@ -44,7 +44,6 @@ export class CitaLista implements OnInit {
   }
 
   ngOnInit(): void {
-    // Cargar citas directamente - el backend permite acceso público
     this.buscarCitas();
   }
 
@@ -54,7 +53,6 @@ export class CitaLista implements OnInit {
 
     const { termino, filtro, fechaDesde, fechaHasta } = this.busquedaForm.value;
 
-    // Si no hay filtros específicos, cargar todas las citas
     if (!termino && !fechaDesde && !fechaHasta) {
       this.cargarTodasLasCitas();
     } else {
@@ -80,12 +78,10 @@ export class CitaLista implements OnInit {
   }
 
   private cargarCitasFiltradas(termino: string, filtro: string, fechaDesde: string, fechaHasta: string): void {
-    // Por ahora, filtrar en el frontend hasta que el backend tenga endpoints de búsqueda
     this.citaService.getCitas().subscribe({
       next: (response: any) => {
         let todasLasCitas = response.content || response || [];
 
-        // Aplicar filtros
         if (termino) {
           const terminoLower = termino.toLowerCase();
           todasLasCitas = todasLasCitas.filter((cita: any) => {
@@ -128,7 +124,6 @@ export class CitaLista implements OnInit {
   }
 
   private cargarInformacionAdicional(): void {
-    // Cargar información adicional de pacientes, médicos y consultorios si no viene incluida
     this.citas.forEach(cita => {
       if (cita.paciente?.idPaciente && !cita.paciente?.nombres) {
         this.pacienteService.getPaciente(cita.paciente.idPaciente).subscribe({
@@ -231,7 +226,6 @@ export class CitaLista implements OnInit {
       message: error.message
     });
 
-    // Simplified error handling - no authentication checks needed
     if (error.message && error.message.includes('conectar al servidor')) {
       this.mensajeError = `No se puede conectar al servidor. Verifica que el backend esté ejecutándose en http://localhost:8080`;
     } else if (error.message && error.message.includes('404')) {

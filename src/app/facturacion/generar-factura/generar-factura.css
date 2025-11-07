@@ -1,4 +1,3 @@
-/* Estilos generales para el contenedor de facturación */
 .facturacion-container {
   max-width: 900px;
   margin: 2rem auto;
@@ -41,7 +40,6 @@
   margin-bottom: 1rem;
 }
 
-/* Formulario de búsqueda */
 .search-form {
   display: flex;
   gap: 1rem;
@@ -63,7 +61,6 @@
   cursor: pointer;
 }
 
-/* Lista de citas pendientes */
 .list-group-item {
   display: flex;
   justify-content: space-between;
@@ -76,7 +73,6 @@
   font-size: 0.9rem;
 }
 
-/* Sección de pago */
 .total-section {
   text-align: right;
   margin: 1.5rem 0;
@@ -99,7 +95,6 @@
   margin-top: 2rem;
 }
 
-/* Estilos para la información de la cita en el botón */
 .cita-info {
   text-align: left;
   line-height: 1.4;
@@ -123,7 +118,6 @@
   align-self: center;
 }
 
-/* Detalles y modo de pago */
 .cita-detalles {
   background-color: #f8f9fa;
   padding: 1rem;
@@ -151,7 +145,6 @@
   margin-right: 0.5rem;
 }
 
-/* Clases para formularios */
 .form-control {
   display: block;
   width: 100%;
@@ -171,7 +164,6 @@
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .25);
 }
 
-/* Botones */
 .btn {
   padding: 10px 20px;
   border-radius: 8px;
@@ -216,7 +208,6 @@
   color: white;
 }
 
-/* Alertas */
 .alert {
   padding: 1rem;
   margin-bottom: 1rem;
@@ -236,7 +227,6 @@
   border-color: #ffecb5;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .facturacion-container {
     margin: 1rem;
@@ -259,7 +249,6 @@
   }
 }
 
-/* --- NUEVOS ESTILOS PARA TABLA DE CITAS PENDIENTES --- */
 .table-container-facturacion {
   width: 100%;
   overflow-x: auto;
@@ -294,12 +283,10 @@
   border-radius: 4px;
 }
 
-/* --- NUEVOS ESTILOS PARA FORMULARIO DE SEGURO --- */
 .form-grid-seguro {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
-  /* Espaciado entre campos */
   margin-bottom: 1.5rem;
 }
 
@@ -307,7 +294,6 @@
   grid-column: 1 / -1;
 }
 
-/* Responsive para el grid de seguro */
 @media (max-width: 576px) {
   .form-grid-seguro {
     grid-template-columns: 1fr;

@@ -39,7 +39,6 @@
       </button>
     </div>
 
-    <!-- Grid de consultorios -->
     <div class="consultorios-grid">
       <div *ngFor="let consultorio of consultoriosFiltrados" class="consultorio-card"
         [ngClass]="getEstadoClass(consultorio.estado)">
@@ -64,7 +63,6 @@
             </span>
           </div>
 
-          <!-- Información adicional -->
           <div class="consultorio-detalles">
             <div class="detalle-item">
               <strong>📍 Ubicación:</strong> Piso {{ consultorio.piso }}, Consultorio {{ consultorio.numero }}

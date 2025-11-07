@@ -16,7 +16,6 @@ import { Subscription, forkJoin } from 'rxjs';
 })
 export class TurnoLista implements OnInit {
 
-  // Datos que se cargarán desde la API
   turnos: any[] = [];
   pacientesSinTurno: any[] = [];
 
@@ -46,7 +45,6 @@ export class TurnoLista implements OnInit {
   }
 
   private suscribirseANotificaciones(): void {
-    // Escuchar cuando se asigna un nuevo turno
     this.turnoAsignadoSubscription = this.comunicacionService.getTurnoAsignado$()
       .subscribe((turnoData: any) => {
         console.log('TurnoLista: Recibida notificación de turno asignado:', turnoData);
@@ -57,10 +55,8 @@ export class TurnoLista implements OnInit {
   private onTurnoAsignado(turnoData: any): void {
     console.log('Procesando turno asignado:', turnoData);
 
-    // Agregar el nuevo turno a la lista de turnos
     this.agregarTurno(turnoData);
 
-    // Si el turno tiene id_consultorio, cargar la información del consultorio
     if (turnoData.id_consultorio) {
       this.consultorioService.getConsultorio(turnoData.id_consultorio).subscribe({
         next: (consultorio: any) => {
@@ -73,8 +69,6 @@ export class TurnoLista implements OnInit {
       });
     }
 
-    // Remover el paciente de la lista de pacientes sin turno
-    // Buscar por DNI del paciente (ya que el backend no devuelve el ID)
     const turnoDni = turnoData.dniPaciente || turnoData.paciente?.dni;
 
     if (turnoDni) {
@@ -86,16 +80,12 @@ export class TurnoLista implements OnInit {
       console.warn('No se pudo identificar el DNI del paciente en los datos del turno:', turnoData);
     }
 
-    // Recalcular la lista de pacientes sin turno para asegurar consistencia
     this.recargarPacientesSinTurno();
 
-    // Mostrar mensaje de éxito
     this.mensajeExito = 'Se ha asignado un nuevo turno correctamente ✅';
   }
 
   private recargarPacientesSinTurno(): void {
-    // NO recalcular desde la API - esto sobrescribe la lista filtrada correctamente
-    // En su lugar, solo hacer un debug de la lista actual
     console.log('=== DEBUG: LISTA ACTUAL DE PACIENTES SIN TURNO ===');
     console.log('Total pacientes sin turno:', this.pacientesSinTurno.length);
     this.pacientesSinTurno.forEach((p: any) => {
@@ -108,7 +98,6 @@ export class TurnoLista implements OnInit {
     this.cargando = true;
     this.mensajeError = null;
 
-    // Cargar turnos y pacientes sin turno en paralelo
     this.cargarTurnos();
     this.cargarPacientesSinTurno();
   }
@@ -118,14 +107,11 @@ export class TurnoLista implements OnInit {
       next: (data: any[]) => {
         this.turnos = data || [];
         console.log('Turnos cargados desde API:', this.turnos);
-
-        // Cargar información de consultorios para turnos que tienen consultorioId
         this.cargarInformacionConsultorios();
       },
       error: (error: any) => {
         console.error('Error al cargar turnos:', error);
         this.handleError(error, 'turnos');
-        // Si hay error 403, intentar con retry automático después de 2 segundos
         if (error.message && error.message.includes('403')) {
           setTimeout(() => {
             console.log('Reintentando cargar turnos...');
@@ -146,17 +132,14 @@ export class TurnoLista implements OnInit {
 
     console.log(`Cargando información de consultorios para ${turnosConConsultorio.length} turnos...`);
 
-    // Crear observables para cargar cada consultorio
     const consultorioObservables = turnosConConsultorio.map(turno =>
       this.consultorioService.getConsultorio(turno.id_consultorio)
     );
 
-    // Ejecutar todas las llamadas en paralelo
     forkJoin(consultorioObservables).subscribe({
       next: (consultorios: any[]) => {
         console.log('Consultorios cargados:', consultorios);
 
-        // Asociar cada consultorio a su turno correspondiente
         turnosConConsultorio.forEach((turno, index) => {
           turno.consultorio = consultorios[index];
           console.log(`Asociado consultorio ${consultorios[index]?.numero} al turno #${turno.idTurno}`);
@@ -166,16 +149,13 @@ export class TurnoLista implements OnInit {
       },
       error: (error: any) => {
         console.error('Error al cargar información de consultorios:', error);
-        // No mostrar error al usuario ya que los turnos siguen funcionando sin el nombre del consultorio
       }
     });
   }
 
   private cargarPacientesSinTurno(): void {
-    // Obtener todos los pacientes y filtrar los que no tienen turno
     this.pacienteService.getPacientes().subscribe({
       next: (response: any) => {
-        // El backend devuelve una respuesta paginada
         const pacientes = response.content || response || [];
         console.log('=== DEBUG: TODOS LOS PACIENTES CARGADOS ===');
         console.log('Total pacientes:', pacientes.length);
@@ -187,16 +167,13 @@ export class TurnoLista implements OnInit {
           console.log(`- Turno #${t.idTurno} | DNI:${t.dniPaciente || t.paciente?.dni || 'N/A'} | Paciente ID:${t.pacienteId || t.paciente?.idPaciente || 'N/A'}`);
         });
 
-        // Filtrar pacientes que no tienen turno asignado
         this.pacientesSinTurno = pacientes.filter((paciente: any) => {
           if (!paciente || !paciente.dni) {
             console.log(`Paciente sin DNI válido:`, paciente);
             return false;
           }
 
-          // Buscar si el paciente tiene algún turno asignado
           const tieneTurno = this.turnos.some((turno: any) => {
-            // Verificar múltiples formas de identificar al paciente
             const turnoDni = turno.dniPaciente || turno.paciente?.dni;
             const pacienteDni = paciente.dni;
 
@@ -239,7 +216,6 @@ export class TurnoLista implements OnInit {
     }
   }
 
-  // Método para agregar un nuevo turno a la lista (se puede llamar desde otros componentes)
   agregarTurno(nuevoTurno: any): void {
     this.turnos.push(nuevoTurno);
     this.turnos.sort((a, b) => {
@@ -298,10 +274,8 @@ export class TurnoLista implements OnInit {
     }
   }
 
-  // Método para navegar al componente de asignación de turnos con datos del paciente
   asignarTurno(paciente: any): void {
     console.log('Navegando a asignar turno para paciente:', paciente);
-    // Navegar al componente de asignación de turnos
     this.router.navigate(['/turno/asignar'], {
       state: { pacienteSeleccionado: paciente }
     });

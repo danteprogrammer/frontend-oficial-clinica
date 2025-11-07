@@ -2,10 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Rol } from './rol.model'; // Crearemos este modelo
-import { Medico } from './medico.service'; // Reutilizamos la interfaz de Medico
+import { Rol } from './rol.model';
+import { Medico } from './medico.service'; 
 
-// Modelo para la respuesta
 export interface UsuarioResponse {
   idUsuario: number;
   nombreUsuario: string;
@@ -18,15 +17,14 @@ export interface UsuarioResponse {
   idMedicoAsociado: number | null;
 }
 
-// Modelo para la petición
 export interface UsuarioRequest {
   nombreUsuario: string;
-  clave?: string | null; // Opcional
+  clave?: string | null; 
   nombres: string;
   apellidos: string;
   estado: string;
   idRol: number;
-  idMedico: number | null; // Opcional
+  idMedico: number | null; 
 }
 
 @Injectable({
@@ -61,7 +59,6 @@ export class UsuarioService {
     );
   }
 
-  // --- AÑADIR ESTE NUEVO MÉTODO ---
   inactivarUsuario(id: number): Observable<UsuarioResponse> {
     return this.http.put<UsuarioResponse>(`${this.apiUrl}/${id}/inactivar`, {}).pipe(
       catchError(this.handleError)

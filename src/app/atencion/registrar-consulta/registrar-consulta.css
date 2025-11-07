@@ -67,7 +67,6 @@
     overflow-y: auto;
     z-index: 100;
     margin-top: 5px;
-    /* <-- AÑADIR ESTA LÍNEA */
 }
 
 .resultado-item {
@@ -154,10 +153,8 @@ button[type="submit"]:hover:not(:disabled) {
     box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
 }
 
-/* --- ESTILOS PARA LA TARJETA DE TRIAJE --- */
 .card-triaje {
     background-color: #f8f9fa;
-    /* Un fondo gris muy claro */
     border: 1px solid #dee2e6;
     border-radius: 12px;
     margin-top: 15px;
@@ -176,7 +173,6 @@ button[type="submit"]:hover:not(:disabled) {
     font-size: 1.1rem;
     font-family: var(--font-display);
     border: none;
-    /* Sobrescribe el h4 general */
 }
 
 .card-triaje .card-header .fas {
@@ -191,7 +187,6 @@ button[type="submit"]:hover:not(:disabled) {
     display: flex;
     flex-wrap: wrap;
     gap: 15px 25px;
-    /* Espacio vertical y horizontal */
 }
 
 .dato-item {
@@ -210,7 +205,6 @@ button[type="submit"]:hover:not(:disabled) {
     font-size: 0.8rem;
     font-weight: 600;
     color: #6c757d;
-    /* Gris secundario */
     margin-bottom: 4px;
 }
 
@@ -218,7 +212,6 @@ button[type="submit"]:hover:not(:disabled) {
     font-size: 1.1rem;
     font-weight: 700;
     color: #00355d;
-    /* Azul oscuro */
 }
 
 .loading-triaje,
@@ -243,8 +236,6 @@ button[type="submit"]:hover:not(:disabled) {
     margin-right: 8px;
 }
 
-/* ✅ --- NUEVOS ESTILOS PARA LA SECCIÓN DE RECETA --- */
-
 .receta-header {
     margin-top: 2rem;
     margin-bottom: 1rem;
@@ -266,9 +257,7 @@ button[type="submit"]:hover:not(:disabled) {
 
 .receta-item {
     display: grid;
-    /* 4 campos de texto + 1 botón */
     grid-template-columns: 2fr 1fr 1.5fr 3fr auto;
-    /* <-- MODIFICADO */
     gap: 15px;
     align-items: flex-end;
     padding: 15px;
@@ -293,7 +282,6 @@ button[type="submit"]:hover:not(:disabled) {
     transition: all 0.2s ease;
     font-weight: 600;
     height: 48px;
-    /* Para alinear con los inputs */
 }
 
 .btn-quitar-med:hover {
@@ -328,21 +316,15 @@ button[type="submit"]:hover:not(:disabled) {
     margin-right: 8px;
 }
 
-/* Responsive para la receta */
 @media (max-width: 900px) {
     .receta-item {
-        /* 2 columnas: (Medicamento + Cantidad) y (Dosis + Posología) */
         grid-template-columns: 1fr 1fr;
-        /* <-- MODIFICADO */
     }
 
-    /* Hacemos que la posología ocupe todo el ancho de la tercera fila */
     .receta-item .form-group:nth-child(4) {
-        /* <-- MODIFICADO a 4 */
         grid-column: 1 / -1;
     }
 
-    /* Hacemos que el botón ocupe todo el ancho de la cuarta fila */
     .btn-quitar-med {
         grid-column: 1 / -1;
         margin-top: 10px;
@@ -353,16 +335,13 @@ button[type="submit"]:hover:not(:disabled) {
 @media (max-width: 576px) {
     .receta-item {
         grid-template-columns: 1fr;
-        /* Una columna en móvil */
     }
 }
 
-/* --- NUEVOS ESTILOS PARA ACCIONES DEL FORMULARIO --- */
 .form-actions {
     display: flex;
     justify-content: flex-end;
     flex-wrap: wrap;
-    /* Para responsive */
     gap: 1rem;
     margin-top: 2rem;
     padding-top: 1.5rem;
@@ -376,7 +355,6 @@ button[type="submit"]:hover:not(:disabled) {
     font-weight: bold;
     cursor: pointer;
     background-color: #17a2b8;
-    /* Un color cian/info */
     color: white;
     transition: all 0.2s ease;
 }
@@ -391,8 +369,6 @@ button[type="submit"]:hover:not(:disabled) {
     cursor: not-allowed;
 }
 
-
-/* --- NUEVOS ESTILOS PARA HISTORIAL DE LABORATORIO --- */
 .card-lab {
     margin-top: 2rem;
 }
@@ -469,7 +445,6 @@ button[type="submit"]:hover:not(:disabled) {
     padding: 10px;
     border-radius: 4px;
     white-space: pre-wrap;
-    /* Mantiene los saltos de línea */
     font-family: var(--font-body);
     font-size: 0.9rem;
     color: #333;

@@ -57,7 +57,6 @@ export class GestionTarifario implements OnInit {
     const tarifaData = this.tarifaForm.value;
 
     if (this.modoEdicion && this.idTarifaEditar) {
-      // --- MODO ACTUALIZAR ---
       this.tarifarioService.actualizarTarifario(this.idTarifaEditar, tarifaData).subscribe({
         next: () => {
           Swal.fire('¡Actualizado!', 'Tarifa actualizada con éxito.', 'success');
@@ -69,7 +68,6 @@ export class GestionTarifario implements OnInit {
         }
       });
     } else {
-      // --- MODO CREAR ---
       this.tarifarioService.crearTarifario(tarifaData).subscribe({
         next: () => {
           Swal.fire('¡Creada!', 'Nueva tarifa registrada con éxito.', 'success');
@@ -90,7 +88,7 @@ export class GestionTarifario implements OnInit {
       especialidad: tarifa.especialidad,
       precio: tarifa.precio
     });
-    window.scrollTo(0, 0); // Subir al formulario
+    window.scrollTo(0, 0); 
   }
 
   eliminarTarifa(id: number): void {
@@ -128,7 +126,6 @@ export class GestionTarifario implements OnInit {
     this.cargarTarifas();
   }
 
-  // --- Funciones de ayuda para mostrar errores de validación ---
   get f() { return this.tarifaForm.controls; }
 
   esCampoInvalido(campo: string): boolean {

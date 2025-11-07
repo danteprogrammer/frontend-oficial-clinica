@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { LaboratorioService } from '../../shared/laboratorio.service';
-import { FormsModule } from '@angular/forms'; // Necesario para el textarea de resultados
+import { FormsModule } from '@angular/forms';
 
 declare var Swal: any;
 
 @Component({
   selector: 'app-gestion-pendientes',
-  imports: [CommonModule, DatePipe, FormsModule], // Añadir FormsModule
+  imports: [CommonModule, DatePipe, FormsModule],
   templateUrl: './gestion-pendientes.html',
   styleUrl: './gestion-pendientes.css'
 })
@@ -15,7 +15,7 @@ export class GestionPendientes implements OnInit {
   ordenes: any[] = [];
   cargando = true;
   error: string | null = null;
-  resultadosTexto: string = ''; // Para el modal
+  resultadosTexto: string = ''; 
 
   constructor(private laboratorioService: LaboratorioService) { }
 
@@ -49,7 +49,7 @@ export class GestionPendientes implements OnInit {
   }
 
   async abrirModalResultados(orden: any) {
-    this.resultadosTexto = orden.resultados || ''; // Cargar resultados si ya existen
+    this.resultadosTexto = orden.resultados || ''; 
 
     const { value: formValues } = await Swal.fire({
       title: 'Registrar Resultados',
@@ -77,7 +77,7 @@ export class GestionPendientes implements OnInit {
       this.laboratorioService.registrarResultados(orden.idOrden, formValues).subscribe({
         next: () => {
           Swal.fire('Guardado', 'Resultados guardados y orden completada.', 'success');
-          this.cargarOrdenes(); // Recarga la lista (la orden completada desaparecerá)
+          this.cargarOrdenes();
         },
         error: (err) => Swal.fire('Error', err.message, 'error'),
         complete: () => this.cargando = false
