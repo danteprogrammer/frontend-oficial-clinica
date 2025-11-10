@@ -39,7 +39,7 @@ export class GestionHorarios implements OnInit {
     private fb: FormBuilder
   ) {
     this.horarioForm = this.fb.group({
-      diaSemana: [null, Validators.required], 
+      diaSemana: [null, Validators.required],
       horaInicio: ['', Validators.required],
       horaFin: ['', Validators.required]
     }, { validators: this.validarHoras });
@@ -100,7 +100,7 @@ export class GestionHorarios implements OnInit {
     this.horarioService.crearHorario(request).subscribe({
       next: () => {
         Swal.fire('¡Éxito!', 'Nuevo horario agregado.', 'success');
-        this.horarioForm.reset({ diaSemana: null }); 
+        this.horarioForm.reset({ diaSemana: null });
         if (this.medicoSeleccionadoId) this.cargarHorarios(this.medicoSeleccionadoId);
       },
       error: (err) => {
