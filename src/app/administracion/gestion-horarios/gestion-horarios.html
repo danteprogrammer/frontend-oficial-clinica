@@ -25,10 +25,10 @@
                         <label for="diaSemana">Día de la Semana</label>
                         <select id="diaSemana" formControlName="diaSemana"
                             [class.is-invalid]="horarioForm.get('diaSemana')?.touched && horarioForm.get('diaSemana')?.invalid">
-                            <option value="" disabled>Seleccione un día...</option>
-                            <option *ngFor="let dia of diasSemana" [value]="dia">{{ dia }}</option>
+                            <option [value]="null" disabled>Seleccione un día...</option>
+                            <option *ngFor="let dia of diasSemana" [value]="dia.valor">{{ dia.nombre }}</option>
                         </select>
-                    </div>
+                        </div>
                     <div class="form-group">
                         <label for="horaInicio">Hora Inicio</label>
                         <input id="horaInicio" type="time" formControlName="horaInicio"
@@ -72,7 +72,7 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let horario of horarios">
-                        <td>{{ horario.diaSemana }}</td>
+                        <td>{{ traducirDia(horario.diaSemana) }}</td>
                         <td>{{ horario.horaInicio }}</td>
                         <td>{{ horario.horaFin }}</td>
                         <td class="acciones">

@@ -22,7 +22,16 @@ export class GestionHorarios implements OnInit {
   error: string | null = null;
 
   horarioForm: FormGroup;
-  diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+  diasSemana = [
+    { valor: 'MONDAY', nombre: 'Lunes' },
+    { valor: 'TUESDAY', nombre: 'Martes' },
+    { valor: 'WEDNESDAY', nombre: 'Miércoles' },
+    { valor: 'THURSDAY', nombre: 'Jueves' },
+    { valor: 'FRIDAY', nombre: 'Viernes' },
+    { valor: 'SATURDAY', nombre: 'Sábado' },
+    { valor: 'SUNDAY', nombre: 'Domingo' }
+  ];
 
   constructor(
     private medicoService: MedicoService,
@@ -30,7 +39,7 @@ export class GestionHorarios implements OnInit {
     private fb: FormBuilder
   ) {
     this.horarioForm = this.fb.group({
-      diaSemana: ['', Validators.required],
+      diaSemana: [null, Validators.required], 
       horaInicio: ['', Validators.required],
       horaFin: ['', Validators.required]
     }, { validators: this.validarHoras });
@@ -39,7 +48,7 @@ export class GestionHorarios implements OnInit {
   ngOnInit(): void {
     this.medicoService.getMedicos().subscribe({
       next: (data) => {
-        this.medicos = data.filter(m => m.estado === 'Activo'); 
+        this.medicos = data.filter(m => m.estado === 'Activo');
         this.cargandoMedicos = false;
       },
       error: (err) => {
@@ -91,7 +100,7 @@ export class GestionHorarios implements OnInit {
     this.horarioService.crearHorario(request).subscribe({
       next: () => {
         Swal.fire('¡Éxito!', 'Nuevo horario agregado.', 'success');
-        this.horarioForm.reset({ diaSemana: '' });
+        this.horarioForm.reset({ diaSemana: null }); 
         if (this.medicoSeleccionadoId) this.cargarHorarios(this.medicoSeleccionadoId);
       },
       error: (err) => {
@@ -132,5 +141,10 @@ export class GestionHorarios implements OnInit {
     const inicio = group.get('horaInicio')?.value;
     const fin = group.get('horaFin')?.value;
     return (inicio && fin && inicio >= fin) ? { horaInvalida: true } : null;
+  }
+
+  traducirDia(diaValor: string): string {
+    const dia = this.diasSemana.find(d => d.valor === diaValor);
+    return dia ? dia.nombre : diaValor;
   }
 }
