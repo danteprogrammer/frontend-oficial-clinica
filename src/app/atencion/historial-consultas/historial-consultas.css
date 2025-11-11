@@ -367,3 +367,71 @@ pre.resultados-text {
 .badge-cancelado {
     background-color: #dc3545;
 }
+
+.resultados-busqueda-tabla {
+  display: none;
+}
+
+.table-container-pacientes {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+  margin-top: 1.5rem;
+}
+
+.btn-seleccionar-sm {
+  background-color: var(--primary-main);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-seleccionar-sm:hover {
+  background-color: var(--primary-dark);
+}
+
+.card-paciente-seleccionado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  background-color: #e1ebff;
+  border-left: 5px solid var(--primary-main);
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.card-paciente-seleccionado h4 {
+  margin: 0;
+  color: var(--primary-dark);
+  font-size: 1.1rem;
+}
+
+.card-paciente-seleccionado p {
+  margin: 0;
+  color: #333;
+}
+
+.btn-cambiar {
+  background-color: #6c757d;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: bold;
+}
+
+.btn-cambiar:hover {
+  background-color: #5a6268;
+}

@@ -1,145 +1,156 @@
 <div class="historial-container">
-    <h2><i class="fas fa-book-medical"></i> Historial Clínico del Paciente</h2>
+  <h2><i class="fas fa-book-medical"></i> Historial Clínico del Paciente</h2>
 
+  <div *ngIf="!pacienteSeleccionado">
     <div class="card-busqueda">
-        <h4>1. Buscar Paciente</h4>
-        <div class="search-form-container">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" class="form-control" placeholder="Buscar por DNI o Nombre del paciente..."
-                [formControl]="pacienteBusquedaControl">
-
-            <button *ngIf="pacienteSeleccionado" (click)="limpiarPaciente()" class="btn-limpiar-paciente">
-                Limpiar
-            </button>
-
-            <div *ngIf="pacientesEncontrados.length > 0" class="resultados-busqueda-tabla">
-                <table class="tabla-paciente-seleccion">
-                    <thead>
-                        <tr>
-                            <th>DNI</th>
-                            <th>Nombre Completo</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let p of pacientesEncontrados" (click)="seleccionarPaciente(p)"
-                            class="resultado-item-fila">
-                            <td>{{ p.dni }}</td>
-                            <td>{{ p.nombres }} {{ p.apellidos }}</td>
-                            <td><button type="button" class="btn-seleccionar-sm">Seleccionar</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+      <h4><i class="fas fa-search"></i> 1. Buscar Paciente</h4>
+      <div class="search-form-container">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" class="form-control" placeholder="Buscar por DNI o Nombre del paciente..."
+          [formControl]="pacienteBusquedaControl">
+      </div>
     </div>
 
-    <div *ngIf="pacienteSeleccionado">
-
-        <div class="info-paciente card">
-            <div class="card-header">
-                <h3>Datos del Paciente</h3>
-            </div>
-            <div class="card-body">
-                <p><strong>Paciente:</strong> {{ pacienteSeleccionado.nombres }} {{ pacienteSeleccionado.apellidos }}
-                </p>
-                <p><strong>DNI:</strong> {{ pacienteSeleccionado.dni }}</p>
-                <p><strong>Edad:</strong> {{ transformDateToAge(pacienteSeleccionado.fechaNacimiento) }} años</p>
-                <p><strong>N° Historia Clínica:</strong> {{ idHistoriaClinicaSeleccionada || 'N/A' }}</p>
-            </div>
-        </div>
-
-        <div *ngIf="cargandoHistorial" class="loading-container">
-            Cargando historial...
-        </div>
-
-        <div *ngIf="error" class="error-container">
-            {{ error }}
-        </div>
-
-        <div *ngIf="!cargandoHistorial && !error">
-            <div class="historial-section">
-                <h3><i class="fas fa-stethoscope"></i> Consultas Anteriores</h3>
-                <div *ngIf="consultas.length === 0" class="no-data">
-                    No hay consultas registradas.
-                </div>
-
-                <div class="timeline" *ngIf="consultas.length > 0">
-                    <div *ngFor="let c of consultas" class="timeline-item">
-                        <div class="timeline-date">
-                            {{ c.fechaConsulta | date:'dd/MM/yyyy' }}
-                        </div>
-                        <div class="timeline-content card">
-                            <div class="card-header">
-                                <strong>{{ c.medico.especialidad.nombre }}</strong> <span class="medico-info">Atendido
-                                    por: {{ c.medico.sexo === 'Femenino' ? 'Dra.' : 'Dr.' }} {{ c.medico.nombres }} {{
-                                    c.medico.apellidos }}</span>
-                            </div>
-                            <div class="card-body">
-                                <div class="consulta-detalle">
-                                    <strong>Motivo:</strong>
-                                    <p>{{ c.motivo }}</p>
-                                </div>
-                                <div class="consulta-detalle">
-                                    <strong>Diagnóstico:</strong>
-                                    <p>{{ c.diagnostico }}</p>
-                                </div>
-                                <div class="consulta-detalle">
-                                    <strong>Tratamiento/Indicaciones:</strong>
-                                    <pre class="tratamiento-text">{{ c.tratamiento }}</pre>
-                                </div>
-                            </div>
-                            <div class="card-footer">
-                                <button class="btn-accion btn-ver-pdf" (click)="verReceta(c)">
-                                    <i class="fas fa-print"></i> Ver Receta
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="historial-section">
-                <h3><i class="fas fa-vial"></i> Exámenes de Laboratorio</h3>
-                <div *ngIf="ordenesLab.length === 0" class="no-data">
-                    No hay exámenes de laboratorio registrados.
-                </div>
-
-                <div class="table-container" *ngIf="ordenesLab.length > 0">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Exámenes Solicitados</th>
-                                <th>Resultados</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let o of ordenesLab">
-                                <td>{{ o.fechaOrden | date:'dd/MM/yyyy' }}</td>
-                                <td>
-                                    <pre class="examenes-text">{{ o.examenesSolicitados }}</pre>
-                                </td>
-                                <td>
-                                    <pre *ngIf="o.resultados" class="resultados-text">{{ o.resultados }}</pre>
-                                    <span *ngIf="!o.resultados" class="no-data-small">Aún no disponible</span>
-                                </td>
-                                <td>
-                                    <span class="badge" [ngClass]="{
-                                        'badge-pendiente': o.estado === 'PENDIENTE',
-                                        'badge-en_proceso': o.estado === 'EN_PROCESO',
-                                        'badge-completado': o.estado === 'COMPLETADO',
-                                        'badge-cancelado': o.estado === 'CANCELADO'
-                                    }">
-                                        {{ o.estado }}
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+    <div *ngIf="pacientesEncontrados.length > 0" class="table-container-pacientes">
+      <table class="tabla-paciente-seleccion">
+        <thead>
+          <tr>
+            <th>DNI</th>
+            <th>Nombre Completo</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of pacientesEncontrados" (click)="seleccionarPaciente(p)" class="resultado-item-fila">
+            <td>{{ p.dni }}</td>
+            <td>{{ p.nombres }} {{ p.apellidos }}</td>
+            <td>
+              <button type="button" class="btn-seleccionar-sm">
+                Seleccionar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-</div>
+  </div>
+
+  <div *ngIf="pacienteSeleccionado">
+
+    <div class="card-paciente-seleccionado">
+      <div>
+        <h4><i class="fas fa-user-check"></i> Paciente Seleccionado</h4>
+        <p>
+          <strong>{{ pacienteSeleccionado.nombres }} {{ pacienteSeleccionado.apellidos }}</strong>
+          (DNI: {{ pacienteSeleccionado.dni }})
+          <span *ngIf="idHistoriaClinicaSeleccionada"> - H.C. N°: {{ idHistoriaClinicaSeleccionada }}</span>
+        </p>
+      </div>
+      <button class="btn-cambiar" (click)="limpiarPaciente()">
+        <i class="fas fa-exchange-alt"></i> Cambiar Paciente
+      </button>
+    </div>
+
+    <div class="info-paciente card">
+      <div class="card-header">
+        <h3>Datos Adicionales</h3>
+      </div>
+      <div class="card-body">
+        <p><strong>Edad:</strong> {{ transformDateToAge(pacienteSeleccionado.fechaNacimiento) }} años</p>
+        <p><strong>N° Historia Clínica:</strong> {{ idHistoriaClinicaSeleccionada || 'N/A' }}</p>
+      </div>
+    </div>
+
+    <div *ngIf="cargandoHistorial" class="loading-container">
+      Cargando historial...
+    </div>
+
+    <div *ngIf="error" class="error-container">
+      {{ error }}
+    </div>
+
+    <div *ngIf="!cargandoHistorial && !error">
+      <div class="historial-section">
+        <h3><i class="fas fa-stethoscope"></i> Consultas Anteriores</h3>
+        <div *ngIf="consultas.length === 0" class="no-data">
+          No hay consultas registradas.
+        </div>
+
+        <div class="timeline" *ngIf="consultas.length > 0">
+          <div *ngFor="let c of consultas" class="timeline-item">
+            <div class="timeline-date">
+              {{ c.fechaConsulta | date:'dd/MM/yyyy' }}
+            </div>
+            <div class="timeline-content card">
+              <div class="card-header">
+                <strong>{{ c.medico.especialidad.nombre }}</strong> <span class="medico-info">Atendido
+                  por: {{ c.medico.sexo === 'Femenino' ? 'Dra.' : 'Dr.' }} {{ c.medico.nombres }} {{
+                  c.medico.apellidos }}</span>
+              </div>
+              <div class="card-body">
+                <div class="consulta-detalle">
+                  <strong>Motivo:</strong>
+                  <p>{{ c.motivo }}</p>
+                </div>
+                <div class="consulta-detalle">
+                  <strong>Diagnóstico:</strong>
+                  <p>{{ c.diagnostico }}</p>
+                </div>
+                <div class="consulta-detalle">
+                  <strong>Tratamiento/Indicaciones:</strong>
+                  <pre class="tratamiento-text">{{ c.tratamiento }}</pre>
+                </div>
+              </div>
+              <div class="card-footer">
+                <button class="btn-accion btn-ver-pdf" (click)="verReceta(c)">
+                  <i class="fas fa-print"></i> Ver Receta
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="historial-section">
+        <h3><i class="fas fa-vial"></i> Exámenes de Laboratorio</h3>
+        <div *ngIf="ordenesLab.length === 0" class="no-data">
+          No hay exámenes de laboratorio registrados.
+        </div>
+
+        <div class="table-container" *ngIf="ordenesLab.length > 0">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Exámenes Solicitados</th>
+                <th>Resultados</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let o of ordenesLab">
+                <td>{{ o.fechaOrden | date:'dd/MM/yyyy' }}</td>
+                <td>
+                  <pre class="examenes-text">{{ o.examenesSolicitados }}</pre>
+                </td>
+                <td>
+                  <pre *ngIf="o.resultados" class="resultados-text">{{ o.resultados }}</pre>
+                  <span *ngIf="!o.resultados" class="no-data-small">Aún no disponible</span>
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="{
+                        'badge-pendiente': o.estado === 'PENDIENTE',
+                        'badge-en_proceso': o.estado === 'EN_PROCESO',
+                        'badge-completado': o.estado === 'COMPLETADO',
+                        'badge-cancelado': o.estado === 'CANCELADO'
+                    }">
+                    {{ o.estado }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div> </div>
