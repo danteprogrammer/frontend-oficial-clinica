@@ -167,3 +167,72 @@ tbody tr:hover {
     border: 1px solid #f5c6cb;
     border-radius: 8px;
 }
+
+/* --- Añadir a gestion-horarios.css --- */
+
+/* Estilos para la tabla de selección de médicos */
+.table-container table {
+  margin-top: 20px;
+}
+
+.btn-seleccionar {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-seleccionar:hover {
+  background-color: #0056b3;
+}
+
+/* Tarjeta de médico seleccionado */
+.medico-seleccionado-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  background-color: #f0f8ff; /* Un fondo azul claro para destacar */
+  border-left: 5px solid #007bff;
+}
+
+.medico-seleccionado-card h3 {
+  margin: 0;
+  font-size: 1.1em;
+  color: #333;
+}
+
+.medico-seleccionado-card h3 strong {
+  color: #0056b3;
+}
+
+.btn-cambiar {
+  background-color: #6c757d;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-cambiar:hover {
+  background-color: #5a6268;
+}
+
+/* Ajuste para el input de búsqueda */
+.form-card .form-group input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box; /* Asegura que el padding no afecte el ancho */
+}

@@ -1,6 +1,8 @@
+// danteprogrammer/frontend-oficial-clinica/frontend-oficial-clinica-d73cc6d747f9a00ca287400c9b42abccd4bf9457/src/app/administracion/gestion-horarios.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms'; // Importar FormsModule
 import { Medico, MedicoService } from '../../shared/medico.service';
 import { Horario, HorarioService, HorarioRequest } from '../../shared/horario.service';
 
@@ -8,18 +10,23 @@ declare var Swal: any;
 
 @Component({
   selector: 'app-gestion-horarios',
-  imports: [CommonModule, ReactiveFormsModule],
+  // Asegúrate de importar CommonModule, ReactiveFormsModule y FormsModule
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './gestion-horarios.html',
   styleUrl: './gestion-horarios.css'
 })
 export class GestionHorarios implements OnInit {
   medicos: Medico[] = [];
+  medicosFiltrados: Medico[] = []; // Lista para la tabla filtrada
   horarios: Horario[] = [];
 
-  medicoSeleccionadoId: number | null = null;
+  medicoSeleccionado: Medico | null = null; // Objeto del médico seleccionado
+  medicoSeleccionadoId: number | null = null; // ID (aún útil para el request)
+
   cargandoMedicos = true;
   cargandoHorarios = false;
   error: string | null = null;
+  filtroMedicos: string = ''; // Término de búsqueda
 
   horarioForm: FormGroup;
 
@@ -48,7 +55,10 @@ export class GestionHorarios implements OnInit {
   ngOnInit(): void {
     this.medicoService.getMedicos().subscribe({
       next: (data) => {
+        // Almacenamos solo médicos activos
         this.medicos = data.filter(m => m.estado === 'Activo');
+        // Inicialmente, la lista filtrada es la lista completa
+        this.medicosFiltrados = [...this.medicos];
         this.cargandoMedicos = false;
       },
       error: (err) => {
@@ -58,18 +68,41 @@ export class GestionHorarios implements OnInit {
     });
   }
 
-  onMedicoChange(event: Event): void {
-    const selectElement = event.target as HTMLSelectElement;
-    const id = selectElement.value ? parseInt(selectElement.value, 10) : null;
+  // Método para filtrar la tabla de médicos
+  buscarMedicos(): void {
+    const termino = this.filtroMedicos.toLowerCase();
+    if (!termino) {
+      this.medicosFiltrados = [...this.medicos];
+      return;
+    }
 
-    this.medicoSeleccionadoId = id;
+    this.medicosFiltrados = this.medicos.filter(m =>
+      m.nombres.toLowerCase().includes(termino) ||
+      m.apellidos.toLowerCase().includes(termino) ||
+      m.dni.toLowerCase().includes(termino) ||
+      m.especialidad.nombre.toLowerCase().includes(termino)
+    );
+  }
+
+  // Se llama al hacer clic en "Seleccionar"
+  seleccionarMedico(medico: Medico): void {
+    this.medicoSeleccionado = medico;
+    this.medicoSeleccionadoId = medico.idMedico!;
     this.horarios = [];
     this.error = null;
-
-    if (id) {
-      this.cargarHorarios(id);
-    }
+    this.cargarHorarios(medico.idMedico!);
   }
+
+  // Se llama al hacer clic en "Cambiar Médico"
+  cambiarMedico(): void {
+    this.medicoSeleccionado = null;
+    this.medicoSeleccionadoId = null;
+    this.horarios = [];
+    this.error = null;
+    this.filtroMedicos = ''; // Limpiar filtro
+    this.medicosFiltrados = [...this.medicos]; // Resetear tabla
+  }
+
 
   cargarHorarios(idMedico: number): void {
     this.cargandoHorarios = true;

@@ -1,89 +1,138 @@
 <div class="admin-container">
-    <h2><i class="fas fa-calendar-alt"></i> Gestión de Horarios de Médicos</h2>
+  <h2><i class="fas fa-calendar-alt"></i> Gestión de Horarios de Médicos</h2>
+
+  <div *ngIf="!medicoSeleccionado">
+    <div class="form-card">
+      <h3><i class="fas fa-user-md"></i> Seleccionar Médico</h3>
+      <div *ngIf="cargandoMedicos" class="loading-container">Cargando médicos...</div>
+
+      <div *ngIf="!cargandoMedicos">
+        <div class="form-group">
+          <label for="filtroMedicos">Buscar Médico</label>
+          <input type="text" id="filtroMedicos" class="form-control"
+            placeholder="Buscar por DNI, nombres, apellidos o especialidad..."
+            [(ngModel)]="filtroMedicos" (input)="buscarMedicos()">
+        </div>
+      </div>
+      <div *ngIf="error && !medicoSeleccionado" class="error-container">{{ error }}</div>
+    </div>
+
+    <div *ngIf="!cargandoMedicos" class="table-container">
+      <div *ngIf="medicosFiltrados.length === 0" class="no-data-container">
+        No se encontraron médicos que coincidan con la búsqueda.
+      </div>
+
+      <table *ngIf="medicosFiltrados.length > 0">
+        <thead>
+          <tr>
+            <th>DNI</th>
+            <th>Médico</th>
+            <th>Especialidad</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let medico of medicosFiltrados">
+            <td>{{ medico.dni }}</td>
+            <td>
+              {{ medico.sexo === 'Femenino' ? 'Dra.' : 'Dr.' }} {{ medico.nombres }} {{ medico.apellidos }}
+            </td>
+            <td>{{ medico.especialidad.nombre }}</td>
+            <td class="acciones">
+              <button class="btn-accion btn-seleccionar" (click)="seleccionarMedico(medico)">
+                <i class="fas fa-check"></i> Seleccionar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="medicoSeleccionado">
+
+    <div class="form-card medico-seleccionado-card">
+      <div>
+        <h3>
+          <i class="fas fa-user-check"></i> Gestionando Horarios para:
+          <strong>
+            {{ medicoSeleccionado.sexo === 'Femenino' ? 'Dra.' : 'Dr.' }} {{ medicoSeleccionado.nombres }} {{ medicoSeleccionado.apellidos }}
+          </strong>
+          ({{ medicoSeleccionado.especialidad.nombre }})
+        </h3>
+      </div>
+      <button class="btn-accion btn-cambiar" (click)="cambiarMedico()">
+        <i class="fas fa-exchange-alt"></i> Cambiar de Médico
+      </button>
+    </div>
 
     <div class="form-card">
-        <h3>Seleccionar Médico</h3>
-        <div *ngIf="cargandoMedicos">Cargando médicos...</div>
-        <div *ngIf="!cargandoMedicos" class="form-group">
-            <label for="medicoSelect">Médico</label>
-            <select id="medicoSelect" (change)="onMedicoChange($event)" class="form-control">
-                <option [value]="null">Seleccione un médico para ver sus horarios...</option>
-                <option *ngFor="let medico of medicos" [value]="medico.idMedico">
-                    {{ medico.sexo === 'Femenino' ? 'Dra.' : 'Dr.' }} {{ medico.nombres }} {{ medico.apellidos }}
-                </option>
+      <h3>Añadir Nuevo Horario</h3>
+      <form [formGroup]="horarioForm" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="diaSemana">Día de la Semana</label>
+            <select id="diaSemana" formControlName="diaSemana"
+              [class.is-invalid]="horarioForm.get('diaSemana')?.touched && horarioForm.get('diaSemana')?.invalid">
+              <option [value]="null" disabled>Seleccione un día...</option>
+              <option *ngFor="let dia of diasSemana" [value]="dia.valor">{{ dia.nombre }}</option>
             </select>
+          </div>
+          <div class="form-group">
+            <label for="horaInicio">Hora Inicio</label>
+            <input id="horaInicio" type="time" formControlName="horaInicio"
+              [class.is-invalid]="horarioForm.get('horaInicio')?.touched && horarioForm.get('horaInicio')?.invalid">
+          </div>
+          <div class="form-group">
+            <label for="horaFin">Hora Fin</label>
+            <input id="horaFin" type="time" formControlName="horaFin"
+              [class.is-invalid]="(horarioForm.get('horaFin')?.touched && horarioForm.get('horaFin')?.invalid) || horarioForm.hasError('horaInvalida')">
+          </div>
         </div>
-        <div *ngIf="error && !medicoSeleccionadoId" class="error-container">{{ error }}</div>
+        <div *ngIf="horarioForm.hasError('horaInvalida')" class="invalid-feedback d-block">
+          La hora de fin debe ser mayor a la hora de inicio.
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" [disabled]="horarioForm.invalid || cargandoHorarios">
+            <i class="fas fa-plus"></i> Añadir Horario
+          </button>
+        </div>
+      </form>
     </div>
 
-    <div *ngIf="medicoSeleccionadoId">
-        <div class="form-card">
-            <h3>Añadir Nuevo Horario</h3>
-            <form [formGroup]="horarioForm" (ngSubmit)="onSubmit()">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="diaSemana">Día de la Semana</label>
-                        <select id="diaSemana" formControlName="diaSemana"
-                            [class.is-invalid]="horarioForm.get('diaSemana')?.touched && horarioForm.get('diaSemana')?.invalid">
-                            <option [value]="null" disabled>Seleccione un día...</option>
-                            <option *ngFor="let dia of diasSemana" [value]="dia.valor">{{ dia.nombre }}</option>
-                        </select>
-                        </div>
-                    <div class="form-group">
-                        <label for="horaInicio">Hora Inicio</label>
-                        <input id="horaInicio" type="time" formControlName="horaInicio"
-                            [class.is-invalid]="horarioForm.get('horaInicio')?.touched && horarioForm.get('horaInicio')?.invalid">
-                    </div>
-                    <div class="form-group">
-                        <label for="horaFin">Hora Fin</label>
-                        <input id="horaFin" type="time" formControlName="horaFin"
-                            [class.is-invalid]="(horarioForm.get('horaFin')?.touched && horarioForm.get('horaFin')?.invalid) || horarioForm.hasError('horaInvalida')">
-                    </div>
-                </div>
-                <div *ngIf="horarioForm.hasError('horaInvalida')" class="invalid-feedback d-block">
-                    La hora de fin debe ser mayor a la hora de inicio.
-                </div>
+    <div class="table-container">
+      <h3>Horarios Asignados</h3>
+      <div *ngIf="cargandoHorarios" class="loading-container">Cargando horarios...</div>
+      <div *ngIf="error && medicoSeleccionadoId" class="error-container">{{ error }}</div>
 
-                <div class="form-actions">
-                    <button type="submit" [disabled]="horarioForm.invalid || cargandoHorarios">
-                        <i class="fas fa-plus"></i> Añadir Horario
-                    </button>
-                </div>
-            </form>
-        </div>
+      <div *ngIf="!cargandoHorarios && horarios.length === 0" class="no-data-container">
+        Este médico no tiene horarios asignados.
+      </div>
 
-        <div class="table-container">
-            <h3>Horarios Asignados</h3>
-            <div *ngIf="cargandoHorarios" class="loading-container">Cargando horarios...</div>
-            <div *ngIf="error && medicoSeleccionadoId" class="error-container">{{ error }}</div>
-
-            <div *ngIf="!cargandoHorarios && horarios.length === 0" class="no-data-container">
-                Este médico no tiene horarios asignados.
-            </div>
-
-            <table *ngIf="!cargandoHorarios && horarios.length > 0">
-                <thead>
-                    <tr>
-                        <th>Día</th>
-                        <th>Hora Inicio</th>
-                        <th>Hora Fin</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let horario of horarios">
-                        <td>{{ traducirDia(horario.diaSemana) }}</td>
-                        <td>{{ horario.horaInicio }}</td>
-                        <td>{{ horario.horaFin }}</td>
-                        <td class="acciones">
-                            <button class="btn-accion btn-eliminar" (click)="eliminar(horario.idHorario)">
-                                <i class="fas fa-trash"></i> Eliminar
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+      <table *ngIf="!cargandoHorarios && horarios.length > 0">
+        <thead>
+          <tr>
+            <th>Día</th>
+            <th>Hora Inicio</th>
+            <th>Hora Fin</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let horario of horarios">
+            <td>{{ traducirDia(horario.diaSemana) }}</td>
+            <td>{{ horario.horaInicio }}</td>
+            <td>{{ horario.horaFin }}</td>
+            <td class="acciones">
+              <button class="btn-accion btn-eliminar" (click)="eliminar(horario.idHorario)">
+                <i class="fas fa-trash"></i> Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  </div>
 
 </div>
