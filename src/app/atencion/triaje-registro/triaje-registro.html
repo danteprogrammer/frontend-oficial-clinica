@@ -3,16 +3,29 @@
 
     <div class="card card-busqueda">
         <div class="card-body">
-            <div class="form-group">
+            <div class="form-group" style="position: relative;">
                 <label for="pacienteBusqueda">Buscar Paciente por DNI o Nombre</label>
                 <input id="pacienteBusqueda" type="text" [formControl]="pacienteBusquedaControl"
                     placeholder="Escriba para buscar..." class="form-control">
-            </div>
 
-            <div *ngIf="pacientesEncontrados.length > 0" class="resultados-busqueda">
-                <div *ngFor="let paciente of pacientesEncontrados" class="resultado-item"
-                    (click)="seleccionarPaciente(paciente)">
-                    {{ paciente.nombres }} {{ paciente.apellidos }} - DNI: {{ paciente.dni }}
+                <div *ngIf="pacientesEncontrados.length > 0" class="resultados-busqueda-tabla">
+                    <table class="tabla-paciente-seleccion">
+                        <thead>
+                            <tr>
+                                <th>DNI</th>
+                                <th>Nombre Completo</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let paciente of pacientesEncontrados" (click)="seleccionarPaciente(paciente)"
+                                class="resultado-item-fila">
+                                <td>{{ paciente.dni }}</td>
+                                <td>{{ paciente.nombres }} {{ paciente.apellidos }}</td>
+                                <td><button type="button" class="btn-seleccionar-sm">Seleccionar</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 

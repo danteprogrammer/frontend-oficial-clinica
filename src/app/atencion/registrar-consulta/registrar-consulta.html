@@ -8,13 +8,25 @@
                 placeholder="Escriba para buscar...">
         </div>
 
-        <div *ngIf="pacientesEncontrados.length > 0" class="resultados-busqueda">
-            <div *ngFor="let paciente of pacientesEncontrados" class="resultado-item"
-                (click)="seleccionarPaciente(paciente)">
-                {{ paciente.nombres }} {{ paciente.apellidos }} - DNI: {{ paciente.dni }}
-            </div>
+        <div *ngIf="pacientesEncontrados.length > 0" class="resultados-busqueda-tabla">
+            <table class="tabla-paciente-seleccion">
+                <thead>
+                    <tr>
+                        <th>DNI</th>
+                        <th>Nombre Completo</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let paciente of pacientesEncontrados" (click)="seleccionarPaciente(paciente)"
+                        class="resultado-item-fila">
+                        <td>{{ paciente.dni }}</td>
+                        <td>{{ paciente.nombres }} {{ paciente.apellidos }}</td>
+                        <td><button type="button" class="btn-seleccionar-sm">Seleccionar</button></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-
         <div *ngIf="pacienteSeleccionado" class="paciente-seleccionado">
             <h4>Paciente: <strong>{{ pacienteSeleccionado.nombres }} {{ pacienteSeleccionado.apellidos }}</strong></h4>
             <span *ngIf="idHistoriaClinicaSeleccionada">H.C. N°: {{ idHistoriaClinicaSeleccionada }}</span>
@@ -132,8 +144,7 @@
                 </div>
                 <div class="form-group">
                     <label for="cantidad-{{i}}">Cantidad</label>
-                    <input id="cantidad-{{i}}" type="text" formControlName="cantidad" 
-                        placeholder="Ej: 1 caja" required>
+                    <input id="cantidad-{{i}}" type="text" formControlName="cantidad" placeholder="Ej: 1 caja" required>
                 </div>
                 <div class="form-group">
                     <label for="dosis-{{i}}">Dosis/Presentación</label>

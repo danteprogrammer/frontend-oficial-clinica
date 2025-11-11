@@ -5,21 +5,31 @@
         <h4>1. Buscar Paciente</h4>
         <div class="search-form-container">
             <i class="fas fa-search search-icon"></i>
-            <input type="text" 
-                   class="form-control" 
-                   placeholder="Buscar por DNI o Nombre del paciente..." 
-                   [formControl]="pacienteBusquedaControl">
-            
+            <input type="text" class="form-control" placeholder="Buscar por DNI o Nombre del paciente..."
+                [formControl]="pacienteBusquedaControl">
+
             <button *ngIf="pacienteSeleccionado" (click)="limpiarPaciente()" class="btn-limpiar-paciente">
                 Limpiar
             </button>
 
-            <div *ngIf="pacientesEncontrados.length > 0" class="resultados-busqueda">
-                <div *ngFor="let p of pacientesEncontrados" 
-                     class="resultado-item" 
-                     (click)="seleccionarPaciente(p)">
-                    <strong>{{ p.nombres }} {{ p.apellidos }}</strong> (DNI: {{ p.dni }})
-                </div>
+            <div *ngIf="pacientesEncontrados.length > 0" class="resultados-busqueda-tabla">
+                <table class="tabla-paciente-seleccion">
+                    <thead>
+                        <tr>
+                            <th>DNI</th>
+                            <th>Nombre Completo</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let p of pacientesEncontrados" (click)="seleccionarPaciente(p)"
+                            class="resultado-item-fila">
+                            <td>{{ p.dni }}</td>
+                            <td>{{ p.nombres }} {{ p.apellidos }}</td>
+                            <td><button type="button" class="btn-seleccionar-sm">Seleccionar</button></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -31,7 +41,8 @@
                 <h3>Datos del Paciente</h3>
             </div>
             <div class="card-body">
-                <p><strong>Paciente:</strong> {{ pacienteSeleccionado.nombres }} {{ pacienteSeleccionado.apellidos }}</p>
+                <p><strong>Paciente:</strong> {{ pacienteSeleccionado.nombres }} {{ pacienteSeleccionado.apellidos }}
+                </p>
                 <p><strong>DNI:</strong> {{ pacienteSeleccionado.dni }}</p>
                 <p><strong>Edad:</strong> {{ transformDateToAge(pacienteSeleccionado.fechaNacimiento) }} años</p>
                 <p><strong>N° Historia Clínica:</strong> {{ idHistoriaClinicaSeleccionada || 'N/A' }}</p>
@@ -57,11 +68,12 @@
                     <div *ngFor="let c of consultas" class="timeline-item">
                         <div class="timeline-date">
                             {{ c.fechaConsulta | date:'dd/MM/yyyy' }}
-                            </div>
+                        </div>
                         <div class="timeline-content card">
                             <div class="card-header">
-                                <strong>{{ c.medico.especialidad }}</strong>
-                                <span class="medico-info">Atendido por: {{ c.medico.sexo === 'Femenino' ? 'Dra.' : 'Dr.' }} {{ c.medico.nombres }} {{ c.medico.apellidos }}</span>
+                                <strong>{{ c.medico.especialidad.nombre }}</strong> <span class="medico-info">Atendido
+                                    por: {{ c.medico.sexo === 'Femenino' ? 'Dra.' : 'Dr.' }} {{ c.medico.nombres }} {{
+                                    c.medico.apellidos }}</span>
                             </div>
                             <div class="card-body">
                                 <div class="consulta-detalle">
@@ -105,8 +117,10 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let o of ordenesLab">
-                                <td>{{ o.fechaOrden | date:'dd/MM/yyyy' }}</td> 
-                                <td><pre class="examenes-text">{{ o.examenesSolicitados }}</pre></td>
+                                <td>{{ o.fechaOrden | date:'dd/MM/yyyy' }}</td>
+                                <td>
+                                    <pre class="examenes-text">{{ o.examenesSolicitados }}</pre>
+                                </td>
                                 <td>
                                     <pre *ngIf="o.resultados" class="resultados-text">{{ o.resultados }}</pre>
                                     <span *ngIf="!o.resultados" class="no-data-small">Aún no disponible</span>

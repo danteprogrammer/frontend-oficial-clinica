@@ -65,7 +65,7 @@ h2 {
     background: #5a6268;
 }
 
-.resultados-busqueda {
+.resultados-busqueda-tabla {
     position: absolute;
     width: 100%;
     top: 100%;
@@ -75,22 +75,51 @@ h2 {
     border-top: none;
     border-radius: 0 0 8px 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-height: 200px;
+    max-height: 250px;
     overflow-y: auto;
     z-index: 100;
     margin-top: 5px;
 }
 
-.resultado-item {
-    padding: 12px 15px;
-    cursor: pointer;
-    font-size: 0.95rem;
+.tabla-paciente-seleccion {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-paciente-seleccion th,
+.tabla-paciente-seleccion td {
+    padding: 10px 12px;
+    text-align: left;
     border-bottom: 1px solid #f0f0f0;
 }
 
-.resultado-item:hover {
+.tabla-paciente-seleccion th {
+    background-color: #f8f9fa;
+    font-size: 0.85rem;
+    color: #6c757d;
+    position: sticky;
+    top: 0;
+}
+
+.tabla-paciente-seleccion .resultado-item-fila {
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.tabla-paciente-seleccion .resultado-item-fila:hover {
     background-color: #f7f8fc;
 }
+
+.tabla-paciente-seleccion .btn-seleccionar-sm {
+    background-color: var(--primary-main);
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
 
 .card {
     background: #fff;
