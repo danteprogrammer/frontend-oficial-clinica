@@ -3,20 +3,23 @@
 
     <form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
         <div class="form-grid">
-            
+
             <div class="form-group">
                 <label for="dni">Documento de Identidad (DNI)</label>
-                <input id="dni" type="text" formControlName="dni" [class.is-invalid]="f['dni'].touched && f['dni'].errors">
+                <input id="dni" type="text" formControlName="dni"
+                    [class.is-invalid]="f['dni'].touched && f['dni'].errors">
                 <div *ngIf="f['dni'].touched && f['dni'].errors" class="invalid-feedback">
                     <div *ngIf="f['dni'].errors['required']">El DNI es obligatorio.</div>
                     <div *ngIf="f['dni'].errors['pattern']">El DNI solo debe contener números.</div>
-                    <div *ngIf="f['dni'].errors['minlength'] || f['dni'].errors['maxlength']">El DNI debe tener 8 dígitos.</div>
+                    <div *ngIf="f['dni'].errors['minlength'] || f['dni'].errors['maxlength']">El DNI debe tener 8
+                        dígitos.</div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="nombres">Nombres</label>
-                <input id="nombres" type="text" formControlName="nombres" [class.is-invalid]="f['nombres'].touched && f['nombres'].errors">
+                <input id="nombres" type="text" formControlName="nombres"
+                    [class.is-invalid]="f['nombres'].touched && f['nombres'].errors">
                 <div *ngIf="f['nombres'].touched && f['nombres'].errors" class="invalid-feedback">
                     <div *ngIf="f['nombres'].errors['required']">Los nombres son obligatorios.</div>
                 </div>
@@ -24,7 +27,8 @@
 
             <div class="form-group">
                 <label for="apellidos">Apellidos</label>
-                <input id="apellidos" type="text" formControlName="apellidos" [class.is-invalid]="f['apellidos'].touched && f['apellidos'].errors">
+                <input id="apellidos" type="text" formControlName="apellidos"
+                    [class.is-invalid]="f['apellidos'].touched && f['apellidos'].errors">
                 <div *ngIf="f['apellidos'].touched && f['apellidos'].errors" class="invalid-feedback">
                     <div *ngIf="f['apellidos'].errors['required']">Los apellidos son obligatorios.</div>
                 </div>
@@ -44,22 +48,28 @@
 
             <div class="form-group">
                 <label for="fechaNacimiento">Fecha de Nacimiento</label>
-                <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento" [class.is-invalid]="f['fechaNacimiento'].touched && f['fechaNacimiento'].errors">
+                <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento"
+                    [class.is-invalid]="f['fechaNacimiento'].touched && f['fechaNacimiento'].errors">
                 <div *ngIf="f['fechaNacimiento'].touched && f['fechaNacimiento'].errors" class="invalid-feedback">
                     <div *ngIf="f['fechaNacimiento'].errors['required']">La fecha es obligatoria.</div>
+                    <div *ngIf="f['fechaNacimiento'].errors['fechaFutura']">La fecha no puede ser futura.</div>
+                    <div *ngIf="f['fechaNacimiento'].errors['fechaInvalida']">La fecha es inválida (ej: más de 120
+                        años).</div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="telefono">Teléfono</label>
-                <input id="telefono" type="text" formControlName="telefono" [class.is-invalid]="f['telefono'].touched && f['telefono'].errors">
+                <input id="telefono" type="text" formControlName="telefono"
+                    [class.is-invalid]="f['telefono'].touched && f['telefono'].errors">
                 <div *ngIf="f['telefono'].touched && f['telefono'].errors" class="invalid-feedback">
                     <div *ngIf="f['telefono'].errors['required']">El teléfono es obligatorio.</div>
                     <div *ngIf="f['telefono'].errors['pattern']">Debe empezar con 9 y solo debe contener números.</div>
-                    <div *ngIf="f['telefono'].errors['minlength'] || f['telefono'].errors['maxlength']">El teléfono debe tener 9 dígitos.</div>
+                    <div *ngIf="f['telefono'].errors['minlength'] || f['telefono'].errors['maxlength']">El teléfono debe
+                        tener 9 dígitos.</div>
                 </div>
             </div>
-            
+
             <div class="form-group full-width">
                 <label for="direccion">Dirección</label>
                 <input id="direccion" type="text" formControlName="direccion">
@@ -67,7 +77,8 @@
 
             <div class="form-group full-width">
                 <label for="email">Email</label>
-                <input id="email" type="email" formControlName="email" [class.is-invalid]="f['email'].touched && f['email'].errors">
+                <input id="email" type="email" formControlName="email"
+                    [class.is-invalid]="f['email'].touched && f['email'].errors">
                 <div *ngIf="f['email'].touched && f['email'].errors" class="invalid-feedback">
                     <div *ngIf="f['email'].errors['required']">El email es obligatorio.</div>
                     <div *ngIf="f['email'].errors['email']">El formato del email no es válido.</div>

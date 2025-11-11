@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidatorFn } from '@angular/forms';
 import { Paciente, Paciente as PacienteService } from '../paciente';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -16,21 +16,21 @@ export class PacienteRegistro {
   registroForm: FormGroup;
 
   constructor(
-    private fb: FormBuilder, 
+    private fb: FormBuilder,
     private pacienteService: PacienteService,
-    private router: Router 
+    private router: Router
   ) {
     this.registroForm = this.fb.group({
       dni: ['', [
-        Validators.required, 
-        Validators.pattern('^[0-9]*$'), 
-        Validators.minLength(8), 
+        Validators.required,
+        Validators.pattern('^[0-9]*$'),
+        Validators.minLength(8),
         Validators.maxLength(8)
       ]],
       nombres: ['', [Validators.required, Validators.minLength(2)]],
       apellidos: ['', [Validators.required, Validators.minLength(2)]],
       sexo: ['', Validators.required],
-      fechaNacimiento: ['', Validators.required],
+      fechaNacimiento: ['', [Validators.required, this.fechaNacimientoValida()]],
       direccion: [''],
       telefono: ['', [
         Validators.required,
@@ -42,9 +42,43 @@ export class PacienteRegistro {
     });
   }
 
+  private fechaNacimientoValida(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      if (!control.value) {
+        return null;
+      }
+
+      try {
+        const parts = control.value.split('-');
+        const fechaIngresada = new Date(parts[0], parts[1] - 1, parts[2]);
+
+        const hoy = new Date();
+        const anioMinimo = new Date();
+
+        fechaIngresada.setHours(0, 0, 0, 0);
+        hoy.setHours(0, 0, 0, 0);
+        anioMinimo.setHours(0, 0, 0, 0);
+
+        anioMinimo.setFullYear(hoy.getFullYear() - 120);
+
+        if (fechaIngresada > hoy) {
+          return { fechaFutura: true };
+        }
+
+        if (fechaIngresada < anioMinimo) {
+          return { fechaInvalida: true };
+        }
+
+        return null;
+      } catch (e) {
+        return { fechaInvalida: true };
+      }
+    };
+  }
+
   get f() { return this.registroForm.controls; }
 
-onSubmit(): void {
+  onSubmit(): void {
     if (this.registroForm.invalid) {
       Swal.fire({
         title: 'Formulario Incompleto',
