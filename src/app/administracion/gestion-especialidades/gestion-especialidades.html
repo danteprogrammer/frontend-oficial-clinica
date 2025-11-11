@@ -1,0 +1,68 @@
+<div class="admin-container">
+    <h2><i class="fas fa-star"></i> Gestión de Especialidades</h2>
+
+    <div class="form-card">
+        <h3>{{ modoEdicion ? 'Editar Especialidad' : 'Registrar Nueva Especialidad' }}</h3>
+        <form [formGroup]="especialidadForm" (ngSubmit)="onSubmit()">
+            <div class="form-grid-tarifario"> <div class="form-group">
+                    <label for="nombre">Nombre Especialidad</label>
+                    <input id="nombre" type="text" formControlName="nombre"
+                        [class.is-invalid]="esCampoInvalido('nombre')" placeholder="Ej: Cardiología">
+                    <div *ngIf="esCampoInvalido('nombre')" class="invalid-feedback">
+                        El nombre es requerido.
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción (Opcional)</label>
+                    <input id="descripcion" type="text" formControlName="descripcion" 
+                           placeholder="Ej: Atención del corazón">
+                </div>
+
+                <div class="form-actions-tarifario">
+                    <button type="button" class="btn-cancelar" (click)="resetFormulario()">Cancelar</button>
+                    <button type="submit" [disabled]="cargando || especialidadForm.invalid">
+                        <span *ngIf="!cargando">{{ modoEdicion ? 'Actualizar' : 'Crear' }}</span>
+                        <span *ngIf="cargando">Guardando...</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <h3>Lista de Especialidades</h3>
+        <div *ngIf="cargando" class="loading-container">Cargando especialidades...</div>
+        <div *ngIf="error" class="error-container">{{ error }}</div>
+
+        <div *ngIf="!cargando && !error && especialidades.length === 0" class="no-data-container">
+            No hay especialidades registradas.
+        </div>
+
+        <table *ngIf="!cargando && !error && especialidades.length > 0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let esp of especialidades">
+                    <td>{{ esp.idEspecialidad }}</td>
+                    <td>{{ esp.nombre }}</td>
+                    <td>{{ esp.descripcion }}</td>
+                    <td class="acciones">
+                        <button class="btn-accion btn-editar" (click)="cargarParaEditar(esp)">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn-accion btn-eliminar" (click)="eliminar(esp.idEspecialidad)">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

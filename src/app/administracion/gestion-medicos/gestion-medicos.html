@@ -42,13 +42,17 @@
 
                 <div class="form-group">
                     <label for="especialidad">Especialidad</label>
-                    <input id="especialidad" type="text" formControlName="especialidad"
+                    <select id="especialidad" formControlName="especialidad"
                         [class.is-invalid]="esCampoInvalido('especialidad')">
+                        <option [value]="null" disabled>Seleccione...</option>
+                        <option *ngFor="let esp of especialidades" [value]="esp.idEspecialidad">
+                            {{ esp.nombre }}
+                        </option>
+                    </select>
                     <div *ngIf="esCampoInvalido('especialidad')" class="invalid-feedback">
                         {{ getMensajeError('especialidad') }}
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label for="telefono">Teléfono</label>
                     <input id="telefono" type="text" formControlName="telefono"
@@ -89,7 +93,7 @@
 
             <div class="form-actions">
                 <button type="button" class="btn-cancelar" (click)="resetFormulario()">Cancelar</button>
-                <button type="submit" [disabled]="cargando">
+                <button type="submit" [disabled]="cargando || medicoForm.invalid">
                     <span *ngIf="!cargando">{{ modoEdicion ? 'Actualizar Médico' : 'Crear Médico' }}</span>
                     <span *ngIf="cargando">Guardando...</span>
                 </button>
@@ -122,7 +126,7 @@
                 <tr *ngFor="let medico of medicos">
                     <td>{{ medico.dni }}</td>
                     <td>{{ medico.nombres }} {{ medico.apellidos }}</td>
-                    <td>{{ medico.especialidad }}</td>
+                    <td>{{ medico.especialidad.nombre }}</td>
                     <td>{{ medico.telefono }}</td>
                     <td>{{ medico.email }}</td>
                     <td>
@@ -138,7 +142,8 @@
                         <button class="btn-accion btn-editar" (click)="cargarMedicoParaEditar(medico)">
                             <i class="fas fa-edit"></i> Editar
                         </button>
-                        <button class="btn-accion btn-eliminar" (click)="inactivarMedico(medico.idMedico!)">
+                        <button class="btn-accion btn-eliminar" (click)="inactivarMedico(medico.idMedico!)"
+                            [disabled]="medico.estado === 'Inactivo'">
                             <i class="fas fa-ban"></i> Inactivar
                         </button>
                     </td>

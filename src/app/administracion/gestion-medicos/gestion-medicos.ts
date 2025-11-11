@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MedicoService } from '../../shared/medico.service';
-import { Medico } from '../../shared/medico.service'; 
+import { Medico } from '../../shared/medico.service';
+import { EspecialidadService } from '../../shared/especialidad.service';
+import { Especialidad } from '../../shared/especialidad.model';
 
 declare var Swal: any;
 
@@ -14,6 +16,7 @@ declare var Swal: any;
 })
 export class GestionMedicos implements OnInit {
   medicos: Medico[] = [];
+  especialidades: Especialidad[] = [];
   cargando = true;
   error: string | null = null;
   medicoForm: FormGroup;
@@ -22,6 +25,7 @@ export class GestionMedicos implements OnInit {
 
   constructor(
     private medicoService: MedicoService,
+    private especialidadService: EspecialidadService,
     private fb: FormBuilder
   ) {
     this.medicoForm = this.fb.group({
@@ -29,7 +33,7 @@ export class GestionMedicos implements OnInit {
       nombres: ['', [Validators.required, Validators.minLength(2)]],
       apellidos: ['', [Validators.required, Validators.minLength(2)]],
       sexo: ['Masculino', Validators.required],
-      especialidad: ['', Validators.required],
+      especialidad: [null, Validators.required],
       telefono: ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]],
       email: ['', [Validators.required, Validators.email]],
       licenciaMedica: ['', Validators.required],
@@ -39,6 +43,18 @@ export class GestionMedicos implements OnInit {
 
   ngOnInit(): void {
     this.cargarMedicos();
+    this.cargarEspecialidades();
+  }
+
+  cargarEspecialidades(): void {
+    this.especialidadService.getEspecialidades().subscribe({
+      next: (data) => {
+        this.especialidades = data;
+      },
+      error: (err) => {
+        this.error = 'Error al cargar especialidades. ' + err.message;
+      }
+    });
   }
 
   cargarMedicos(): void {
@@ -57,12 +73,19 @@ export class GestionMedicos implements OnInit {
 
   onSubmit(): void {
     if (this.medicoForm.invalid) {
-      this.medicoForm.markAllAsTouched(); 
+      this.medicoForm.markAllAsTouched();
       return;
     }
 
     this.cargando = true;
-    const medicoData = this.medicoForm.value;
+
+    const formValue = this.medicoForm.value;
+    const medicoData = {
+      ...formValue,
+      especialidad: {
+        idEspecialidad: formValue.especialidad
+      }
+    };
 
     if (this.modoEdicion && this.idMedicoEditar) {
       this.medicoService.actualizarMedico(this.idMedicoEditar, medicoData).subscribe({
@@ -97,7 +120,7 @@ export class GestionMedicos implements OnInit {
       nombres: medico.nombres,
       apellidos: medico.apellidos,
       sexo: medico.sexo,
-      especialidad: medico.especialidad,
+      especialidad: medico.especialidad.idEspecialidad,
       telefono: medico.telefono,
       email: medico.email,
       licenciaMedica: medico.licenciaMedica,
@@ -112,7 +135,7 @@ export class GestionMedicos implements OnInit {
       text: "El médico será marcado como 'Inactivo' y no podrá ser asignado a nuevas citas.",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33', 
+      confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Sí, inactivar',
       cancelButtonText: 'Cancelar'
@@ -122,7 +145,7 @@ export class GestionMedicos implements OnInit {
         this.medicoService.inactivarMedico(id).subscribe({
           next: () => {
             Swal.fire('¡Inactivado!', 'El médico ha sido inactivado.', 'success');
-            this.cargarMedicos(); 
+            this.cargarMedicos();
           },
           error: (err) => {
             Swal.fire('Error', err.message, 'error');
@@ -136,7 +159,8 @@ export class GestionMedicos implements OnInit {
   resetFormulario(): void {
     this.medicoForm.reset({
       sexo: 'Masculino',
-      estado: 'Activo'
+      estado: 'Activo',
+      especialidad: null
     });
     this.modoEdicion = false;
     this.idMedicoEditar = null;

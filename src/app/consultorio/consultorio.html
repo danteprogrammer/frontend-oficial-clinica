@@ -22,7 +22,6 @@
   </div>
 
   <div *ngIf="!loading && !error" class="consultorios-content">
-    <!-- Filtros por estado -->
     <div class="filtros-container">
       <button class="filtro-btn active" (click)="filtroEstado = 'Todos'" [class.active]="filtroEstado === 'Todos'">
         Todos ({{ consultorios.length }})
@@ -57,6 +56,9 @@
         <div class="consultorio-body">
           <h3 class="consultorio-descripcion">{{ consultorio.descripcion }}</h3>
 
+          <div class="detalle-item" style="margin-bottom: 15px;">
+            <strong style="color: var(--primary-main);">Especialidad:</strong> {{ consultorio.especialidad.nombre }}
+          </div>
           <div class="consultorio-estado">
             <span class="estado-label">
               {{ consultorio.estado }}

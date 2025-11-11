@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ConsultorioService } from '../shared/consultorio.service';
+import { ConsultorioService, Consultorio as ConsultorioModel } from '../shared/consultorio.service';
 
 @Component({
   selector: 'app-consultorio',
@@ -11,14 +11,14 @@ import { ConsultorioService } from '../shared/consultorio.service';
 })
 export class Consultorio implements OnInit {
 
-  consultorios: any[] = [];
+  consultorios: ConsultorioModel[] = [];
 
   loading: boolean = false;
   error: string | null = null;
 
   private apiUrl = 'http://localhost:8080/api/consultorios';
 
-  constructor(private consultorioService: ConsultorioService) {}
+  constructor(private consultorioService: ConsultorioService) { }
 
   ngOnInit(): void {
     this.cargarConsultorios();
@@ -29,7 +29,7 @@ export class Consultorio implements OnInit {
     this.error = null;
 
     this.consultorioService.getConsultorios().subscribe({
-      next: (data: any[]) => {
+      next: (data: ConsultorioModel[]) => {
         this.consultorios = data || [];
         console.log('Consultorios cargados desde API:', this.consultorios);
         this.loading = false;
@@ -65,7 +65,7 @@ export class Consultorio implements OnInit {
 
   filtroEstado: string = 'Todos';
 
-  get consultoriosFiltrados(): any[] {
+  get consultoriosFiltrados(): ConsultorioModel[] {
     if (this.filtroEstado === 'Todos') {
       return this.consultorios;
     }
@@ -76,21 +76,21 @@ export class Consultorio implements OnInit {
     return this.consultorios.filter(c => c.estado === estado).length;
   }
 
-  getEstadoClass(estado: string): string {
-    switch (estado) {
-      case 'Disponible': return 'estado-disponible';
-      case 'Ocupado': return 'estado-ocupado';
-      case 'Mantenimiento': return 'estado-mantenimiento';
-      default: return 'estado-desconocido';
-    }
-  }
+  getEstadoClass(estado: string): string {
+    switch (estado) {
+      case 'Disponible': return 'estado-disponible';
+      case 'Ocupado': return 'estado-ocupado';
+      case 'Mantenimiento': return 'estado-mantenimiento';
+      default: return 'estado-desconocido';
+    }
+  }
 
-  getEstadoIcon(estado: string): string {
-    switch (estado) {
-      case 'Disponible': return '✅';
-      case 'Ocupado': return '⛔';
-      case 'Mantenimiento': return '🛠️';
-      default: return '❓';
-    }
-  }
+  getEstadoIcon(estado: string): string {
+    switch (estado) {
+      case 'Disponible': return '✅';
+      case 'Ocupado': return '⛔';
+      case 'Mantenimiento': return '🛠️';
+      default: return '❓';
+    }
+  }
 }

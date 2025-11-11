@@ -22,6 +22,7 @@ import { GestionHorarios } from './administracion/gestion-horarios/gestion-horar
 import { HistorialPagos } from './facturacion/historial-pagos/historial-pagos';
 import { HistorialConsultas } from './atencion/historial-consultas/historial-consultas';
 import { HistorialResultados } from './laboratorio/historial-resultados/historial-resultados';
+import { GestionEspecialidades } from './administracion/gestion-especialidades/gestion-especialidades';
 
 
 export const routes: Routes = [
@@ -51,7 +52,7 @@ export const routes: Routes = [
             { path: 'admin/tarifario', component: GestionTarifario },
             { path: 'admin/usuarios', component: GestionUsuarios },
             { path: 'admin/horarios', component: GestionHorarios },
-            
+            { path: 'admin/especialidades', component: GestionEspecialidades },
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
         ]
     },

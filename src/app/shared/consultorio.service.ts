@@ -2,6 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
+import { Especialidad } from './especialidad.model';
+
+export interface Consultorio {
+  idConsultorio: number;
+  numero: string;
+  piso: number;
+  descripcion: string;
+  especialidad: Especialidad;
+  estado: 'Disponible' | 'Ocupado' | 'Mantenimiento';
+}
 
 @Injectable({
   providedIn: 'root'
@@ -9,23 +19,23 @@ import { catchError, retry } from 'rxjs/operators';
 export class ConsultorioService {
   private apiUrl = 'http://localhost:8080/api/consultorios';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getConsultorios(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl).pipe(
-      retry(2), 
+  getConsultorios(): Observable<Consultorio[]> { 
+    return this.http.get<Consultorio[]>(this.apiUrl).pipe( 
+      retry(2),
       catchError(this.handleError)
     );
   }
 
-  getConsultorio(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
+  getConsultorio(id: number): Observable<Consultorio> { 
+    return this.http.get<Consultorio>(`${this.apiUrl}/${id}`).pipe( 
       catchError(this.handleError)
     );
   }
 
-  getConsultoriosDisponibles(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl).pipe(
+  getConsultoriosDisponibles(): Observable<Consultorio[]> { 
+    return this.http.get<Consultorio[]>(this.apiUrl).pipe( 
       retry(2),
       catchError(this.handleError)
     );

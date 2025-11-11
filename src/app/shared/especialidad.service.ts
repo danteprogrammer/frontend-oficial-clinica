@@ -4,40 +4,34 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Especialidad } from './especialidad.model';
 
-export interface Tarifario {
-  id?: number;
-  especialidad: Especialidad;
-  precio: number;
-}
-
 @Injectable({
   providedIn: 'root'
 })
-export class TarifarioService {
-  private apiUrl = 'http://localhost:8080/api/tarifario';
+export class EspecialidadService {
+  private apiUrl = 'http://localhost:8080/api/admin/especialidades';
 
   constructor(private http: HttpClient) { }
 
-  getTarifarios(): Observable<Tarifario[]> {
-    return this.http.get<Tarifario[]>(this.apiUrl).pipe(
+  getEspecialidades(): Observable<Especialidad[]> {
+    return this.http.get<Especialidad[]>(this.apiUrl).pipe(
       catchError(this.handleError)
     );
   }
 
-  crearTarifario(tarifario: any): Observable<Tarifario> { 
-    return this.http.post<Tarifario>(this.apiUrl, tarifario).pipe(
+  crearEspecialidad(especialidad: { nombre: string, descripcion: string }): Observable<Especialidad> {
+    return this.http.post<Especialidad>(this.apiUrl, especialidad).pipe(
       catchError(this.handleError)
     );
   }
 
-  actualizarTarifario(id: number, tarifario: any): Observable<Tarifario> { 
-    return this.http.put<Tarifario>(`${this.apiUrl}/${id}`, tarifario).pipe(
+  actualizarEspecialidad(id: number, especialidad: { nombre: string, descripcion: string }): Observable<Especialidad> {
+    return this.http.put<Especialidad>(`${this.apiUrl}/${id}`, especialidad).pipe(
       catchError(this.handleError)
     );
   }
 
-  eliminarTarifario(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${id}`).pipe(
+  eliminarEspecialidad(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
       catchError(this.handleError)
     );
   }
@@ -50,6 +44,8 @@ export class TarifarioService {
       errorMessage = 'No tiene permisos para esta acción.';
     } else if (error.status === 404) {
       errorMessage = 'No se encontró el recurso.';
+    } else if (error.status === 400) {
+      errorMessage = 'Solicitud incorrecta: ' + error.error?.message;
     }
     return throwError(() => new Error(errorMessage));
   }

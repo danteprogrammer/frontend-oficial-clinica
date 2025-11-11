@@ -41,10 +41,11 @@
                     <label for="especialidad">Especialidad</label>
                     <select id="especialidad" formControlName="especialidad" (change)="onEspecialidadChange()">
                         <option value="" disabled>Seleccione...</option>
-                        <option *ngFor="let esp of especialidades" [value]="esp">{{ esp }}</option>
+                        <option *ngFor="let esp of especialidades" [value]="esp.nombre">
+                            {{ esp.nombre }}
+                        </option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label for="medicoId">Médico</label>
                     <select id="medicoId" formControlName="medicoId" (change)="onMedicoChange()">

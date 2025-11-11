@@ -7,6 +7,7 @@ import { MedicoService } from '../../shared/medico.service';
 import { CitaService } from '../../shared/cita.service';
 import { debounceTime, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Especialidad } from '../../shared/especialidad.model'; 
 
 declare var Swal: any;
 
@@ -18,7 +19,7 @@ declare var Swal: any;
   styleUrls: ['./turno-registro.css']
 })
 export class TurnoRegistro implements OnInit {
-registroForm!: FormGroup;
+  registroForm!: FormGroup;
   mensajeExito: string | null = null;
   mensajeError: string | null = null;
   cargando: boolean = false;
@@ -27,7 +28,7 @@ registroForm!: FormGroup;
   pacientesEncontrados: any[] = [];
   pacienteSeleccionado: any = null;
 
-  especialidades: string[] = [];
+  especialidades: Especialidad[] = []; 
   medicos: any[] = [];
   horarioMedico: any = null;
   diasDisponibles: string[] = [];
@@ -63,7 +64,7 @@ registroForm!: FormGroup;
     this.cargarEspecialidades();
     this.setupPacienteSearch();
   }
-  
+
   private setupPacienteSearch(): void {
     this.pacienteBusquedaControl.valueChanges.pipe(
       debounceTime(400),
@@ -93,7 +94,7 @@ registroForm!: FormGroup;
 
   private cargarEspecialidades(): void {
     this.medicoService.getEspecialidades().subscribe({
-      next: (data) => this.especialidades = data,
+      next: (data) => this.especialidades = data, 
       error: (err) => this.mensajeError = "No se pudieron cargar las especialidades."
     });
   }
@@ -157,7 +158,7 @@ registroForm!: FormGroup;
       tieneSeguro: formData.tieneSeguro,
       fecha: formData.fecha,
       hora: formData.hora,
-      motivo: 'Consulta en ' + formData.especialidad, 
+      motivo: 'Consulta en ' + formData.especialidad,
       estado: 'Pendiente'
     };
 

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
+import { Especialidad } from './especialidad.model';
 
 export interface Medico {
   idMedico?: number;
@@ -9,7 +10,7 @@ export interface Medico {
   nombres: string;
   apellidos: string;
   sexo: 'Masculino' | 'Femenino';
-  especialidad: string;
+  especialidad: Especialidad;
   telefono: string;
   email: string;
   licenciaMedica: string;
@@ -24,26 +25,26 @@ export class MedicoService {
 
   constructor(private http: HttpClient) { }
 
-  getMedicos(): Observable<Medico[]> { 
+  getMedicos(): Observable<Medico[]> {
     return this.http.get<Medico[]>(this.apiUrl).pipe(
       retry(2),
       catchError(this.handleError)
     );
   }
 
-  getMedico(id: number): Observable<Medico> { 
+  getMedico(id: number): Observable<Medico> {
     return this.http.get<Medico>(`${this.apiUrl}/${id}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  getEspecialidades(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/especialidades`).pipe(
+  getEspecialidades(): Observable<Especialidad[]> {
+    return this.http.get<Especialidad[]>(`${this.apiUrl}/especialidades`).pipe(
       catchError(this.handleError)
     );
   }
 
-  getMedicosPorEspecialidad(especialidad: string): Observable<Medico[]> { 
+  getMedicosPorEspecialidad(especialidad: string): Observable<Medico[]> {
     return this.http.get<Medico[]>(`${this.apiUrl}/especialidad/${especialidad}`).pipe(
       catchError(this.handleError)
     );
@@ -55,20 +56,20 @@ export class MedicoService {
     );
   }
 
-  getMedicosDisponibles(): Observable<Medico[]> { 
+  getMedicosDisponibles(): Observable<Medico[]> {
     return this.http.get<Medico[]>(this.apiUrl).pipe(
       retry(2),
       catchError(this.handleError)
     );
   }
 
-  crearMedico(medico: Medico): Observable<any> { 
+  crearMedico(medico: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, medico).pipe(
       catchError(this.handleError)
     );
   }
 
-  actualizarMedico(id: number, medico: Medico): Observable<any> { 
+  actualizarMedico(id: number, medico: any): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/${id}`, medico).pipe(
       catchError(this.handleError)
     );
@@ -86,20 +87,20 @@ export class MedicoService {
     );
   }
 
-  private handleError(error: HttpErrorResponse) {
+  private handleError(HttpErrorResponse: HttpErrorResponse) {
     let errorMessage = '';
 
-    if (error.status === 403) {
+    if (HttpErrorResponse.status === 403) {
       errorMessage = 'Error de autorización. Verifica que estés logueado correctamente.';
-    } else if (error.status === 404) {
+    } else if (HttpErrorResponse.status === 404) {
       errorMessage = 'Médico no encontrado.';
-    } else if (error.status === 0) {
+    } else if (HttpErrorResponse.status === 0) {
       errorMessage = 'No se puede conectar al servidor. Verifica que el backend esté ejecutándose.';
     } else {
-      errorMessage = `Error del servidor: ${error.message}`;
+      errorMessage = HttpErrorResponse.error?.message || `Error del servidor: ${HttpErrorResponse.message}`;
     }
 
-    console.error('Error en MedicoService:', error);
+    console.error('Error en MedicoService:', HttpErrorResponse);
     return throwError(() => new Error(errorMessage));
   }
 }

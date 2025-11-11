@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Tarifario, TarifarioService } from '../../shared/tarifario.service';
+import { EspecialidadService } from '../../shared/especialidad.service';
+import { Especialidad } from '../../shared/especialidad.model';
 
 declare var Swal: any;
 
@@ -13,6 +15,7 @@ declare var Swal: any;
 })
 export class GestionTarifario implements OnInit {
   tarifas: Tarifario[] = [];
+  especialidades: Especialidad[] = [];
   cargando = true;
   error: string | null = null;
   tarifaForm: FormGroup;
@@ -21,16 +24,29 @@ export class GestionTarifario implements OnInit {
 
   constructor(
     private tarifarioService: TarifarioService,
+    private especialidadService: EspecialidadService,
     private fb: FormBuilder
   ) {
     this.tarifaForm = this.fb.group({
-      especialidad: ['', Validators.required],
+      especialidad: [null, Validators.required],
       precio: ['', [Validators.required, Validators.min(0), Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$')]]
     });
   }
 
   ngOnInit(): void {
     this.cargarTarifas();
+    this.cargarEspecialidades();
+  }
+
+  cargarEspecialidades(): void {
+    this.especialidadService.getEspecialidades().subscribe({
+      next: (data) => {
+        this.especialidades = data;
+      },
+      error: (err) => {
+        this.error = 'Error al cargar especialidades. ' + err.message;
+      }
+    });
   }
 
   cargarTarifas(): void {
@@ -54,7 +70,14 @@ export class GestionTarifario implements OnInit {
     }
 
     this.cargando = true;
-    const tarifaData = this.tarifaForm.value;
+
+    const formValue = this.tarifaForm.value;
+    const tarifaData = {
+      ...formValue,
+      especialidad: {
+        idEspecialidad: formValue.especialidad
+      }
+    };
 
     if (this.modoEdicion && this.idTarifaEditar) {
       this.tarifarioService.actualizarTarifario(this.idTarifaEditar, tarifaData).subscribe({
@@ -85,10 +108,10 @@ export class GestionTarifario implements OnInit {
     this.modoEdicion = true;
     this.idTarifaEditar = tarifa.id!;
     this.tarifaForm.patchValue({
-      especialidad: tarifa.especialidad,
+      especialidad: tarifa.especialidad.idEspecialidad,
       precio: tarifa.precio
     });
-    window.scrollTo(0, 0); 
+    window.scrollTo(0, 0);
   }
 
   eliminarTarifa(id: number): void {
@@ -119,7 +142,7 @@ export class GestionTarifario implements OnInit {
   }
 
   resetFormulario(): void {
-    this.tarifaForm.reset();
+    this.tarifaForm.reset({ especialidad: null });
     this.modoEdicion = false;
     this.idTarifaEditar = null;
     this.cargando = false;
