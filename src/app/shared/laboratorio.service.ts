@@ -32,7 +32,7 @@ export interface OrdenLaboratorioResponseDto {
   providedIn: 'root'
 })
 export class LaboratorioService {
-  private apiUrl = 'http://localhost:8080/api/laboratorio';
+  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/laboratorio';
 
   constructor(private http: HttpClient) { }
 

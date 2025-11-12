@@ -36,7 +36,7 @@ export interface HistorialConsulta {
   providedIn: 'root'
 })
 export class ConsultaService {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api';
 
   constructor(private http: HttpClient) { }
 

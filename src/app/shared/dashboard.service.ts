@@ -13,7 +13,7 @@ export interface DashboardStats {
   providedIn: 'root'
 })
 export class DashboardService {
-  private apiUrl = 'http://localhost:8080/api/dashboard';
+  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/dashboard';
 
   constructor(private http: HttpClient) { }
 

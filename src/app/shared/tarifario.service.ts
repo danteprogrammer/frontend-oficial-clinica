@@ -14,7 +14,7 @@ export interface Tarifario {
   providedIn: 'root'
 })
 export class TarifarioService {
-  private apiUrl = 'http://localhost:8080/api/tarifario';
+  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/tarifario';
 
   constructor(private http: HttpClient) { }
 

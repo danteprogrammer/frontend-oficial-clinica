@@ -31,7 +31,7 @@ export interface UsuarioRequest {
   providedIn: 'root'
 })
 export class UsuarioService {
-  private apiUrl = 'http://localhost:8080/api/admin/usuarios';
+  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/admin/usuarios';
 
   constructor(private http: HttpClient) { }
 

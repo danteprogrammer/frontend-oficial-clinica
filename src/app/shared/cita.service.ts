@@ -7,7 +7,7 @@ import { catchError, retry } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class CitaService {
-  private apiUrl = 'http://localhost:8080/api/citas';
+  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/citas';
 
   constructor(private http: HttpClient) { }
 

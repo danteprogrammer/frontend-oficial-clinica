@@ -21,7 +21,7 @@ export interface Medico {
   providedIn: 'root'
 })
 export class MedicoService {
-  private apiUrl = 'http://localhost:8080/api/medicos';
+  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/medicos';
 
   constructor(private http: HttpClient) { }
 

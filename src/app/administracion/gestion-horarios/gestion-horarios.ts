@@ -2,7 +2,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms'; // Importar FormsModule
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms'; 
 import { Medico, MedicoService } from '../../shared/medico.service';
 import { Horario, HorarioService, HorarioRequest } from '../../shared/horario.service';
 
@@ -10,23 +10,22 @@ declare var Swal: any;
 
 @Component({
   selector: 'app-gestion-horarios',
-  // Asegúrate de importar CommonModule, ReactiveFormsModule y FormsModule
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './gestion-horarios.html',
   styleUrl: './gestion-horarios.css'
 })
 export class GestionHorarios implements OnInit {
   medicos: Medico[] = [];
-  medicosFiltrados: Medico[] = []; // Lista para la tabla filtrada
+  medicosFiltrados: Medico[] = []; 
   horarios: Horario[] = [];
 
-  medicoSeleccionado: Medico | null = null; // Objeto del médico seleccionado
-  medicoSeleccionadoId: number | null = null; // ID (aún útil para el request)
+  medicoSeleccionado: Medico | null = null; 
+  medicoSeleccionadoId: number | null = null; 
 
   cargandoMedicos = true;
   cargandoHorarios = false;
   error: string | null = null;
-  filtroMedicos: string = ''; // Término de búsqueda
+  filtroMedicos: string = ''; 
 
   horarioForm: FormGroup;
 
@@ -55,9 +54,7 @@ export class GestionHorarios implements OnInit {
   ngOnInit(): void {
     this.medicoService.getMedicos().subscribe({
       next: (data) => {
-        // Almacenamos solo médicos activos
         this.medicos = data.filter(m => m.estado === 'Activo');
-        // Inicialmente, la lista filtrada es la lista completa
         this.medicosFiltrados = [...this.medicos];
         this.cargandoMedicos = false;
       },
@@ -68,7 +65,6 @@ export class GestionHorarios implements OnInit {
     });
   }
 
-  // Método para filtrar la tabla de médicos
   buscarMedicos(): void {
     const termino = this.filtroMedicos.toLowerCase();
     if (!termino) {
@@ -84,7 +80,6 @@ export class GestionHorarios implements OnInit {
     );
   }
 
-  // Se llama al hacer clic en "Seleccionar"
   seleccionarMedico(medico: Medico): void {
     this.medicoSeleccionado = medico;
     this.medicoSeleccionadoId = medico.idMedico!;
@@ -93,14 +88,13 @@ export class GestionHorarios implements OnInit {
     this.cargarHorarios(medico.idMedico!);
   }
 
-  // Se llama al hacer clic en "Cambiar Médico"
   cambiarMedico(): void {
     this.medicoSeleccionado = null;
     this.medicoSeleccionadoId = null;
     this.horarios = [];
     this.error = null;
-    this.filtroMedicos = ''; // Limpiar filtro
-    this.medicosFiltrados = [...this.medicos]; // Resetear tabla
+    this.filtroMedicos = ''; 
+    this.medicosFiltrados = [...this.medicos]; 
   }
 
 

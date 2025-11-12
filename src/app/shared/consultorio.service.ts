@@ -24,7 +24,7 @@ export interface ApiResponse {
   providedIn: 'root'
 })
 export class ConsultorioService {
-  private apiUrl = 'http://localhost:8080/api/consultorios';
+  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/consultorios';
 
   constructor(private http: HttpClient, private authService: Auth) { }
 

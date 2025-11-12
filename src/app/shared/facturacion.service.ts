@@ -28,7 +28,7 @@ export interface CitaParaFacturacionDto {
   providedIn: 'root'
 })
 export class FacturacionService {
-  private apiUrl = 'http://localhost:8080/api/facturacion';
+  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/facturacion';
 
   constructor(private http: HttpClient) { }
 

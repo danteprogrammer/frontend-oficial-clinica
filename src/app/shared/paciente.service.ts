@@ -8,7 +8,7 @@ import { PaginaPacientes } from '../pacientes/paciente';
   providedIn: 'root'
 })
 export class PacienteService {
-private apiUrl = 'http://localhost:8080/api/pacientes';
+private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/pacientes';
 
   constructor(private http: HttpClient) {}
 

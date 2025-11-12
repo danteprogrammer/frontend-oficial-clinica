@@ -7,7 +7,7 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class TriajeService {
-  private apiUrl = 'http://localhost:8080/api/triajes';
+  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/triajes';
 
   constructor(private http: HttpClient) { }
 
