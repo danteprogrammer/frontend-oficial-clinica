@@ -198,6 +198,11 @@
     }
 }
 
+.input-container {
+    position: relative;
+    width: 100%;
+}
+
 .resultados-busqueda-tabla {
     position: absolute;
     width: 100%;
@@ -209,7 +214,9 @@
     max-height: 250px;
     overflow-y: auto;
     z-index: 100;
-    margin-top: 5px;
+    top: 100%;
+    margin-top: 4px; 
+    box-sizing: border-box; 
 }
 
 .tabla-paciente-seleccion {
