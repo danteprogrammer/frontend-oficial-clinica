@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; 
-import { BaseChartDirective } from 'ng2-charts'; 
-import { ChartConfiguration, ChartData, ChartType } from 'chart.js'; 
-import { DashboardService, DashboardStats } from '../../shared/dashboard.service'; 
+import { CommonModule } from '@angular/common';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { DashboardService, DashboardStats } from '../../shared/dashboard.service';
+import { Auth } from '../../auth/auth';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,15 +11,16 @@ import { DashboardService, DashboardStats } from '../../shared/dashboard.service
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class Dashboard implements OnInit { 
-
+export class Dashboard implements OnInit {
   cargando = true;
   error: string | null = null;
-  stats: DashboardStats = { 
+  stats: DashboardStats = {
     ingresosHoy: 0,
     pacientesAtendidosHoy: 0,
     consultasPorEspecialidadHoy: []
   };
+
+  userRole: string = ''; 
 
   public pieChartOptions: ChartConfiguration['options'] = {
     responsive: true,
@@ -47,10 +49,19 @@ export class Dashboard implements OnInit {
   };
   public pieChartType: ChartType = 'pie';
 
-  constructor(private dashboardService: DashboardService) { }
+  constructor(
+    private dashboardService: DashboardService,
+    private authService: Auth 
+  ) { }
 
   ngOnInit(): void {
-    this.cargarStats();
+    this.userRole = this.authService.getRole() || ''; 
+
+    if (this.userRole === 'ADMIN') {
+      this.cargarStats();
+    } else {
+      this.cargando = false;
+    }
   }
 
   cargarStats(): void {
@@ -76,7 +87,7 @@ export class Dashboard implements OnInit {
     this.pieChartData = {
       labels: labels,
       datasets: [{
-        ...this.pieChartData.datasets[0], 
+        ...this.pieChartData.datasets[0],
         data: cantidades
       }]
     };

@@ -83,7 +83,7 @@ export class Main implements OnInit {
       roles: ['ADMIN'],
       submenus: [
         { name: 'Gestión de Médicos', path: '/admin/medicos', roles: ['ADMIN'] },
-        { name: 'Gestión de Consultorios', path: '/consultorios', roles: ['ADMIN'] },
+        { name: 'Gestión de Consultorios', path: '/admin/consultorios', roles: ['ADMIN'] },
         { name: 'Gestión de Tarifario', path: '/admin/tarifario', roles: ['ADMIN'] },
         { name: 'Gestión de Usuarios', path: '/admin/usuarios', roles: ['ADMIN'] },
         { name: 'Gestión de Horarios', path: '/admin/horarios', roles: ['ADMIN'] },
