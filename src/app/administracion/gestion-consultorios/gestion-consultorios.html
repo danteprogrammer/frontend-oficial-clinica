@@ -44,11 +44,12 @@
                         </span>
                     </td>
                     <td class="actions">
-                        <button class="btn-icon btn-edit" (click)="abrirModal(consultorio)">
-                            <i class="fas fa-edit"></i>
+                        <button class="btn-accion btn-editar" (click)="abrirModal(consultorio)">
+                            <i class="fas fa-edit"></i> Editar
                         </button>
-                        <button class="btn-icon btn-delete" (click)="confirmarEliminacion(consultorio.idConsultorio)">
-                            <i class="fas fa-trash"></i>
+                        <button class="btn-accion btn-eliminar"
+                            (click)="confirmarEliminacion(consultorio.idConsultorio)">
+                            <i class="fas fa-trash"></i> Eliminar
                         </button>
                     </td>
                 </tr>
