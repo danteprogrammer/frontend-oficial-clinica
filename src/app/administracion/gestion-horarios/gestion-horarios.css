@@ -1,32 +1,35 @@
 .admin-container {
-    max-width: 1400px;
-    margin: 1rem auto;
-    padding: 1rem;
+    max-width: 100%;
+    margin: clamp(0.5rem, 2vw, 1rem) auto;
+    padding: clamp(0.75rem, 3vw, 1rem);
 }
 
 h2 {
     text-align: center;
     color: var(--primary-dark);
-    margin-bottom: 2rem;
+    margin-bottom: clamp(1.5rem, 4vw, 2rem);
+    font-size: clamp(1.3rem, 5vw, 2rem);
+    word-wrap: break-word;
 }
 
 .form-card {
     background: #fff;
-    padding: 1.5rem 2rem;
+    padding: clamp(1rem, 3vw, 2rem);
     border-radius: 12px;
     box-shadow: var(--shadow-sm);
-    margin-bottom: 2rem;
+    margin-bottom: clamp(1rem, 3vw, 2rem);
 }
 
 .form-card h3 {
     margin-top: 0;
     color: var(--primary-main);
+    font-size: clamp(1.1rem, 3vw, 1.3rem);
 }
 
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+    gap: clamp(0.75rem, 2vw, 1.5rem);
 }
 
 .form-group {
@@ -38,15 +41,17 @@ h2 {
     margin-bottom: 0.5rem;
     font-weight: 600;
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: clamp(0.85rem, 1.5vw, 0.9rem);
 }
 
 .form-group input,
 .form-group select {
-    padding: 10px 12px;
+    padding: clamp(8px, 1.5vw, 10px) 12px;
     border-radius: 8px;
     border: 1px solid var(--border-color);
-    font-size: 0.95rem;
+    font-size: clamp(0.9rem, 2vw, 0.95rem);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .form-group input:focus,
@@ -73,8 +78,9 @@ h2 {
 
 .form-actions {
     display: flex;
+    flex-wrap: wrap;
     justify-content: flex-end;
-    gap: 1rem;
+    gap: clamp(0.75rem, 2vw, 1rem);
     margin-top: 1.5rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--border-color);
@@ -168,9 +174,7 @@ tbody tr:hover {
     border-radius: 8px;
 }
 
-/* --- Añadir a gestion-horarios.css --- */
 
-/* Estilos para la tabla de selección de médicos */
 .table-container table {
   margin-top: 20px;
 }
@@ -192,14 +196,13 @@ tbody tr:hover {
   background-color: #0056b3;
 }
 
-/* Tarjeta de médico seleccionado */
 .medico-seleccionado-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: 15px;
-  background-color: #f0f8ff; /* Un fondo azul claro para destacar */
+  background-color: #f0f8ff; 
   border-left: 5px solid #007bff;
 }
 
@@ -230,9 +233,8 @@ tbody tr:hover {
   background-color: #5a6268;
 }
 
-/* Ajuste para el input de búsqueda */
 .form-card .form-group input[type="text"] {
   width: 100%;
   padding: 10px;
-  box-sizing: border-box; /* Asegura que el padding no afecte el ancho */
+  box-sizing: border-box; 
 }

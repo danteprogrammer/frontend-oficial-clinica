@@ -43,7 +43,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 40px;
+    padding: clamp(20px, 5vw, 40px);
     z-index: 2;
 }
 
@@ -52,42 +52,46 @@
 }
 
 .main-logo {
-    max-width: 300px;
-    margin-bottom: 20px;
+    max-width: clamp(150px, 30vw, 300px);
+    margin-bottom: clamp(15px, 3vw, 20px);
+    height: auto;
+    width: 100%;
 }
 
 .title {
-    font-size: 3.5rem;
+    font-size: clamp(2rem, 6vw, 3.5rem);
     color: #005792;
     line-height: 1.2;
     font-weight: 700;
+    word-wrap: break-word;
 }
 
 
 .login-form-wrapper {
     width: 100%;
     max-width: 350px;
+    padding: 0 clamp(15px, 3vw, 20px);
 }
 
 .login-form-wrapper h3 {
-    font-size: 1.8rem;
+    font-size: clamp(1.3rem, 4vw, 1.8rem);
     color: #034471;
-    margin-bottom: 25px;
+    margin-bottom: clamp(15px, 3vw, 25px);
     font-weight: 600;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: clamp(12px, 2vw, 20px);
 }
 
 .form-group input {
     width: 100%;
-    padding: 15px 20px;
+    padding: clamp(10px, 2vw, 15px) clamp(12px, 2vw, 20px);
     border: none;
     border-radius: 8px;
     background-color: #ffffff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    font-size: 1rem;
+    font-size: clamp(0.9rem, 1.5vw, 1rem);
     box-sizing: border-box;
 }
 
@@ -97,11 +101,11 @@
 
 button {
     width: 100%;
-    padding: 15px;
+    padding: clamp(10px, 2vw, 15px);
     background: #fca311;
     border: none;
     color: white;
-    font-size: 1.1rem;
+    font-size: clamp(0.95rem, 1.5vw, 1.1rem);
     font-weight: bold;
     border-radius: 8px;
     cursor: pointer;
@@ -121,8 +125,38 @@ button:disabled {
 .error-message {
     color: #d32f2f;
     background-color: #ffcdd2;
-    padding: 10px;
+    padding: clamp(8px, 1.5vw, 10px);
     border-radius: 4px;
-    margin-bottom: 15px;
+    margin-bottom: clamp(10px, 2vw, 15px);
     text-align: center;
+    font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .left-panel {
+        display: none;
+    }
+    
+    .right-panel {
+        width: 100%;
+    }
+    
+    .login-form-wrapper {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .left-panel,
+    .right-panel {
+        padding: 15px;
+    }
+    
+    .login-form-wrapper {
+        max-width: 100%;
+    }
 }

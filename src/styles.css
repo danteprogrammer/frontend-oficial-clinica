@@ -35,6 +35,11 @@ html {
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    box-sizing: border-box;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 h1,
@@ -46,32 +51,44 @@ h6 {
     font-family: var(--font-display);
     color: var(--primary-darkest);
     margin-top: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
+
+h1 { font-size: clamp(1.5rem, 5vw, 2.5rem); }
+h2 { font-size: clamp(1.3rem, 4vw, 2rem); }
+h3 { font-size: clamp(1.1rem, 3vw, 1.75rem); }
+h4 { font-size: clamp(1rem, 2.5vw, 1.5rem); }
 
 .card {
     background-color: var(--background-white);
-    padding: 25px 30px;
+    padding: clamp(15px, 5vw, 30px);
     border-radius: 12px;
     box-shadow: var(--shadow-md);
     border: 1px solid var(--border-color);
+    margin-bottom: 20px;
 }
 
 .card-header {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
     padding-bottom: 15px;
     border-bottom: 1px solid var(--border-color);
+    gap: 15px;
 }
 
 .card-header h2 {
     margin-bottom: 0;
-    font-size: 1.5rem;
+    font-size: clamp(1.3rem, 4vw, 1.5rem);
+    flex: 1 1 auto;
+    min-width: 200px;
 }
 
 .btn {
-    padding: 10px 20px;
+    padding: clamp(8px, 2vw, 12px) clamp(15px, 3vw, 20px);
     border-radius: 8px;
     border: none;
     font-weight: 700;
@@ -80,8 +97,11 @@ h6 {
     transition: all 0.2s ease-in-out;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    font-size: 14px;
+    font-size: clamp(13px, 2vw, 14px);
+    white-space: nowrap;
+    min-height: 40px;
 }
 
 .btn:disabled {
@@ -117,8 +137,8 @@ h6 {
 
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+    gap: clamp(15px, 4vw, 25px);
     margin-bottom: 20px;
 }
 
@@ -134,19 +154,21 @@ h6 {
 .form-group label {
     margin-bottom: 8px;
     font-weight: 600;
-    font-size: 14px;
+    font-size: clamp(13px, 2vw, 14px);
     color: var(--text-primary);
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
-    padding: 12px;
+    padding: clamp(8px, 2vw, 12px);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     font-family: var(--font-body);
-    font-size: 1rem;
+    font-size: clamp(14px, 2.5vw, 1rem);
     transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    max-width: 100%;
 }
 
 .form-group input:focus,
@@ -159,8 +181,9 @@ h6 {
 
 .form-actions {
     display: flex;
+    flex-wrap: wrap;
     justify-content: flex-end;
-    gap: 15px;
+    gap: clamp(10px, 2vw, 15px);
     margin-top: 30px;
 }
 
@@ -177,9 +200,11 @@ table {
 
 th,
 td {
-    padding: 15px;
+    padding: clamp(10px, 2vw, 15px);
     text-align: left;
     border-bottom: 1px solid var(--border-color);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 thead th {
@@ -187,7 +212,7 @@ thead th {
     font-weight: 700;
     color: var(--text-secondary);
     text-transform: uppercase;
-    font-size: 12px;
+    font-size: clamp(11px, 1.5vw, 12px);
 }
 
 tbody tr:hover {
@@ -195,10 +220,109 @@ tbody tr:hover {
 }
 
 .alert {
-    padding: 15px;
+    padding: clamp(12px, 3vw, 15px);
     margin-bottom: 20px;
     border-radius: 8px;
     font-weight: 500;
+    font-size: clamp(13px, 2vw, 14px);
+}
+
+/* Responsive Utilities */
+@media (max-width: 1024px) {
+    .form-grid {
+        grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .card {
+        padding: clamp(15px, 4vw, 20px);
+    }
+    
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .card-header h2 {
+        width: 100%;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .form-actions {
+        justify-content: stretch;
+    }
+    
+    .form-actions .btn {
+        flex: 1;
+    }
+    
+    .table-container {
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+    }
+    
+    table {
+        font-size: clamp(12px, 2vw, 14px);
+    }
+    
+    th, td {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+    
+    .card {
+        padding: 12px;
+        margin-bottom: 15px;
+    }
+    
+    .card-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .btn {
+        padding: 10px 15px;
+        font-size: 13px;
+        min-height: 36px;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .form-group label {
+        font-size: 13px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 10px;
+        font-size: 16px;
+    }
+    
+    table {
+        font-size: 12px;
+    }
+    
+    th, td {
+        padding: 8px 6px;
+    }
+    
+    .alert {
+        padding: 12px;
+        font-size: 13px;
+    }
 }
 
 .alert-success {
