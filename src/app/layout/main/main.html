@@ -1,5 +1,7 @@
 <div class="main-layout">
-  <aside class="sidebar">
+  <button class="menu-toggle" (click)="toggleSidebar()" aria-label="Toggle menu">☰</button>
+  <div class="sidebar-overlay" [class.active]="sidebarActive" (click)="closeSidebar()"></div>
+  <aside class="sidebar" [class.active]="sidebarActive">
     <div class="sidebar-header">
       <img src="images/logo.png" alt="Logo SaludVida" class="logo">
     </div>
@@ -9,7 +11,7 @@
         <li *ngFor="let menu of navMenus" class="menu-item">
 
           <a *ngIf="menu.path" [routerLink]="menu.path" routerLinkActive="active-link"
-            [routerLinkActiveOptions]="{exact: true}" (click)="toggleMenu(menu)">
+            [routerLinkActiveOptions]="{exact: true}" (click)="toggleMenu(menu); closeSidebar()">
             <span class="menu-icon">{{ menu.icon }}</span>
             <span>{{ menu.name }}</span>
           </a>
@@ -22,7 +24,7 @@
 
           <ul class="submenu" *ngIf="menu.submenus" [class.open]="menu.isOpen">
             <li *ngFor="let submenu of menu.submenus">
-              <a [routerLink]="submenu.path" routerLinkActive="active-link">{{ submenu.name }}</a>
+              <a [routerLink]="submenu.path" routerLinkActive="active-link" (click)="closeSidebar()">{{ submenu.name }}</a>
             </li>
           </ul>
 
@@ -38,7 +40,7 @@
     </div>
   </aside>
 
-  <main class="content">
+  <main class="content" (click)="closeSidebar()">
     <router-outlet></router-outlet>
   </main>
 </div>

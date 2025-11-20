@@ -21,7 +21,8 @@ interface NavMenu {
   templateUrl: './main.html',
   styleUrl: './main.css'
 })
-export class Main implements OnInit { 
+export class Main implements OnInit {
+  sidebarActive: boolean = false; 
 
   private allMenus: NavMenu[] = [
     { name: 'Dashboard', path: '/dashboard', icon: '🏠', roles: ['ADMIN'] },
@@ -162,6 +163,14 @@ export class Main implements OnInit {
       }
     });
     clickedMenu.isOpen = !clickedMenu.isOpen;
+  }
+
+  toggleSidebar(): void {
+    this.sidebarActive = !this.sidebarActive;
+  }
+
+  closeSidebar(): void {
+    this.sidebarActive = false;
   }
 
   logout(): void {
