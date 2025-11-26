@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse , HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -17,8 +17,13 @@ export class DashboardService {
 
   constructor(private http: HttpClient) { }
 
-  getStats(): Observable<DashboardStats> {
-    return this.http.get<DashboardStats>(`${this.apiUrl}/stats`).pipe(
+  getStats(fecha?: string): Observable<DashboardStats> {
+    let params = new HttpParams();
+    if (fecha) {
+      params = params.set('fecha', fecha);
+    }
+
+    return this.http.get<DashboardStats>(`${this.apiUrl}/stats`, { params }).pipe(
       catchError(this.handleError)
     );
   }

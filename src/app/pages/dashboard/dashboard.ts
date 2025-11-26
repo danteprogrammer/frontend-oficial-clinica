@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { DashboardService, DashboardStats } from '../../shared/dashboard.service';
@@ -7,20 +8,23 @@ import { Auth } from '../../auth/auth';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, BaseChartDirective],
+  imports: [CommonModule, BaseChartDirective, FormsModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
 export class Dashboard implements OnInit {
   cargando = true;
   error: string | null = null;
+
+  fechaSeleccionada: string = new Date().toISOString().split('T')[0];
+
   stats: DashboardStats = {
     ingresosHoy: 0,
     pacientesAtendidosHoy: 0,
     consultasPorEspecialidadHoy: []
   };
 
-  userRole: string = ''; 
+  userRole: string = '';
 
   public pieChartOptions: ChartConfiguration['options'] = {
     responsive: true,
@@ -51,11 +55,11 @@ export class Dashboard implements OnInit {
 
   constructor(
     private dashboardService: DashboardService,
-    private authService: Auth 
+    private authService: Auth
   ) { }
 
   ngOnInit(): void {
-    this.userRole = this.authService.getRole() || ''; 
+    this.userRole = this.authService.getRole() || '';
 
     if (this.userRole === 'ADMIN') {
       this.cargarStats();
@@ -67,7 +71,8 @@ export class Dashboard implements OnInit {
   cargarStats(): void {
     this.cargando = true;
     this.error = null;
-    this.dashboardService.getStats().subscribe({
+
+    this.dashboardService.getStats(this.fechaSeleccionada).subscribe({
       next: (data) => {
         this.stats = data;
         this.actualizarGrafico(data.consultasPorEspecialidadHoy);
@@ -78,6 +83,10 @@ export class Dashboard implements OnInit {
         this.cargando = false;
       }
     });
+  }
+
+  onFechaChange(): void {
+    this.cargarStats();
   }
 
   actualizarGrafico(data: { especialidad: string; cantidad: number }[]): void {

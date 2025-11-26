@@ -1,5 +1,15 @@
 <div class="dashboard-container">
-    <h2>Dashboard - Resumen del Día</h2>
+    <div class="header-dashboard" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 10px;">
+        <h2 style="margin-bottom: 0;">Dashboard - Resumen Diario</h2>
+        
+        <div class="date-filter" style="display: flex; align-items: center; gap: 10px; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <label for="fechaStats" style="font-weight: bold; color: #666; margin:0;">Fecha:</label>
+            <input type="date" id="fechaStats" 
+                   [(ngModel)]="fechaSeleccionada" 
+                   (change)="onFechaChange()"
+                   style="padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit;">
+        </div>
+    </div>
 
     <div *ngIf="cargando" class="loading-container">
         Cargando estadísticas...
@@ -12,31 +22,22 @@
 
     <div *ngIf="!cargando && !error">
         <div class="stats-grid">
-            <div class="stat-card stat-ingresos">
-                <div class="card-icon">
-                    <i class="fas fa-dollar-sign"></i>
-                </div>
+             <div class="stat-card stat-ingresos">
+                <div class="card-icon"><i class="fas fa-dollar-sign"></i></div>
                 <div class="card-content">
-                    <h4>Ingresos de Hoy</h4>
-                    <span class="stat-value">{{ formatCurrency(stats.ingresosHoy) }}</span>
+                    <h4>Ingresos del Día</h4> <span class="stat-value">{{ formatCurrency(stats.ingresosHoy) }}</span>
                 </div>
             </div>
-
             <div class="stat-card stat-pacientes">
-                <div class="card-icon">
-                    <i class="fas fa-users"></i>
-                </div>
+                <div class="card-icon"><i class="fas fa-users"></i></div>
                 <div class="card-content">
                     <h4>Pacientes Atendidos</h4>
                     <span class="stat-value">{{ stats.pacientesAtendidosHoy }}</span>
                 </div>
             </div>
-
             <div class="stat-card stat-especialidad">
-                <div class="card-icon">
-                    <i class="fas fa-star"></i>
-                </div>
-                <div class="card-content">
+                 <div class="card-icon"><i class="fas fa-star"></i></div>
+                 <div class="card-content">
                     <h4>Especialidad Principal</h4>
                     <span class="stat-value" *ngIf="stats.consultasPorEspecialidadHoy.length > 0; else noEspecialidad">
                         {{ stats.consultasPorEspecialidadHoy[0].especialidad }}
@@ -49,17 +50,16 @@
         </div>
 
         <div class="chart-container">
-            <h3>Consultas por Especialidad (Hoy)</h3>
+            <h3>Consultas por Especialidad</h3>
             <div *ngIf="stats.consultasPorEspecialidadHoy.length > 0; else noDataGrafico" class="chart-wrapper">
                 <canvas baseChart [data]="pieChartData" [type]="pieChartType" [options]="pieChartOptions">
                 </canvas>
             </div>
             <ng-template #noDataGrafico>
                 <div class="no-data-grafico">
-                    <p>No hay datos de consultas para mostrar.</p>
+                    <p>No hay datos de consultas para la fecha seleccionada.</p>
                 </div>
             </ng-template>
         </div>
     </div>
-
 </div>
