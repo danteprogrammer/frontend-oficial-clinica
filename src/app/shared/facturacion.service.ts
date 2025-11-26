@@ -28,7 +28,7 @@ export interface CitaParaFacturacionDto {
   providedIn: 'root'
 })
 export class FacturacionService {
-  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/facturacion';
+  private apiUrl = 'https://backend-clinica-saludvida.onrender.com/api/facturacion';
 
   constructor(private http: HttpClient) { }
 

@@ -32,7 +32,7 @@ export interface OrdenLaboratorioResponseDto {
   providedIn: 'root'
 })
 export class LaboratorioService {
-  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/laboratorio';
+  private apiUrl = 'https://backend-clinica-saludvida.onrender.com/api/laboratorio';
 
   constructor(private http: HttpClient) { }
 

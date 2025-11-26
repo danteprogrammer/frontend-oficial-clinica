@@ -22,7 +22,7 @@ export interface HorarioRequest {
   providedIn: 'root'
 })
 export class HorarioService {
-  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/admin/horarios';
+  private apiUrl = 'https://backend-clinica-saludvida.onrender.com/api/admin/horarios';
 
   constructor(private http: HttpClient) { }
 

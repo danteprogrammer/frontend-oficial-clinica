@@ -31,7 +31,7 @@ export interface UsuarioRequest {
   providedIn: 'root'
 })
 export class UsuarioService {
-  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/admin/usuarios';
+  private apiUrl = 'https://backend-clinica-saludvida.onrender.com/api/admin/usuarios';
 
   constructor(private http: HttpClient) { }
 

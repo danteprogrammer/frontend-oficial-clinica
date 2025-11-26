@@ -17,7 +17,7 @@ export interface MedicoInfo {
   providedIn: 'root'
 })
 export class Auth {
-  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/auth';
+  private apiUrl = 'https://backend-clinica-saludvida.onrender.com/api/auth';
 
   private decodedToken: any | null = null;
   private userRole = signal<string | null>(null);

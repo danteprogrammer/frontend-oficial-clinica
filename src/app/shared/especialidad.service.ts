@@ -8,7 +8,7 @@ import { Especialidad } from './especialidad.model';
   providedIn: 'root'
 })
 export class EspecialidadService {
-  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/admin/especialidades';
+  private apiUrl = 'https://backend-clinica-saludvida.onrender.com/api/admin/especialidades';
 
   constructor(private http: HttpClient) { }
 

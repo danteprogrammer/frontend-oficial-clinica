@@ -36,7 +36,7 @@ export interface HistorialConsulta {
   providedIn: 'root'
 })
 export class ConsultaService {
-  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api';
+  private apiUrl = 'https://backend-clinica-saludvida.onrender.com/api';
 
   constructor(private http: HttpClient) { }
 

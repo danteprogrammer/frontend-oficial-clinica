@@ -7,7 +7,7 @@ import { catchError, retry } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class TurnoService {
-  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/turnos';
+  private apiUrl = 'https://backend-clinica-saludvida.onrender.com/api/turnos';
 
   constructor(private http: HttpClient) {}
 

@@ -10,7 +10,7 @@ declare var Swal: any;
 
 @Injectable({ providedIn: 'root' })
 export class SeguroService {
-  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/seguros';
+  private apiUrl = 'https://backend-clinica-saludvida.onrender.com/api/seguros';
 
   constructor(private http: HttpClient) { }
 

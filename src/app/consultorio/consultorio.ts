@@ -16,7 +16,7 @@ export class Consultorio implements OnInit {
   loading: boolean = false;
   error: string | null = null;
 
-  private apiUrl = 'https://backend-oficial-clinica-production.up.railway.app/api/consultorios';
+  private apiUrl = 'https://backend-clinica-saludvida.onrender.com/api/consultorios';
 
   constructor(private consultorioService: ConsultorioService) { }
 
