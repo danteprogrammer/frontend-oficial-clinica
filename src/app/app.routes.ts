@@ -1,67 +1,51 @@
 import { Routes } from '@angular/router';
-import { Login } from './auth/login/login';
 import { authGuard } from './auth/auth-guard';
-import { Main } from './layout/main/main';
-import { ForgotPassword } from './auth/forgot-password/forgot-password';
-import { ResetPassword } from './auth/reset-password/reset-password';
-import { ChangePassword } from './auth/change-password/change-password';
-import { PacienteBusqueda } from './pacientes/paciente-busqueda/paciente-busqueda';
-import { PacienteRegistro } from './pacientes/paciente-registro/paciente-registro';
-import { PacienteModificar } from './pacientes/paciente-modificar/paciente-modificar';
-import { PacienteInactivos } from './pacientes/paciente-inactivos/paciente-inactivos';
-import { TurnoRegistro } from './turno/turno-registro/turno-registro';
-import { Consultorio } from './consultorio/consultorio';
-import { CitaLista } from './cita/cita-lista/cita-lista';
-import { CitaModificar } from './cita/cita-modificar/cita-modificar';
-import { Dashboard } from './pages/dashboard/dashboard';
-import { RegistrarConsulta } from './atencion/registrar-consulta/registrar-consulta';
-import { GenerarFactura } from './facturacion/generar-factura/generar-factura'; 
-import { TriajeRegistro } from './atencion/triaje-registro/triaje-registro';
-import { GestionPendientes } from './laboratorio/gestion-pendientes/gestion-pendientes';
-import { GestionMedicos } from './administracion/gestion-medicos/gestion-medicos';
-import { GestionTarifario } from './administracion/gestion-tarifario/gestion-tarifario';
-import { GestionUsuarios } from './administracion/gestion-usuarios/gestion-usuarios';
-import { GestionHorarios } from './administracion/gestion-horarios/gestion-horarios';
-import { HistorialPagos } from './facturacion/historial-pagos/historial-pagos';
-import { HistorialConsultas } from './atencion/historial-consultas/historial-consultas';
-import { HistorialResultados } from './laboratorio/historial-resultados/historial-resultados';
-import { GestionEspecialidades } from './administracion/gestion-especialidades/gestion-especialidades';
-import { GestionConsultorios } from './administracion/gestion-consultorios/gestion-consultorios';
-
 
 export const routes: Routes = [
-{ path: 'login', component: Login },
-    { path: 'forgot-password', component: ForgotPassword },
-    { path: 'reset-password', component: ResetPassword },
-    
-    { path: 'auth/change-password', component: ChangePassword, canActivate: [authGuard] },
+    { 
+        path: 'login', 
+        loadComponent: () => import('./auth/login/login').then(m => m.Login) 
+    },
+    { 
+        path: 'forgot-password', 
+        loadComponent: () => import('./auth/forgot-password/forgot-password').then(m => m.ForgotPassword) 
+    },
+    { 
+        path: 'reset-password', 
+        loadComponent: () => import('./auth/reset-password/reset-password').then(m => m.ResetPassword) 
+    },
+    { 
+        path: 'auth/change-password', 
+        loadComponent: () => import('./auth/change-password/change-password').then(m => m.ChangePassword),
+        canActivate: [authGuard] 
+    },
     {
         path: '',
-        component: Main,
+        loadComponent: () => import('./layout/main/main').then(m => m.Main),
         canActivate: [authGuard],
         children: [
-            { path: 'dashboard', component: Dashboard },
-            { path: 'pacientes/registrados', component: PacienteBusqueda },
-            { path: 'pacientes/nuevo', component: PacienteRegistro },
-            { path: 'pacientes/modificar/:id', component: PacienteModificar },
-            { path: 'pacientes/inactivos', component: PacienteInactivos },
-            { path: 'cita/registrar', component: TurnoRegistro },
-            { path: 'cita/lista', component: CitaLista },
-            { path: 'cita/modificar/:id', component: CitaModificar },
-            { path: 'consultorios', component: Consultorio },
-            { path: 'atencion/registrar-consulta', component: RegistrarConsulta },
-            { path: 'atencion/triaje', component: TriajeRegistro },
-            { path: 'atencion/historial', component: HistorialConsultas },
-            { path: 'facturacion/generar-factura', component: GenerarFactura },
-            { path: 'facturacion/historial', component: HistorialPagos }, 
-            { path: 'laboratorio/pendientes', component: GestionPendientes },
-            { path: 'laboratorio/historial', component: HistorialResultados },
-            { path: 'admin/medicos', component: GestionMedicos },
-            { path: 'admin/tarifario', component: GestionTarifario },
-            { path: 'admin/usuarios', component: GestionUsuarios },
-            { path: 'admin/horarios', component: GestionHorarios },
-            { path: 'admin/especialidades', component: GestionEspecialidades },
-            { path: 'admin/consultorios', component: GestionConsultorios },
+            { path: 'dashboard', loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.Dashboard) },
+            { path: 'pacientes/registrados', loadComponent: () => import('./pacientes/paciente-busqueda/paciente-busqueda').then(m => m.PacienteBusqueda) },
+            { path: 'pacientes/nuevo', loadComponent: () => import('./pacientes/paciente-registro/paciente-registro').then(m => m.PacienteRegistro) },
+            { path: 'pacientes/modificar/:id', loadComponent: () => import('./pacientes/paciente-modificar/paciente-modificar').then(m => m.PacienteModificar) },
+            { path: 'pacientes/inactivos', loadComponent: () => import('./pacientes/paciente-inactivos/paciente-inactivos').then(m => m.PacienteInactivos) },
+            { path: 'cita/registrar', loadComponent: () => import('./turno/turno-registro/turno-registro').then(m => m.TurnoRegistro) },
+            { path: 'cita/lista', loadComponent: () => import('./cita/cita-lista/cita-lista').then(m => m.CitaLista) },
+            { path: 'cita/modificar/:id', loadComponent: () => import('./cita/cita-modificar/cita-modificar').then(m => m.CitaModificar) },
+            { path: 'consultorios', loadComponent: () => import('./consultorio/consultorio').then(m => m.Consultorio) },
+            { path: 'atencion/registrar-consulta', loadComponent: () => import('./atencion/registrar-consulta/registrar-consulta').then(m => m.RegistrarConsulta) },
+            { path: 'atencion/triaje', loadComponent: () => import('./atencion/triaje-registro/triaje-registro').then(m => m.TriajeRegistro) },
+            { path: 'atencion/historial', loadComponent: () => import('./atencion/historial-consultas/historial-consultas').then(m => m.HistorialConsultas) },
+            { path: 'facturacion/generar-factura', loadComponent: () => import('./facturacion/generar-factura/generar-factura').then(m => m.GenerarFactura) },
+            { path: 'facturacion/historial', loadComponent: () => import('./facturacion/historial-pagos/historial-pagos').then(m => m.HistorialPagos) },
+            { path: 'laboratorio/pendientes', loadComponent: () => import('./laboratorio/gestion-pendientes/gestion-pendientes').then(m => m.GestionPendientes) },
+            { path: 'laboratorio/historial', loadComponent: () => import('./laboratorio/historial-resultados/historial-resultados').then(m => m.HistorialResultados) },
+            { path: 'admin/medicos', loadComponent: () => import('./administracion/gestion-medicos/gestion-medicos').then(m => m.GestionMedicos) },
+            { path: 'admin/tarifario', loadComponent: () => import('./administracion/gestion-tarifario/gestion-tarifario').then(m => m.GestionTarifario) },
+            { path: 'admin/usuarios', loadComponent: () => import('./administracion/gestion-usuarios/gestion-usuarios').then(m => m.GestionUsuarios) },
+            { path: 'admin/horarios', loadComponent: () => import('./administracion/gestion-horarios/gestion-horarios').then(m => m.GestionHorarios) },
+            { path: 'admin/especialidades', loadComponent: () => import('./administracion/gestion-especialidades/gestion-especialidades').then(m => m.GestionEspecialidades) },
+            { path: 'admin/consultorios', loadComponent: () => import('./administracion/gestion-consultorios/gestion-consultorios').then(m => m.GestionConsultorios) },
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
         ]
     },
