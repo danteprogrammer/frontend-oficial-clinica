@@ -3,13 +3,13 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Rol } from './rol.model';
-import { Medico } from './medico.service'; 
 
 export interface UsuarioResponse {
   idUsuario: number;
   nombreUsuario: string;
   nombres: string;
   apellidos: string;
+  email: string;
   estado: string;
   rolNombre: string;
   idRol: number;
@@ -22,6 +22,7 @@ export interface UsuarioRequest {
   clave?: string | null; 
   nombres: string;
   apellidos: string;
+  email: string;
   estado: string;
   idRol: number;
   idMedico: number | null; 

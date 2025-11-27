@@ -21,6 +21,14 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="email">Correo Electrónico</label>
+                    <input id="email" type="email" formControlName="email"
+                        [class.is-invalid]="esCampoInvalido('email')"
+                        placeholder="ejemplo@correo.com">
+                    <div *ngIf="esCampoInvalido('email')" class="invalid-feedback">Correo válido requerido.</div>
+                </div>
+
+                <div class="form-group">
                     <label for="nombreUsuario">Nombre de Usuario (login)</label>
                     <input id="nombreUsuario" type="text" formControlName="nombreUsuario"
                         [class.is-invalid]="esCampoInvalido('nombreUsuario')">
@@ -30,7 +38,7 @@
                 <div class="form-group">
                     <label for="clave">Contraseña</label>
                     <input id="clave" type="password" formControlName="clave"
-                        [placeholder]="modoEdicion ? 'Dejar en blanco para no cambiar' : 'Requerido al crear'">
+                        [placeholder]="modoEdicion ? 'Dejar en blanco para no cambiar' : 'Vacío = Generar automática'">
                 </div>
 
                 <div class="form-group">
@@ -58,7 +66,7 @@
                             Dr. {{ medico.nombres }} {{ medico.apellidos }} (DNI: {{medico.dni}})
                         </option>
                     </select>
-                    <small>Seleccione el perfil profesional al que esta cuenta de login tendrá acceso.</small>
+                    <small>Al seleccionar un médico, se copiarán sus datos (Nombre y Correo).</small>
                 </div>
 
             </div>
@@ -82,7 +90,7 @@
             <thead>
                 <tr>
                     <th>Nombre Completo</th>
-                    <th>Usuario (login)</th>
+                    <th>Email</th> <th>Usuario (login)</th>
                     <th>Rol</th>
                     <th>Estado</th>
                     <th>Enlazado a</th>
@@ -92,7 +100,7 @@
             <tbody>
                 <tr *ngFor="let user of usuarios">
                     <td>{{ user.nombres }} {{ user.apellidos }}</td>
-                    <td>{{ user.nombreUsuario }}</td>
+                    <td>{{ user.email }}</td> <td>{{ user.nombreUsuario }}</td>
                     <td><span class="badge badge-rol">{{ user.rolNombre }}</span></td>
                     <td>
                         <span class="badge" [ngClass]="{

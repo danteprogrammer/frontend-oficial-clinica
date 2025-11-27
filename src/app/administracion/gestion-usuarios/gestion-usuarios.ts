@@ -16,7 +16,7 @@ declare var Swal: any;
 export class GestionUsuarios implements OnInit {
   usuarios: UsuarioResponse[] = [];
   roles: Rol[] = [];
-  medicos: Medico[] = []; 
+  medicos: Medico[] = [];
 
   cargando = true;
   error: string | null = null;
@@ -24,21 +24,22 @@ export class GestionUsuarios implements OnInit {
   modoEdicion = false;
   idUsuarioEditar: number | null = null;
 
-  esRolMedico = false; 
+  esRolMedico = false;
 
   constructor(
     private usuarioService: UsuarioService,
-    private medicoService: MedicoService, 
+    private medicoService: MedicoService,
     private fb: FormBuilder
   ) {
     this.usuarioForm = this.fb.group({
       nombres: ['', Validators.required],
       apellidos: ['', Validators.required],
       nombreUsuario: ['', Validators.required],
-      clave: [''], 
+      email: ['', [Validators.required, Validators.email]],
+      clave: [''],
       idRol: [null, Validators.required],
       estado: ['ACTIVO', Validators.required],
-      idMedico: [null] 
+      idMedico: [null]
     });
   }
 
@@ -50,7 +51,20 @@ export class GestionUsuarios implements OnInit {
       this.esRolMedico = (rol?.nombre === 'MEDICO');
 
       if (!this.esRolMedico) {
-        this.f['idMedico'].setValue(null); 
+        this.f['idMedico'].setValue(null);
+      }
+    });
+
+    this.f['idMedico'].valueChanges.subscribe(idMedicoSeleccionado => {
+      if (idMedicoSeleccionado) {
+        const medicoSeleccionado = this.medicos.find(m => m.idMedico == idMedicoSeleccionado);
+        if (medicoSeleccionado) {
+          this.usuarioForm.patchValue({
+            nombres: medicoSeleccionado.nombres,
+            apellidos: medicoSeleccionado.apellidos,
+            email: medicoSeleccionado.email
+          });
+        }
       }
     });
   }
@@ -62,7 +76,7 @@ export class GestionUsuarios implements OnInit {
     Promise.all([
       this.usuarioService.listarUsuarios().toPromise(),
       this.usuarioService.listarRoles().toPromise(),
-      this.medicoService.getMedicos().toPromise() 
+      this.medicoService.getMedicos().toPromise()
     ]).then(([usuarios, roles, medicos]) => {
       this.usuarios = usuarios || [];
       this.roles = roles || [];
@@ -103,13 +117,11 @@ export class GestionUsuarios implements OnInit {
       });
     } else {
       if (!request.clave || request.clave.trim() === '') {
-        Swal.fire('Error', 'La contraseña es obligatoria al crear un usuario.', 'error');
-        this.cargando = false;
-        return;
+        request.clave = null;
       }
       this.usuarioService.crearUsuario(request).subscribe({
         next: () => {
-          Swal.fire('¡Creado!', 'Nuevo usuario registrado con éxito.', 'success');
+          Swal.fire('¡Creado!', 'Usuario registrado y credenciales enviadas al correo: ' + request.email, 'success');
           this.resetFormulario();
         },
         error: (err) => {
@@ -131,7 +143,8 @@ export class GestionUsuarios implements OnInit {
       nombres: usuario.nombres,
       apellidos: usuario.apellidos,
       nombreUsuario: usuario.nombreUsuario,
-      clave: '', 
+      email: usuario.email,
+      clave: '',
       idRol: usuario.idRol,
       estado: usuario.estado,
       idMedico: this.esRolMedico ? (usuario.idMedicoAsociado || null) : null
@@ -160,7 +173,7 @@ export class GestionUsuarios implements OnInit {
         this.usuarioService.inactivarUsuario(usuario.idUsuario).subscribe({
           next: () => {
             Swal.fire('¡Inactivado!', 'El usuario ha sido inactivado.', 'success');
-            this.cargarDatosIniciales(); 
+            this.cargarDatosIniciales();
           },
           error: (err) => {
             Swal.fire('Error', err.message, 'error');
@@ -170,7 +183,6 @@ export class GestionUsuarios implements OnInit {
       }
     });
   }
-
 
   resetFormulario(): void {
     this.usuarioForm.reset({
