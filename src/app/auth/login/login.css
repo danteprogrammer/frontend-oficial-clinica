@@ -73,7 +73,7 @@
     padding: 0 clamp(15px, 3vw, 20px);
 }
 
-.login-form-wrapper h3 {
+.login-form-wrapper h2 {
     font-size: clamp(1.3rem, 4vw, 1.8rem);
     color: #034471;
     margin-bottom: clamp(15px, 3vw, 25px);
