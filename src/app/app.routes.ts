@@ -2,6 +2,9 @@ import { Routes } from '@angular/router';
 import { Login } from './auth/login/login';
 import { authGuard } from './auth/auth-guard';
 import { Main } from './layout/main/main';
+import { ForgotPassword } from './auth/forgot-password/forgot-password';
+import { ResetPassword } from './auth/reset-password/reset-password';
+import { ChangePassword } from './auth/change-password/change-password';
 import { PacienteBusqueda } from './pacientes/paciente-busqueda/paciente-busqueda';
 import { PacienteRegistro } from './pacientes/paciente-registro/paciente-registro';
 import { PacienteModificar } from './pacientes/paciente-modificar/paciente-modificar';
@@ -27,7 +30,11 @@ import { GestionConsultorios } from './administracion/gestion-consultorios/gesti
 
 
 export const routes: Routes = [
-    { path: 'login', component: Login },
+{ path: 'login', component: Login },
+    { path: 'forgot-password', component: ForgotPassword },
+    { path: 'reset-password', component: ResetPassword },
+    
+    { path: 'auth/change-password', component: ChangePassword, canActivate: [authGuard] },
     {
         path: '',
         component: Main,

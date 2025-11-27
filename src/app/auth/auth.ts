@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core'; 
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router'; 
-import { Observable, throwError, of } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode'; 
 
@@ -11,6 +11,11 @@ export interface MedicoInfo {
   apellidos: string;
   cmp: string;
   sexo: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  requiereCambioPassword: boolean;
 }
 
 @Injectable({
@@ -31,49 +36,37 @@ export class Auth {
     if (typeof localStorage !== 'undefined') {
       const token = this.getToken();
       if (token) {
-        try {
-          this.decodedToken = jwtDecode(token);
-
-          const role = this.decodedToken.authorities?.[0]?.authority;
-          if (role) {
-            this.userRole.set(role);
-          }
-
-          const medico = this.decodedToken.medicoInfo;
-          if (medico) {
-            this.medicoInfo.set(medico);
-          }
-
-        } catch (Error) {
-          console.error('Error al decodificar el token:', Error);
-          this.logout();
-        }
+        this.decodeAndSetUser(token);
       }
     }
   }
 
-  login(username: string, password: string): Observable<any> {
-    return this.http.post<{ token: string }>(`${this.apiUrl}/login`, { username, password })
+  private decodeAndSetUser(token: string): void {
+    try {
+      this.decodedToken = jwtDecode(token);
+
+      const role = this.decodedToken.authorities?.[0]?.authority;
+      if (role) {
+        this.userRole.set(role);
+      }
+
+      const medico = this.decodedToken.medicoInfo;
+      if (medico) {
+        this.medicoInfo.set(medico);
+      }
+
+    } catch (Error) {
+      console.error('Error al decodificar el token:', Error);
+      this.logout();
+    }
+  }
+
+  login(username: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password })
       .pipe(
         tap(response => {
           this.saveToken(response.token);
-
-          try {
-            this.decodedToken = jwtDecode(response.token);
-            const role = this.decodedToken.authorities?.[0]?.authority;
-            if (role) {
-              this.userRole.set(role);
-            }
-
-            const medico = this.decodedToken.medicoInfo;
-            if (medico) {
-              this.medicoInfo.set(medico);
-            }
-          } catch (Error) {
-            console.error('Error al decodificar nuevo token:', Error);
-            this.userRole.set(null);
-            this.medicoInfo.set(null);
-          }
+          this.decodeAndSetUser(response.token);
         }),
         catchError((err: HttpErrorResponse) => {
           this.userRole.set(null);
@@ -83,20 +76,37 @@ export class Auth {
       );
   }
 
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reset-password`, { token, newPassword });
+  }
+
+  changePassword(newPassword: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/change-password`, { newPassword });
+  }
+
   private saveToken(token: string): void {
     localStorage.setItem('authToken', token);
   }
 
   getToken(): string | null {
-    return localStorage.getItem('authToken');
+    if (typeof localStorage !== 'undefined') {
+      return localStorage.getItem('authToken');
+    }
+    return null;
   }
 
   logout(): void {
-    localStorage.removeItem('authToken');
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('authToken');
+    }
     this.decodedToken = null;
     this.userRole.set(null);
     this.medicoInfo.set(null);
-
+    this.router.navigate(['/login']);
   }
 
   isLoggedIn(): boolean {
