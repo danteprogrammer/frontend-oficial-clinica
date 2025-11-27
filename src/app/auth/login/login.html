@@ -1,4 +1,4 @@
-<div class="login-container">
+<main class="login-container">
     <div class="swoop-bg-1"></div>
     <div class="swoop-bg-2"></div>
 
@@ -9,14 +9,17 @@
 
     <div class="right-panel">
         <div class="login-form-wrapper">
-            <h3>Iniciar Sesión</h3>
+            <h2>Iniciar Sesión</h2>
+            
             <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
                 <div class="form-group">
+                    <label for="username" class="visually-hidden">Nombre de Usuario</label>
                     <input type="text" id="username" formControlName="username" placeholder="Usuario" required />
                 </div>
 
                 <div class="form-group">
+                    <label for="password" class="visually-hidden">Contraseña</label>
                     <input type="password" id="password" formControlName="password" placeholder="Contraseña" required />
                 </div>
 
@@ -32,4 +35,4 @@
             </form>
         </div>
     </div>
-</div>
+</main>
