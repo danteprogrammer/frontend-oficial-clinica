@@ -5,6 +5,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { DashboardService, DashboardStats } from '../../shared/dashboard.service';
 import { Auth } from '../../auth/auth';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -55,7 +56,8 @@ export class Dashboard implements OnInit {
 
   constructor(
     private dashboardService: DashboardService,
-    private authService: Auth
+    private authService: Auth,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -65,6 +67,30 @@ export class Dashboard implements OnInit {
       this.cargarStats();
     } else {
       this.cargando = false;
+      this.redirigirSegunRol(this.userRole);
+    }
+  }
+
+  redirigirSegunRol(role: string): void {
+    switch (role) {
+      case 'MEDICO':
+        this.router.navigate(['/atencion/registrar-consulta']);
+        break;
+      case 'RECEPCIONISTA':
+        this.router.navigate(['/pacientes/registrados']);
+        break;
+      case 'CAJA':
+        this.router.navigate(['/facturacion/generar-factura']);
+        break;
+      case 'TRIAJE':
+        this.router.navigate(['/atencion/triaje']);
+        break;
+      case 'LABORATORIO':
+        this.router.navigate(['/laboratorio/pendientes']);
+        break;
+      default:
+        this.authService.logout();
+        break;
     }
   }
 

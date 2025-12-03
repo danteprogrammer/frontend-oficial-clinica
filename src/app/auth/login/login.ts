@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router'; 
-import { Auth } from '../auth'; 
-import { CommonModule } from '@angular/common'; 
+import { Router, RouterLink } from '@angular/router';
+import { Auth } from '../auth';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -38,7 +38,31 @@ export class Login {
         if (response.requiereCambioPassword) {
           this.router.navigate(['/auth/change-password']);
         } else {
-          this.router.navigate(['/dashboard']);
+          const role = this.authService.getRole();
+          
+          switch (role) {
+            case 'ADMIN':
+              this.router.navigate(['/dashboard']);
+              break;
+            case 'MEDICO':
+              this.router.navigate(['/atencion/registrar-consulta']);
+              break;
+            case 'RECEPCIONISTA':
+              this.router.navigate(['/pacientes/registrados']);
+              break;
+            case 'TRIAJE':
+              this.router.navigate(['/atencion/triaje']);
+              break;
+            case 'LABORATORIO':
+              this.router.navigate(['/laboratorio/pendientes']);
+              break;
+            case 'CAJA':
+              this.router.navigate(['/facturacion/generar-factura']);
+              break;
+            default:
+              this.router.navigate(['/dashboard']);
+              break;
+          }
         }
       },
       error: (err) => {

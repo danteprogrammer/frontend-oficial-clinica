@@ -12,17 +12,18 @@ import { ConsultaService } from '../../shared/consulta.service';
 import { Auth, MedicoInfo } from '../../auth/auth'; 
 import { PdfService } from '../../shared/pdf.service'; 
 
-import * as pdfMake from 'pdfmake/build/pdfmake';
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+//import * as pdfMake from 'pdfmake/build/pdfmake';
+//import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 
-const pdfMakeInstance: any = (pdfMake as any);
-pdfMakeInstance.vfs = (pdfFonts as any).vfs;
+//const pdfMakeInstance: any = (pdfMake as any);
+//pdfMakeInstance.vfs = (pdfFonts as any).vfs;
 
 declare var Swal: any;
 
 
 @Component({
   selector: 'app-registrar-consulta',
+  standalone: true,
   imports: [ReactiveFormsModule, CommonModule, DatePipe],
   templateUrl: './registrar-consulta.html',
   styleUrl: './registrar-consulta.css',
